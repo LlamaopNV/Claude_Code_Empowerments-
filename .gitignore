@@ -10,3 +10,6 @@ __pycache__/
 # OS cruft
 .DS_Store
 Thumbs.db
+
+# Skill output (generated in a user's working dir, not part of the marketplace)
+idea-briefs/

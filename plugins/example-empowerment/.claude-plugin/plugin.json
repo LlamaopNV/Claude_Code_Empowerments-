@@ -14,5 +14,5 @@
   "keywords": ["template", "example", "starter"],
   "skills": "./skills/",
   "commands": "./commands/",
-  "agents": "./agents/"
+  "agents": ["./agents/example-agent.md"]
 }

@@ -23,6 +23,19 @@
       },
       "category": "development",
       "keywords": ["template", "example", "starter"]
+    },
+    {
+      "name": "bake-to-completion",
+      "displayName": "Bake to Completion",
+      "source": "./plugins/bake-to-completion",
+      "description": "Interview-driven skill that takes a half-baked software/product idea and strengthens every aspect of it, then hands off a clean brief to design and planning.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["idea", "brainstorming", "validation", "product", "interview"]
     }
   ]
 }

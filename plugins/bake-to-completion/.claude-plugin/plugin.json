@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "bake-to-completion",
+  "displayName": "Bake to Completion",
+  "version": "0.1.0",
+  "description": "Interview-driven skill that takes a half-baked software/product idea and strengthens every aspect of it through an adaptive Socratic interview and adversarial stress-test, then hands off a clean brief to design and planning.",
+  "author": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "homepage": "https://github.com/LlamaopNV/Claude_Code_Empowerments-",
+  "repository": "https://github.com/LlamaopNV/Claude_Code_Empowerments-",
+  "license": "MIT",
+  "keywords": ["idea", "brainstorming", "validation", "product", "interview", "pressure-test"],
+  "skills": "./skills/"
+}

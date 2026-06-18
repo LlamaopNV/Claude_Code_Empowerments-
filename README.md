@@ -28,6 +28,7 @@ The plugins in this marketplace appear under the **Discover** tab. Select one, p
 | Plugin | Category | Description |
 | --- | --- | --- |
 | `example-empowerment` | development | A copy-me template plugin demonstrating a skill, a command, and an agent. |
+| `bake-to-completion` | development | Interviews you about a half-baked software/product idea, stress-tests every aspect, and hands off a strengthened brief for planning. |
 
 ## Repository layout
 
