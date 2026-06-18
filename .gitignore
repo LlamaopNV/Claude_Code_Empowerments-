@@ -1,0 +1,12 @@
+# Editor / IDE
+.idea/
+.vscode/
+
+# Python virtualenv (local tooling, not part of the marketplace)
+.venv/
+__pycache__/
+*.pyc
+
+# OS cruft
+.DS_Store
+Thumbs.db

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "example-empowerment",
+  "displayName": "Example Empowerment",
+  "version": "0.1.0",
+  "description": "A copy-me template plugin demonstrating a skill, a command, and an agent.",
+  "author": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "homepage": "https://github.com/LlamaopNV/Claude_Code_Empowerments-",
+  "repository": "https://github.com/LlamaopNV/Claude_Code_Empowerments-",
+  "license": "MIT",
+  "keywords": ["template", "example", "starter"],
+  "skills": "./skills/",
+  "commands": "./commands/",
+  "agents": "./agents/"
+}

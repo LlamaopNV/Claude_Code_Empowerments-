@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
+  "name": "claude-code-empowerments",
+  "owner": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "description": "A personal marketplace of Claude Code plugins and skills — empowerments for everyday coding.",
+  "version": "0.1.0",
+  "metadata": {
+    "pluginRoot": "./plugins"
+  },
+  "plugins": [
+    {
+      "name": "example-empowerment",
+      "displayName": "Example Empowerment",
+      "source": "./plugins/example-empowerment",
+      "description": "A copy-me template plugin demonstrating a skill, a command, and an agent.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["template", "example", "starter"]
+    }
+  ]
+}
