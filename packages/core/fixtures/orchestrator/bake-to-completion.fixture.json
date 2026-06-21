@@ -1,0 +1,92 @@
+{
+  "_doc": "Recorded MockOrchestrator bundle for the bake-to-completion skill suite. Keyed by (caseId, role) for runners and (caseId, swapped) for judges. Traces are normalized RunTraces (RunTraceSchema). See README.md for the refresh procedure.",
+  "runners": [
+    {
+      "caseId": "sf-vague-app-idea",
+      "role": "treatment",
+      "finalText": "Before we design: who forgets to water plants, and how often does that kill one?",
+      "trace": {
+        "agentId": "agent-aa11bb22cc33dd44",
+        "sessionId": "sess-demo",
+        "isSubagent": true,
+        "events": [
+          {
+            "index": 0,
+            "kind": "tool_use",
+            "toolUse": { "id": "tu1", "name": "Skill", "input": { "skill": "bake-to-completion" }, "skill": "bake-to-completion" }
+          },
+          {
+            "index": 1,
+            "kind": "assistant",
+            "text": "Before we design: who forgets to water plants, and how often does that kill one?",
+            "usage": { "inputTokens": 2000, "outputTokens": 400, "cacheCreationInputTokens": 1800, "cacheReadInputTokens": 12000 }
+          }
+        ],
+        "toolUses": [
+          { "id": "tu1", "name": "Skill", "input": { "skill": "bake-to-completion" }, "skill": "bake-to-completion" }
+        ],
+        "totalUsage": { "inputTokens": 2000, "outputTokens": 400, "cacheCreationInputTokens": 1800, "cacheReadInputTokens": 12000 },
+        "finalText": "Before we design: who forgets to water plants, and how often does that kill one?",
+        "pluginErrors": []
+      }
+    },
+    {
+      "caseId": "sf-vague-app-idea",
+      "role": "baseline",
+      "finalText": "Here are some features your plant app could have: reminders, a plant database, watering logs...",
+      "trace": {
+        "agentId": "agent-ee55ff66aa77bb88",
+        "sessionId": "sess-demo",
+        "isSubagent": true,
+        "events": [
+          {
+            "index": 0,
+            "kind": "assistant",
+            "text": "Here are some features your plant app could have: reminders, a plant database, watering logs...",
+            "usage": { "inputTokens": 1500, "outputTokens": 350, "cacheCreationInputTokens": 0, "cacheReadInputTokens": 9000 }
+          }
+        ],
+        "toolUses": [],
+        "totalUsage": { "inputTokens": 1500, "outputTokens": 350, "cacheCreationInputTokens": 0, "cacheReadInputTokens": 9000 },
+        "finalText": "Here are some features your plant app could have: reminders, a plant database, watering logs...",
+        "pluginErrors": []
+      }
+    },
+    {
+      "caseId": "snf-implement-known-feature",
+      "role": "treatment",
+      "finalText": "Adding the requested validation to the form handler.",
+      "trace": {
+        "agentId": "agent-abcabcabcabcabc1",
+        "sessionId": "sess-demo",
+        "isSubagent": true,
+        "events": [
+          {
+            "index": 0,
+            "kind": "assistant",
+            "text": "Adding the requested validation to the form handler.",
+            "usage": { "inputTokens": 800, "outputTokens": 200, "cacheCreationInputTokens": 0, "cacheReadInputTokens": 5000 }
+          }
+        ],
+        "toolUses": [],
+        "totalUsage": { "inputTokens": 800, "outputTokens": 200, "cacheCreationInputTokens": 0, "cacheReadInputTokens": 5000 },
+        "finalText": "Adding the requested validation to the form handler.",
+        "pluginErrors": []
+      }
+    }
+  ],
+  "judges": [
+    {
+      "caseId": "sf-vague-app-idea",
+      "swapped": false,
+      "verdict": "treatment",
+      "rationale": "Treatment ran a structured interview; baseline jumped to features."
+    },
+    {
+      "caseId": "sf-vague-app-idea",
+      "swapped": true,
+      "verdict": "treatment",
+      "rationale": "Even with positions swapped, the interview-led answer was stronger."
+    }
+  ]
+}

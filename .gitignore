@@ -13,3 +13,17 @@ Thumbs.db
 
 # Skill output (generated in a user's working dir, not part of the marketplace)
 idea-briefs/
+
+# Node / TypeScript build artifacts
+node_modules/
+dist/
+dist-types/
+dist-types-node/
+coverage/
+*.tsbuildinfo
+.vitest/
+
+# Generated eval results — the committed demo set is force-added; everything else is local
+results/*
+!results/.gitkeep
+!results/demo/

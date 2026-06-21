@@ -1,0 +1,8 @@
+{
+    "name": "md-with-mermaid-to-pdf",
+    "description": "Convert a markdown file containing mermaid diagrams to PDF. Renders all mermaid code blocks to SVGs, produces a rendered markdown file, then converts to PDF.",
+    "version": "1.0.0",
+    "author": {
+        "name": "LlamaopNV"
+    }
+}

@@ -1,0 +1,73 @@
+# Example Anvil eval suite — validates against EvalSuiteSchema (@anvil/core).
+# Target: the `bake-to-completion` skill (strengthens half-baked product ideas).
+# Buckets: should-fire (idea-shaping requests), should-not-fire (near-misses
+# that look adjacent but should NOT trigger), and task (quality + process).
+schemaVersion: 1
+name: bake-to-completion effectiveness
+artifact:
+  kind: skill
+  name: bake-to-completion
+  path: plugins/anvil/skills/bake-to-completion
+judgeModel: claude-opus-4-20250514
+runModel: claude-sonnet-4-20250514
+repetitions: 5
+cases:
+  - id: sf-vague-app-idea
+    bucket: should-fire
+    shouldActivate: true
+    prompt: >-
+      I have a rough idea for an app that helps people remember to water their
+      plants, but it's pretty half-baked. Can you interview me about it and help
+      me sharpen it before we design anything?
+    rubric: >-
+      A strong response runs a structured idea-interview: probes the target
+      user, the core problem, differentiation, and feasibility, and surfaces
+      hidden assumptions — rather than jumping straight to a feature list.
+
+  - id: sf-pressure-test-concept
+    bucket: should-fire
+    shouldActivate: true
+    prompt: >-
+      Pressure-test my startup concept before I commit. It's unproven and early
+      stage and I want you to poke holes in it.
+    rubric: >-
+      Identifies the riskiest assumption, proposes the cheapest test of it, and
+      strengthens the concept; does not merely praise the idea.
+
+  - id: snf-implement-known-feature
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      Add a dark-mode toggle to the settings page of my existing React app and
+      persist the choice in localStorage.
+    expectations:
+      - type: not-contains
+        value: interview me about your idea
+
+  - id: snf-debug-existing-bug
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      My unit tests are failing with a null-pointer exception in the checkout
+      service. Help me debug it.
+    expectations:
+      - type: not-contains
+        value: half-baked
+
+  - id: task-sharpen-and-summarize
+    bucket: task
+    shouldActivate: true
+    prompt: >-
+      Here is my fuzzy idea: a marketplace for renting power tools between
+      neighbours. Sharpen it and give me a one-paragraph pitch plus the single
+      biggest risk.
+    rubric: >-
+      Output contains a crisp one-paragraph pitch and names a single, specific
+      biggest risk with a rationale. Concrete over vague.
+    expectations:
+      - type: regex
+        pattern: 'risk'
+        flags: 'i'
+      - type: contains
+        value: pitch
+        caseSensitive: false

@@ -1,0 +1,124 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-2026-06-21-bake-001",
+  "suiteName": "bake-to-completion effectiveness",
+  "artifact": {
+    "kind": "skill",
+    "name": "bake-to-completion",
+    "path": "plugins/anvil/skills/bake-to-completion"
+  },
+  "createdAt": "2026-06-21T16:42:00.000Z",
+  "judgeModel": "claude-opus-4-20250514",
+  "runModel": "claude-sonnet-4-20250514",
+  "repetitions": 5,
+  "metrics": {
+    "activation.precision": {
+      "metric": "activation.precision",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 25,
+      "stdDev": 0.0,
+      "ci": { "level": 0.95, "lower": 0.86, "upper": 1.0 }
+    },
+    "activation.recall": {
+      "metric": "activation.recall",
+      "value": 0.8,
+      "unit": "ratio",
+      "n": 15,
+      "stdDev": 0.41,
+      "ci": { "level": 0.95, "lower": 0.55, "upper": 0.94 }
+    },
+    "activation.f1": {
+      "metric": "activation.f1",
+      "value": 0.89,
+      "unit": "ratio",
+      "n": 25,
+      "stdDev": 0.31,
+      "ci": { "level": 0.95, "lower": 0.71, "upper": 0.97 }
+    },
+    "quality.delta": {
+      "metric": "quality.delta",
+      "value": 0.42,
+      "unit": "ratio",
+      "n": 15,
+      "stdDev": 0.28,
+      "ci": { "level": 0.95, "lower": 0.18, "upper": 0.66 }
+    },
+    "cost.tokens": {
+      "metric": "cost.tokens",
+      "value": 18342,
+      "unit": "tokens",
+      "n": 50,
+      "stdDev": 4120.5,
+      "ci": { "level": 0.95, "lower": 17200, "upper": 19484 }
+    }
+  },
+  "confusion": {
+    "truePositive": 12,
+    "falsePositive": 0,
+    "trueNegative": 10,
+    "falseNegative": 3,
+    "falsePositiveCaseIds": [],
+    "falseNegativeCaseIds": ["sf-pressure-test-concept"]
+  },
+  "cases": [
+    {
+      "caseId": "sf-vague-app-idea",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "Treatment ran a structured interview probing user, problem, and feasibility; baseline jumped to features." },
+        { "verdict": "treatment", "swapped": true, "rationale": "Even with positions swapped, the interview-led answer was stronger." }
+      ],
+      "treatmentTraceId": "agent-aa11bb22cc33dd44",
+      "baselineTraceId": "agent-ee55ff66aa77bb88"
+    },
+    {
+      "caseId": "sf-pressure-test-concept",
+      "activated": false,
+      "activationCorrect": false,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        { "verdict": "tie", "swapped": false, "rationale": "Skill did not fire; both answers similar in quality." }
+      ],
+      "treatmentTraceId": "agent-1122334455667788",
+      "baselineTraceId": "agent-99aabbccddeeff00"
+    },
+    {
+      "caseId": "snf-implement-known-feature",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [],
+      "treatmentTraceId": "agent-abcabcabcabcabc1"
+    },
+    {
+      "caseId": "snf-debug-existing-bug",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [],
+      "treatmentTraceId": "agent-defdefdefdefdef2"
+    },
+    {
+      "caseId": "task-sharpen-and-summarize",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true, true],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "Treatment gave a crisp pitch and named a single biggest risk; baseline listed several risks vaguely." },
+        { "verdict": "treatment", "swapped": true, "rationale": "Position swap held: the sharpened pitch was clearer." }
+      ],
+      "treatmentTraceId": "agent-7777888899990000",
+      "baselineTraceId": "agent-0000111122223333"
+    }
+  ],
+  "pluginLoadOk": true,
+  "pluginErrors": []
+}

@@ -1,0 +1,8 @@
+{
+    "name": "bitbucket-pr",
+    "description": "Manage Bitbucket pull requests — list, view, create, update, review, merge, and comment.",
+    "version": "1.0.1",
+    "author": {
+        "name": "LlamaopNV"
+    }
+}

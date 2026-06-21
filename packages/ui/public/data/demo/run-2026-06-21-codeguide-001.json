@@ -1,0 +1,134 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-2026-06-21-codeguide-001",
+  "suiteName": "claude-code-guide specialization",
+  "artifact": {
+    "kind": "subagent",
+    "name": "claude-code-guide",
+    "path": "plugins/anvil/agents/claude-code-guide.md",
+    "baselineSubagent": "general-purpose"
+  },
+  "createdAt": "2026-06-21T17:05:00.000Z",
+  "judgeModel": "claude-opus-4-20250514",
+  "runModel": "claude-sonnet-4-20250514",
+  "repetitions": 4,
+  "metrics": {
+    "activation.precision": {
+      "metric": "activation.precision",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 16,
+      "stdDev": 0.0,
+      "ci": { "level": 0.95, "lower": 0.8, "upper": 1.0 }
+    },
+    "activation.recall": {
+      "metric": "activation.recall",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 12,
+      "stdDev": 0.0,
+      "ci": { "level": 0.95, "lower": 0.78, "upper": 1.0 }
+    },
+    "activation.f1": {
+      "metric": "activation.f1",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 16,
+      "stdDev": 0.0,
+      "ci": { "level": 0.95, "lower": 0.8, "upper": 1.0 }
+    },
+    "quality.delta": {
+      "metric": "quality.delta",
+      "value": 0.55,
+      "unit": "ratio",
+      "n": 12,
+      "stdDev": 0.22,
+      "ci": { "level": 0.95, "lower": 0.34, "upper": 0.76 }
+    },
+    "cost.tokens": {
+      "metric": "cost.tokens",
+      "value": 22150,
+      "unit": "tokens",
+      "n": 32,
+      "stdDev": 5230.0,
+      "ci": { "level": 0.95, "lower": 20800, "upper": 23500 }
+    },
+    "cost.usd": {
+      "metric": "cost.usd",
+      "value": 0.071,
+      "unit": "usd",
+      "n": 32,
+      "stdDev": 0.017,
+      "ci": { "level": 0.95, "lower": 0.064, "upper": 0.078 }
+    }
+  },
+  "confusion": {
+    "truePositive": 3,
+    "falsePositive": 0,
+    "trueNegative": 2,
+    "falseNegative": 0,
+    "falsePositiveCaseIds": [],
+    "falseNegativeCaseIds": []
+  },
+  "cases": [
+    {
+      "caseId": "sf-hooks-question",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "The specialized guide cited the correct settings.json hook event names and the matcher syntax; general-purpose gave a plausible but partly invented schema." },
+        { "verdict": "treatment", "swapped": true, "rationale": "Swap held — the guide's answer matched the documented hooks contract." }
+      ],
+      "treatmentTraceId": "agent-cg11aa22bb33cc44",
+      "baselineTraceId": "agent-cg55dd66ee77ff88"
+    },
+    {
+      "caseId": "sf-mcp-server-config",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "Guide explained .mcp.json stdio config precisely; baseline conflated it with the API." },
+        { "verdict": "tie", "swapped": true, "rationale": "Both adequate after the swap; close call." }
+      ],
+      "treatmentTraceId": "agent-cg99aa00bb11cc22",
+      "baselineTraceId": "agent-cgdd33ee44ff5566"
+    },
+    {
+      "caseId": "sf-slash-command-frontmatter",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "Correct command frontmatter fields and argument-hint usage." },
+        { "verdict": "treatment", "swapped": true, "rationale": "Swap held." }
+      ],
+      "treatmentTraceId": "agent-cg1234abcd5678ef",
+      "baselineTraceId": "agent-cgfedc0987654321"
+    },
+    {
+      "caseId": "snf-generic-python-refactor",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [],
+      "treatmentTraceId": "agent-cgaaaabbbbcccc01"
+    },
+    {
+      "caseId": "snf-business-logic-bug",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [],
+      "treatmentTraceId": "agent-cgaaaabbbbcccc02"
+    }
+  ],
+  "pluginLoadOk": true,
+  "pluginErrors": []
+}

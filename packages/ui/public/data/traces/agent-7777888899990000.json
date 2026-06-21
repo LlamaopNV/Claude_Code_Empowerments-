@@ -1,0 +1,5562 @@
+{
+  "agentId": "agent-7777888899990000",
+  "sessionId": "2b67b33f-0000-4000-8000-000000000000",
+  "isSubagent": true,
+  "events": [
+    {
+      "index": 0,
+      "kind": "user",
+      "timestamp": "2026-06-21T16:40:00.000Z",
+      "text": "Task prompt for this case."
+    },
+    {
+      "index": 1,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:01.000Z",
+      "toolUse": {
+        "id": "toolu_skill",
+        "name": "Skill",
+        "input": {
+          "skill": "bake-to-completion"
+        },
+        "skill": "bake-to-completion"
+      },
+      "usage": {
+        "inputTokens": 100,
+        "outputTokens": 20,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 2,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_0",
+        "name": "Read",
+        "input": {
+          "n": 0
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 3,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_1",
+        "name": "Bash",
+        "input": {
+          "n": 1
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 4,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_2",
+        "name": "Bash",
+        "input": {
+          "n": 2
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 5,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_3",
+        "name": "Read",
+        "input": {
+          "n": 3
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 6,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_4",
+        "name": "Bash",
+        "input": {
+          "n": 4
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 7,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_5",
+        "name": "Bash",
+        "input": {
+          "n": 5
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 8,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_6",
+        "name": "Read",
+        "input": {
+          "n": 6
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 9,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_7",
+        "name": "Bash",
+        "input": {
+          "n": 7
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 10,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_8",
+        "name": "Bash",
+        "input": {
+          "n": 8
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 11,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_9",
+        "name": "Read",
+        "input": {
+          "n": 9
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 12,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_10",
+        "name": "Bash",
+        "input": {
+          "n": 10
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 13,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_11",
+        "name": "Bash",
+        "input": {
+          "n": 11
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 14,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_12",
+        "name": "Read",
+        "input": {
+          "n": 12
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 15,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_13",
+        "name": "Bash",
+        "input": {
+          "n": 13
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 16,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_14",
+        "name": "Bash",
+        "input": {
+          "n": 14
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 17,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_15",
+        "name": "Read",
+        "input": {
+          "n": 15
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 18,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_16",
+        "name": "Bash",
+        "input": {
+          "n": 16
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 19,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_17",
+        "name": "Bash",
+        "input": {
+          "n": 17
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 20,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_18",
+        "name": "Read",
+        "input": {
+          "n": 18
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 21,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_19",
+        "name": "Bash",
+        "input": {
+          "n": 19
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 22,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_20",
+        "name": "Bash",
+        "input": {
+          "n": 20
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 23,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_21",
+        "name": "Read",
+        "input": {
+          "n": 21
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 24,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_22",
+        "name": "Bash",
+        "input": {
+          "n": 22
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 25,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_23",
+        "name": "Bash",
+        "input": {
+          "n": 23
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 26,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_24",
+        "name": "Read",
+        "input": {
+          "n": 24
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 27,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_25",
+        "name": "Bash",
+        "input": {
+          "n": 25
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 28,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_26",
+        "name": "Bash",
+        "input": {
+          "n": 26
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 29,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_27",
+        "name": "Read",
+        "input": {
+          "n": 27
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 30,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_28",
+        "name": "Bash",
+        "input": {
+          "n": 28
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 31,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_29",
+        "name": "Bash",
+        "input": {
+          "n": 29
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 32,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_30",
+        "name": "Read",
+        "input": {
+          "n": 30
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 33,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_31",
+        "name": "Bash",
+        "input": {
+          "n": 31
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 34,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_32",
+        "name": "Bash",
+        "input": {
+          "n": 32
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 35,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_33",
+        "name": "Read",
+        "input": {
+          "n": 33
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 36,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_34",
+        "name": "Bash",
+        "input": {
+          "n": 34
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 37,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_35",
+        "name": "Bash",
+        "input": {
+          "n": 35
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 38,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_36",
+        "name": "Read",
+        "input": {
+          "n": 36
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 39,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_37",
+        "name": "Bash",
+        "input": {
+          "n": 37
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 40,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_38",
+        "name": "Bash",
+        "input": {
+          "n": 38
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 41,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_39",
+        "name": "Read",
+        "input": {
+          "n": 39
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 42,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_40",
+        "name": "Bash",
+        "input": {
+          "n": 40
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 43,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_41",
+        "name": "Bash",
+        "input": {
+          "n": 41
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 44,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_42",
+        "name": "Read",
+        "input": {
+          "n": 42
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 45,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_43",
+        "name": "Bash",
+        "input": {
+          "n": 43
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 46,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_44",
+        "name": "Bash",
+        "input": {
+          "n": 44
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 47,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_45",
+        "name": "Read",
+        "input": {
+          "n": 45
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 48,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_46",
+        "name": "Bash",
+        "input": {
+          "n": 46
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 49,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_47",
+        "name": "Bash",
+        "input": {
+          "n": 47
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 50,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_48",
+        "name": "Read",
+        "input": {
+          "n": 48
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 51,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_49",
+        "name": "Bash",
+        "input": {
+          "n": 49
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 52,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_50",
+        "name": "Bash",
+        "input": {
+          "n": 50
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 53,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_51",
+        "name": "Read",
+        "input": {
+          "n": 51
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 54,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_52",
+        "name": "Bash",
+        "input": {
+          "n": 52
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 55,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_53",
+        "name": "Bash",
+        "input": {
+          "n": 53
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 56,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_54",
+        "name": "Read",
+        "input": {
+          "n": 54
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 57,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_55",
+        "name": "Bash",
+        "input": {
+          "n": 55
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 58,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_56",
+        "name": "Bash",
+        "input": {
+          "n": 56
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 59,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_57",
+        "name": "Read",
+        "input": {
+          "n": 57
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 60,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_58",
+        "name": "Bash",
+        "input": {
+          "n": 58
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 61,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_59",
+        "name": "Bash",
+        "input": {
+          "n": 59
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 62,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_60",
+        "name": "Read",
+        "input": {
+          "n": 60
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 63,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_61",
+        "name": "Bash",
+        "input": {
+          "n": 61
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 64,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_62",
+        "name": "Bash",
+        "input": {
+          "n": 62
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 65,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_63",
+        "name": "Read",
+        "input": {
+          "n": 63
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 66,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_64",
+        "name": "Bash",
+        "input": {
+          "n": 64
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 67,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_65",
+        "name": "Bash",
+        "input": {
+          "n": 65
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 68,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_66",
+        "name": "Read",
+        "input": {
+          "n": 66
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 69,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_67",
+        "name": "Bash",
+        "input": {
+          "n": 67
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 70,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_68",
+        "name": "Bash",
+        "input": {
+          "n": 68
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 71,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_69",
+        "name": "Read",
+        "input": {
+          "n": 69
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 72,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_70",
+        "name": "Bash",
+        "input": {
+          "n": 70
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 73,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_71",
+        "name": "Bash",
+        "input": {
+          "n": 71
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 74,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_72",
+        "name": "Read",
+        "input": {
+          "n": 72
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 75,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_73",
+        "name": "Bash",
+        "input": {
+          "n": 73
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 76,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_74",
+        "name": "Bash",
+        "input": {
+          "n": 74
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 77,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_75",
+        "name": "Read",
+        "input": {
+          "n": 75
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 78,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_76",
+        "name": "Bash",
+        "input": {
+          "n": 76
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 79,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_77",
+        "name": "Bash",
+        "input": {
+          "n": 77
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 80,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_78",
+        "name": "Read",
+        "input": {
+          "n": 78
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 81,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_79",
+        "name": "Bash",
+        "input": {
+          "n": 79
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 82,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_80",
+        "name": "Bash",
+        "input": {
+          "n": 80
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 83,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_81",
+        "name": "Read",
+        "input": {
+          "n": 81
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 84,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_82",
+        "name": "Bash",
+        "input": {
+          "n": 82
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 85,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_83",
+        "name": "Bash",
+        "input": {
+          "n": 83
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 86,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_84",
+        "name": "Read",
+        "input": {
+          "n": 84
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 87,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_85",
+        "name": "Bash",
+        "input": {
+          "n": 85
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 88,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_86",
+        "name": "Bash",
+        "input": {
+          "n": 86
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 89,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_87",
+        "name": "Read",
+        "input": {
+          "n": 87
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 90,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_88",
+        "name": "Bash",
+        "input": {
+          "n": 88
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 91,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_89",
+        "name": "Bash",
+        "input": {
+          "n": 89
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 92,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_90",
+        "name": "Read",
+        "input": {
+          "n": 90
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 93,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_91",
+        "name": "Bash",
+        "input": {
+          "n": 91
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 94,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_92",
+        "name": "Bash",
+        "input": {
+          "n": 92
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 95,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_93",
+        "name": "Read",
+        "input": {
+          "n": 93
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 96,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_94",
+        "name": "Bash",
+        "input": {
+          "n": 94
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 97,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_95",
+        "name": "Bash",
+        "input": {
+          "n": 95
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 98,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_96",
+        "name": "Read",
+        "input": {
+          "n": 96
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 99,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_97",
+        "name": "Bash",
+        "input": {
+          "n": 97
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 100,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_98",
+        "name": "Bash",
+        "input": {
+          "n": 98
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 101,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_99",
+        "name": "Read",
+        "input": {
+          "n": 99
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 102,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_100",
+        "name": "Bash",
+        "input": {
+          "n": 100
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 103,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_101",
+        "name": "Bash",
+        "input": {
+          "n": 101
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 104,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_102",
+        "name": "Read",
+        "input": {
+          "n": 102
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 105,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_103",
+        "name": "Bash",
+        "input": {
+          "n": 103
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 106,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_104",
+        "name": "Bash",
+        "input": {
+          "n": 104
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 107,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_105",
+        "name": "Read",
+        "input": {
+          "n": 105
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 108,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_106",
+        "name": "Bash",
+        "input": {
+          "n": 106
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 109,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_107",
+        "name": "Bash",
+        "input": {
+          "n": 107
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 110,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_108",
+        "name": "Read",
+        "input": {
+          "n": 108
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 111,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_109",
+        "name": "Bash",
+        "input": {
+          "n": 109
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 112,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_110",
+        "name": "Bash",
+        "input": {
+          "n": 110
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 113,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_111",
+        "name": "Read",
+        "input": {
+          "n": 111
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 114,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_112",
+        "name": "Bash",
+        "input": {
+          "n": 112
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 115,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_113",
+        "name": "Bash",
+        "input": {
+          "n": 113
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 116,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_114",
+        "name": "Read",
+        "input": {
+          "n": 114
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 117,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_115",
+        "name": "Bash",
+        "input": {
+          "n": 115
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 118,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_116",
+        "name": "Bash",
+        "input": {
+          "n": 116
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 119,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_117",
+        "name": "Read",
+        "input": {
+          "n": 117
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 120,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_118",
+        "name": "Bash",
+        "input": {
+          "n": 118
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 121,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_119",
+        "name": "Bash",
+        "input": {
+          "n": 119
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 122,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_120",
+        "name": "Read",
+        "input": {
+          "n": 120
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 123,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_121",
+        "name": "Bash",
+        "input": {
+          "n": 121
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 124,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_122",
+        "name": "Bash",
+        "input": {
+          "n": 122
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 125,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_123",
+        "name": "Read",
+        "input": {
+          "n": 123
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 126,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_124",
+        "name": "Bash",
+        "input": {
+          "n": 124
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 127,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_125",
+        "name": "Bash",
+        "input": {
+          "n": 125
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 128,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_126",
+        "name": "Read",
+        "input": {
+          "n": 126
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 129,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_127",
+        "name": "Bash",
+        "input": {
+          "n": 127
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 130,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_128",
+        "name": "Bash",
+        "input": {
+          "n": 128
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 131,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_129",
+        "name": "Read",
+        "input": {
+          "n": 129
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 132,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_130",
+        "name": "Bash",
+        "input": {
+          "n": 130
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 133,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_131",
+        "name": "Bash",
+        "input": {
+          "n": 131
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 134,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_132",
+        "name": "Read",
+        "input": {
+          "n": 132
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 135,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_133",
+        "name": "Bash",
+        "input": {
+          "n": 133
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 136,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_134",
+        "name": "Bash",
+        "input": {
+          "n": 134
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 137,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_135",
+        "name": "Read",
+        "input": {
+          "n": 135
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 138,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_136",
+        "name": "Bash",
+        "input": {
+          "n": 136
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 139,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_137",
+        "name": "Bash",
+        "input": {
+          "n": 137
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 140,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_138",
+        "name": "Read",
+        "input": {
+          "n": 138
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 141,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_139",
+        "name": "Bash",
+        "input": {
+          "n": 139
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 142,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_140",
+        "name": "Bash",
+        "input": {
+          "n": 140
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 143,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_141",
+        "name": "Read",
+        "input": {
+          "n": 141
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 144,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_142",
+        "name": "Bash",
+        "input": {
+          "n": 142
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 145,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_143",
+        "name": "Bash",
+        "input": {
+          "n": 143
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 146,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_144",
+        "name": "Read",
+        "input": {
+          "n": 144
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 147,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_145",
+        "name": "Bash",
+        "input": {
+          "n": 145
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 148,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_146",
+        "name": "Bash",
+        "input": {
+          "n": 146
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 149,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_147",
+        "name": "Read",
+        "input": {
+          "n": 147
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 150,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_148",
+        "name": "Bash",
+        "input": {
+          "n": 148
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 151,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_149",
+        "name": "Bash",
+        "input": {
+          "n": 149
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 152,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_150",
+        "name": "Read",
+        "input": {
+          "n": 150
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 153,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_151",
+        "name": "Bash",
+        "input": {
+          "n": 151
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 154,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_152",
+        "name": "Bash",
+        "input": {
+          "n": 152
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 155,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_153",
+        "name": "Read",
+        "input": {
+          "n": 153
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 156,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_154",
+        "name": "Bash",
+        "input": {
+          "n": 154
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 157,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_155",
+        "name": "Bash",
+        "input": {
+          "n": 155
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 158,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_156",
+        "name": "Read",
+        "input": {
+          "n": 156
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 159,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_157",
+        "name": "Bash",
+        "input": {
+          "n": 157
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 160,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_158",
+        "name": "Bash",
+        "input": {
+          "n": 158
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 161,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_159",
+        "name": "Read",
+        "input": {
+          "n": 159
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 162,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_160",
+        "name": "Bash",
+        "input": {
+          "n": 160
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 163,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_161",
+        "name": "Bash",
+        "input": {
+          "n": 161
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 164,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_162",
+        "name": "Read",
+        "input": {
+          "n": 162
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 165,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_163",
+        "name": "Bash",
+        "input": {
+          "n": 163
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 166,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_164",
+        "name": "Bash",
+        "input": {
+          "n": 164
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 167,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_165",
+        "name": "Read",
+        "input": {
+          "n": 165
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 168,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_166",
+        "name": "Bash",
+        "input": {
+          "n": 166
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 169,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_167",
+        "name": "Bash",
+        "input": {
+          "n": 167
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 170,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_168",
+        "name": "Read",
+        "input": {
+          "n": 168
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 171,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_169",
+        "name": "Bash",
+        "input": {
+          "n": 169
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 172,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_170",
+        "name": "Bash",
+        "input": {
+          "n": 170
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 173,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_171",
+        "name": "Read",
+        "input": {
+          "n": 171
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 174,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_172",
+        "name": "Bash",
+        "input": {
+          "n": 172
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 175,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_173",
+        "name": "Bash",
+        "input": {
+          "n": 173
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 176,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_174",
+        "name": "Read",
+        "input": {
+          "n": 174
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 177,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_175",
+        "name": "Bash",
+        "input": {
+          "n": 175
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 178,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_176",
+        "name": "Bash",
+        "input": {
+          "n": 176
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 179,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_177",
+        "name": "Read",
+        "input": {
+          "n": 177
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 180,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_178",
+        "name": "Bash",
+        "input": {
+          "n": 178
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 181,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_179",
+        "name": "Bash",
+        "input": {
+          "n": 179
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 182,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_180",
+        "name": "Read",
+        "input": {
+          "n": 180
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 183,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_181",
+        "name": "Bash",
+        "input": {
+          "n": 181
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 184,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_182",
+        "name": "Bash",
+        "input": {
+          "n": 182
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 185,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_183",
+        "name": "Read",
+        "input": {
+          "n": 183
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 186,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_184",
+        "name": "Bash",
+        "input": {
+          "n": 184
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 187,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_185",
+        "name": "Bash",
+        "input": {
+          "n": 185
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 188,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_186",
+        "name": "Read",
+        "input": {
+          "n": 186
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 189,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_187",
+        "name": "Bash",
+        "input": {
+          "n": 187
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 190,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_188",
+        "name": "Bash",
+        "input": {
+          "n": 188
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 191,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_189",
+        "name": "Read",
+        "input": {
+          "n": 189
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 192,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_190",
+        "name": "Bash",
+        "input": {
+          "n": 190
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 193,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_191",
+        "name": "Bash",
+        "input": {
+          "n": 191
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 194,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_192",
+        "name": "Read",
+        "input": {
+          "n": 192
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 195,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_193",
+        "name": "Bash",
+        "input": {
+          "n": 193
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 196,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_194",
+        "name": "Bash",
+        "input": {
+          "n": 194
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 197,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_195",
+        "name": "Read",
+        "input": {
+          "n": 195
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 198,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_196",
+        "name": "Bash",
+        "input": {
+          "n": 196
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 199,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_197",
+        "name": "Bash",
+        "input": {
+          "n": 197
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 200,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_198",
+        "name": "Read",
+        "input": {
+          "n": 198
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 201,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_199",
+        "name": "Bash",
+        "input": {
+          "n": 199
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 202,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_200",
+        "name": "Bash",
+        "input": {
+          "n": 200
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 203,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_201",
+        "name": "Read",
+        "input": {
+          "n": 201
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 204,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_202",
+        "name": "Bash",
+        "input": {
+          "n": 202
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 205,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_203",
+        "name": "Bash",
+        "input": {
+          "n": 203
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 206,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_204",
+        "name": "Read",
+        "input": {
+          "n": 204
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 207,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_205",
+        "name": "Bash",
+        "input": {
+          "n": 205
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 208,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_206",
+        "name": "Bash",
+        "input": {
+          "n": 206
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 209,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_207",
+        "name": "Read",
+        "input": {
+          "n": 207
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 210,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_208",
+        "name": "Bash",
+        "input": {
+          "n": 208
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 211,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_209",
+        "name": "Bash",
+        "input": {
+          "n": 209
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 212,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_210",
+        "name": "Read",
+        "input": {
+          "n": 210
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 213,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_211",
+        "name": "Bash",
+        "input": {
+          "n": 211
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 214,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_212",
+        "name": "Bash",
+        "input": {
+          "n": 212
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 215,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_213",
+        "name": "Read",
+        "input": {
+          "n": 213
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 216,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_214",
+        "name": "Bash",
+        "input": {
+          "n": 214
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 217,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_215",
+        "name": "Bash",
+        "input": {
+          "n": 215
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 218,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_216",
+        "name": "Read",
+        "input": {
+          "n": 216
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 219,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_217",
+        "name": "Bash",
+        "input": {
+          "n": 217
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 220,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_218",
+        "name": "Bash",
+        "input": {
+          "n": 218
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 221,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_219",
+        "name": "Read",
+        "input": {
+          "n": 219
+        }
+      },
+      "usage": {
+        "inputTokens": 50,
+        "outputTokens": 10,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    },
+    {
+      "index": 222,
+      "kind": "assistant",
+      "timestamp": "2026-06-21T16:40:08.000Z",
+      "text": "A crisp one-line pitch, and the single biggest risk is whether anyone will keep the app open.",
+      "usage": {
+        "inputTokens": 2600,
+        "outputTokens": 520,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 0
+      }
+    }
+  ],
+  "toolUses": [
+    {
+      "id": "toolu_skill",
+      "name": "Skill",
+      "input": {
+        "skill": "bake-to-completion"
+      },
+      "skill": "bake-to-completion"
+    },
+    {
+      "id": "toolu_0",
+      "name": "Read",
+      "input": {
+        "n": 0
+      }
+    },
+    {
+      "id": "toolu_1",
+      "name": "Bash",
+      "input": {
+        "n": 1
+      }
+    },
+    {
+      "id": "toolu_2",
+      "name": "Bash",
+      "input": {
+        "n": 2
+      }
+    },
+    {
+      "id": "toolu_3",
+      "name": "Read",
+      "input": {
+        "n": 3
+      }
+    },
+    {
+      "id": "toolu_4",
+      "name": "Bash",
+      "input": {
+        "n": 4
+      }
+    },
+    {
+      "id": "toolu_5",
+      "name": "Bash",
+      "input": {
+        "n": 5
+      }
+    },
+    {
+      "id": "toolu_6",
+      "name": "Read",
+      "input": {
+        "n": 6
+      }
+    },
+    {
+      "id": "toolu_7",
+      "name": "Bash",
+      "input": {
+        "n": 7
+      }
+    },
+    {
+      "id": "toolu_8",
+      "name": "Bash",
+      "input": {
+        "n": 8
+      }
+    },
+    {
+      "id": "toolu_9",
+      "name": "Read",
+      "input": {
+        "n": 9
+      }
+    },
+    {
+      "id": "toolu_10",
+      "name": "Bash",
+      "input": {
+        "n": 10
+      }
+    },
+    {
+      "id": "toolu_11",
+      "name": "Bash",
+      "input": {
+        "n": 11
+      }
+    },
+    {
+      "id": "toolu_12",
+      "name": "Read",
+      "input": {
+        "n": 12
+      }
+    },
+    {
+      "id": "toolu_13",
+      "name": "Bash",
+      "input": {
+        "n": 13
+      }
+    },
+    {
+      "id": "toolu_14",
+      "name": "Bash",
+      "input": {
+        "n": 14
+      }
+    },
+    {
+      "id": "toolu_15",
+      "name": "Read",
+      "input": {
+        "n": 15
+      }
+    },
+    {
+      "id": "toolu_16",
+      "name": "Bash",
+      "input": {
+        "n": 16
+      }
+    },
+    {
+      "id": "toolu_17",
+      "name": "Bash",
+      "input": {
+        "n": 17
+      }
+    },
+    {
+      "id": "toolu_18",
+      "name": "Read",
+      "input": {
+        "n": 18
+      }
+    },
+    {
+      "id": "toolu_19",
+      "name": "Bash",
+      "input": {
+        "n": 19
+      }
+    },
+    {
+      "id": "toolu_20",
+      "name": "Bash",
+      "input": {
+        "n": 20
+      }
+    },
+    {
+      "id": "toolu_21",
+      "name": "Read",
+      "input": {
+        "n": 21
+      }
+    },
+    {
+      "id": "toolu_22",
+      "name": "Bash",
+      "input": {
+        "n": 22
+      }
+    },
+    {
+      "id": "toolu_23",
+      "name": "Bash",
+      "input": {
+        "n": 23
+      }
+    },
+    {
+      "id": "toolu_24",
+      "name": "Read",
+      "input": {
+        "n": 24
+      }
+    },
+    {
+      "id": "toolu_25",
+      "name": "Bash",
+      "input": {
+        "n": 25
+      }
+    },
+    {
+      "id": "toolu_26",
+      "name": "Bash",
+      "input": {
+        "n": 26
+      }
+    },
+    {
+      "id": "toolu_27",
+      "name": "Read",
+      "input": {
+        "n": 27
+      }
+    },
+    {
+      "id": "toolu_28",
+      "name": "Bash",
+      "input": {
+        "n": 28
+      }
+    },
+    {
+      "id": "toolu_29",
+      "name": "Bash",
+      "input": {
+        "n": 29
+      }
+    },
+    {
+      "id": "toolu_30",
+      "name": "Read",
+      "input": {
+        "n": 30
+      }
+    },
+    {
+      "id": "toolu_31",
+      "name": "Bash",
+      "input": {
+        "n": 31
+      }
+    },
+    {
+      "id": "toolu_32",
+      "name": "Bash",
+      "input": {
+        "n": 32
+      }
+    },
+    {
+      "id": "toolu_33",
+      "name": "Read",
+      "input": {
+        "n": 33
+      }
+    },
+    {
+      "id": "toolu_34",
+      "name": "Bash",
+      "input": {
+        "n": 34
+      }
+    },
+    {
+      "id": "toolu_35",
+      "name": "Bash",
+      "input": {
+        "n": 35
+      }
+    },
+    {
+      "id": "toolu_36",
+      "name": "Read",
+      "input": {
+        "n": 36
+      }
+    },
+    {
+      "id": "toolu_37",
+      "name": "Bash",
+      "input": {
+        "n": 37
+      }
+    },
+    {
+      "id": "toolu_38",
+      "name": "Bash",
+      "input": {
+        "n": 38
+      }
+    },
+    {
+      "id": "toolu_39",
+      "name": "Read",
+      "input": {
+        "n": 39
+      }
+    },
+    {
+      "id": "toolu_40",
+      "name": "Bash",
+      "input": {
+        "n": 40
+      }
+    },
+    {
+      "id": "toolu_41",
+      "name": "Bash",
+      "input": {
+        "n": 41
+      }
+    },
+    {
+      "id": "toolu_42",
+      "name": "Read",
+      "input": {
+        "n": 42
+      }
+    },
+    {
+      "id": "toolu_43",
+      "name": "Bash",
+      "input": {
+        "n": 43
+      }
+    },
+    {
+      "id": "toolu_44",
+      "name": "Bash",
+      "input": {
+        "n": 44
+      }
+    },
+    {
+      "id": "toolu_45",
+      "name": "Read",
+      "input": {
+        "n": 45
+      }
+    },
+    {
+      "id": "toolu_46",
+      "name": "Bash",
+      "input": {
+        "n": 46
+      }
+    },
+    {
+      "id": "toolu_47",
+      "name": "Bash",
+      "input": {
+        "n": 47
+      }
+    },
+    {
+      "id": "toolu_48",
+      "name": "Read",
+      "input": {
+        "n": 48
+      }
+    },
+    {
+      "id": "toolu_49",
+      "name": "Bash",
+      "input": {
+        "n": 49
+      }
+    },
+    {
+      "id": "toolu_50",
+      "name": "Bash",
+      "input": {
+        "n": 50
+      }
+    },
+    {
+      "id": "toolu_51",
+      "name": "Read",
+      "input": {
+        "n": 51
+      }
+    },
+    {
+      "id": "toolu_52",
+      "name": "Bash",
+      "input": {
+        "n": 52
+      }
+    },
+    {
+      "id": "toolu_53",
+      "name": "Bash",
+      "input": {
+        "n": 53
+      }
+    },
+    {
+      "id": "toolu_54",
+      "name": "Read",
+      "input": {
+        "n": 54
+      }
+    },
+    {
+      "id": "toolu_55",
+      "name": "Bash",
+      "input": {
+        "n": 55
+      }
+    },
+    {
+      "id": "toolu_56",
+      "name": "Bash",
+      "input": {
+        "n": 56
+      }
+    },
+    {
+      "id": "toolu_57",
+      "name": "Read",
+      "input": {
+        "n": 57
+      }
+    },
+    {
+      "id": "toolu_58",
+      "name": "Bash",
+      "input": {
+        "n": 58
+      }
+    },
+    {
+      "id": "toolu_59",
+      "name": "Bash",
+      "input": {
+        "n": 59
+      }
+    },
+    {
+      "id": "toolu_60",
+      "name": "Read",
+      "input": {
+        "n": 60
+      }
+    },
+    {
+      "id": "toolu_61",
+      "name": "Bash",
+      "input": {
+        "n": 61
+      }
+    },
+    {
+      "id": "toolu_62",
+      "name": "Bash",
+      "input": {
+        "n": 62
+      }
+    },
+    {
+      "id": "toolu_63",
+      "name": "Read",
+      "input": {
+        "n": 63
+      }
+    },
+    {
+      "id": "toolu_64",
+      "name": "Bash",
+      "input": {
+        "n": 64
+      }
+    },
+    {
+      "id": "toolu_65",
+      "name": "Bash",
+      "input": {
+        "n": 65
+      }
+    },
+    {
+      "id": "toolu_66",
+      "name": "Read",
+      "input": {
+        "n": 66
+      }
+    },
+    {
+      "id": "toolu_67",
+      "name": "Bash",
+      "input": {
+        "n": 67
+      }
+    },
+    {
+      "id": "toolu_68",
+      "name": "Bash",
+      "input": {
+        "n": 68
+      }
+    },
+    {
+      "id": "toolu_69",
+      "name": "Read",
+      "input": {
+        "n": 69
+      }
+    },
+    {
+      "id": "toolu_70",
+      "name": "Bash",
+      "input": {
+        "n": 70
+      }
+    },
+    {
+      "id": "toolu_71",
+      "name": "Bash",
+      "input": {
+        "n": 71
+      }
+    },
+    {
+      "id": "toolu_72",
+      "name": "Read",
+      "input": {
+        "n": 72
+      }
+    },
+    {
+      "id": "toolu_73",
+      "name": "Bash",
+      "input": {
+        "n": 73
+      }
+    },
+    {
+      "id": "toolu_74",
+      "name": "Bash",
+      "input": {
+        "n": 74
+      }
+    },
+    {
+      "id": "toolu_75",
+      "name": "Read",
+      "input": {
+        "n": 75
+      }
+    },
+    {
+      "id": "toolu_76",
+      "name": "Bash",
+      "input": {
+        "n": 76
+      }
+    },
+    {
+      "id": "toolu_77",
+      "name": "Bash",
+      "input": {
+        "n": 77
+      }
+    },
+    {
+      "id": "toolu_78",
+      "name": "Read",
+      "input": {
+        "n": 78
+      }
+    },
+    {
+      "id": "toolu_79",
+      "name": "Bash",
+      "input": {
+        "n": 79
+      }
+    },
+    {
+      "id": "toolu_80",
+      "name": "Bash",
+      "input": {
+        "n": 80
+      }
+    },
+    {
+      "id": "toolu_81",
+      "name": "Read",
+      "input": {
+        "n": 81
+      }
+    },
+    {
+      "id": "toolu_82",
+      "name": "Bash",
+      "input": {
+        "n": 82
+      }
+    },
+    {
+      "id": "toolu_83",
+      "name": "Bash",
+      "input": {
+        "n": 83
+      }
+    },
+    {
+      "id": "toolu_84",
+      "name": "Read",
+      "input": {
+        "n": 84
+      }
+    },
+    {
+      "id": "toolu_85",
+      "name": "Bash",
+      "input": {
+        "n": 85
+      }
+    },
+    {
+      "id": "toolu_86",
+      "name": "Bash",
+      "input": {
+        "n": 86
+      }
+    },
+    {
+      "id": "toolu_87",
+      "name": "Read",
+      "input": {
+        "n": 87
+      }
+    },
+    {
+      "id": "toolu_88",
+      "name": "Bash",
+      "input": {
+        "n": 88
+      }
+    },
+    {
+      "id": "toolu_89",
+      "name": "Bash",
+      "input": {
+        "n": 89
+      }
+    },
+    {
+      "id": "toolu_90",
+      "name": "Read",
+      "input": {
+        "n": 90
+      }
+    },
+    {
+      "id": "toolu_91",
+      "name": "Bash",
+      "input": {
+        "n": 91
+      }
+    },
+    {
+      "id": "toolu_92",
+      "name": "Bash",
+      "input": {
+        "n": 92
+      }
+    },
+    {
+      "id": "toolu_93",
+      "name": "Read",
+      "input": {
+        "n": 93
+      }
+    },
+    {
+      "id": "toolu_94",
+      "name": "Bash",
+      "input": {
+        "n": 94
+      }
+    },
+    {
+      "id": "toolu_95",
+      "name": "Bash",
+      "input": {
+        "n": 95
+      }
+    },
+    {
+      "id": "toolu_96",
+      "name": "Read",
+      "input": {
+        "n": 96
+      }
+    },
+    {
+      "id": "toolu_97",
+      "name": "Bash",
+      "input": {
+        "n": 97
+      }
+    },
+    {
+      "id": "toolu_98",
+      "name": "Bash",
+      "input": {
+        "n": 98
+      }
+    },
+    {
+      "id": "toolu_99",
+      "name": "Read",
+      "input": {
+        "n": 99
+      }
+    },
+    {
+      "id": "toolu_100",
+      "name": "Bash",
+      "input": {
+        "n": 100
+      }
+    },
+    {
+      "id": "toolu_101",
+      "name": "Bash",
+      "input": {
+        "n": 101
+      }
+    },
+    {
+      "id": "toolu_102",
+      "name": "Read",
+      "input": {
+        "n": 102
+      }
+    },
+    {
+      "id": "toolu_103",
+      "name": "Bash",
+      "input": {
+        "n": 103
+      }
+    },
+    {
+      "id": "toolu_104",
+      "name": "Bash",
+      "input": {
+        "n": 104
+      }
+    },
+    {
+      "id": "toolu_105",
+      "name": "Read",
+      "input": {
+        "n": 105
+      }
+    },
+    {
+      "id": "toolu_106",
+      "name": "Bash",
+      "input": {
+        "n": 106
+      }
+    },
+    {
+      "id": "toolu_107",
+      "name": "Bash",
+      "input": {
+        "n": 107
+      }
+    },
+    {
+      "id": "toolu_108",
+      "name": "Read",
+      "input": {
+        "n": 108
+      }
+    },
+    {
+      "id": "toolu_109",
+      "name": "Bash",
+      "input": {
+        "n": 109
+      }
+    },
+    {
+      "id": "toolu_110",
+      "name": "Bash",
+      "input": {
+        "n": 110
+      }
+    },
+    {
+      "id": "toolu_111",
+      "name": "Read",
+      "input": {
+        "n": 111
+      }
+    },
+    {
+      "id": "toolu_112",
+      "name": "Bash",
+      "input": {
+        "n": 112
+      }
+    },
+    {
+      "id": "toolu_113",
+      "name": "Bash",
+      "input": {
+        "n": 113
+      }
+    },
+    {
+      "id": "toolu_114",
+      "name": "Read",
+      "input": {
+        "n": 114
+      }
+    },
+    {
+      "id": "toolu_115",
+      "name": "Bash",
+      "input": {
+        "n": 115
+      }
+    },
+    {
+      "id": "toolu_116",
+      "name": "Bash",
+      "input": {
+        "n": 116
+      }
+    },
+    {
+      "id": "toolu_117",
+      "name": "Read",
+      "input": {
+        "n": 117
+      }
+    },
+    {
+      "id": "toolu_118",
+      "name": "Bash",
+      "input": {
+        "n": 118
+      }
+    },
+    {
+      "id": "toolu_119",
+      "name": "Bash",
+      "input": {
+        "n": 119
+      }
+    },
+    {
+      "id": "toolu_120",
+      "name": "Read",
+      "input": {
+        "n": 120
+      }
+    },
+    {
+      "id": "toolu_121",
+      "name": "Bash",
+      "input": {
+        "n": 121
+      }
+    },
+    {
+      "id": "toolu_122",
+      "name": "Bash",
+      "input": {
+        "n": 122
+      }
+    },
+    {
+      "id": "toolu_123",
+      "name": "Read",
+      "input": {
+        "n": 123
+      }
+    },
+    {
+      "id": "toolu_124",
+      "name": "Bash",
+      "input": {
+        "n": 124
+      }
+    },
+    {
+      "id": "toolu_125",
+      "name": "Bash",
+      "input": {
+        "n": 125
+      }
+    },
+    {
+      "id": "toolu_126",
+      "name": "Read",
+      "input": {
+        "n": 126
+      }
+    },
+    {
+      "id": "toolu_127",
+      "name": "Bash",
+      "input": {
+        "n": 127
+      }
+    },
+    {
+      "id": "toolu_128",
+      "name": "Bash",
+      "input": {
+        "n": 128
+      }
+    },
+    {
+      "id": "toolu_129",
+      "name": "Read",
+      "input": {
+        "n": 129
+      }
+    },
+    {
+      "id": "toolu_130",
+      "name": "Bash",
+      "input": {
+        "n": 130
+      }
+    },
+    {
+      "id": "toolu_131",
+      "name": "Bash",
+      "input": {
+        "n": 131
+      }
+    },
+    {
+      "id": "toolu_132",
+      "name": "Read",
+      "input": {
+        "n": 132
+      }
+    },
+    {
+      "id": "toolu_133",
+      "name": "Bash",
+      "input": {
+        "n": 133
+      }
+    },
+    {
+      "id": "toolu_134",
+      "name": "Bash",
+      "input": {
+        "n": 134
+      }
+    },
+    {
+      "id": "toolu_135",
+      "name": "Read",
+      "input": {
+        "n": 135
+      }
+    },
+    {
+      "id": "toolu_136",
+      "name": "Bash",
+      "input": {
+        "n": 136
+      }
+    },
+    {
+      "id": "toolu_137",
+      "name": "Bash",
+      "input": {
+        "n": 137
+      }
+    },
+    {
+      "id": "toolu_138",
+      "name": "Read",
+      "input": {
+        "n": 138
+      }
+    },
+    {
+      "id": "toolu_139",
+      "name": "Bash",
+      "input": {
+        "n": 139
+      }
+    },
+    {
+      "id": "toolu_140",
+      "name": "Bash",
+      "input": {
+        "n": 140
+      }
+    },
+    {
+      "id": "toolu_141",
+      "name": "Read",
+      "input": {
+        "n": 141
+      }
+    },
+    {
+      "id": "toolu_142",
+      "name": "Bash",
+      "input": {
+        "n": 142
+      }
+    },
+    {
+      "id": "toolu_143",
+      "name": "Bash",
+      "input": {
+        "n": 143
+      }
+    },
+    {
+      "id": "toolu_144",
+      "name": "Read",
+      "input": {
+        "n": 144
+      }
+    },
+    {
+      "id": "toolu_145",
+      "name": "Bash",
+      "input": {
+        "n": 145
+      }
+    },
+    {
+      "id": "toolu_146",
+      "name": "Bash",
+      "input": {
+        "n": 146
+      }
+    },
+    {
+      "id": "toolu_147",
+      "name": "Read",
+      "input": {
+        "n": 147
+      }
+    },
+    {
+      "id": "toolu_148",
+      "name": "Bash",
+      "input": {
+        "n": 148
+      }
+    },
+    {
+      "id": "toolu_149",
+      "name": "Bash",
+      "input": {
+        "n": 149
+      }
+    },
+    {
+      "id": "toolu_150",
+      "name": "Read",
+      "input": {
+        "n": 150
+      }
+    },
+    {
+      "id": "toolu_151",
+      "name": "Bash",
+      "input": {
+        "n": 151
+      }
+    },
+    {
+      "id": "toolu_152",
+      "name": "Bash",
+      "input": {
+        "n": 152
+      }
+    },
+    {
+      "id": "toolu_153",
+      "name": "Read",
+      "input": {
+        "n": 153
+      }
+    },
+    {
+      "id": "toolu_154",
+      "name": "Bash",
+      "input": {
+        "n": 154
+      }
+    },
+    {
+      "id": "toolu_155",
+      "name": "Bash",
+      "input": {
+        "n": 155
+      }
+    },
+    {
+      "id": "toolu_156",
+      "name": "Read",
+      "input": {
+        "n": 156
+      }
+    },
+    {
+      "id": "toolu_157",
+      "name": "Bash",
+      "input": {
+        "n": 157
+      }
+    },
+    {
+      "id": "toolu_158",
+      "name": "Bash",
+      "input": {
+        "n": 158
+      }
+    },
+    {
+      "id": "toolu_159",
+      "name": "Read",
+      "input": {
+        "n": 159
+      }
+    },
+    {
+      "id": "toolu_160",
+      "name": "Bash",
+      "input": {
+        "n": 160
+      }
+    },
+    {
+      "id": "toolu_161",
+      "name": "Bash",
+      "input": {
+        "n": 161
+      }
+    },
+    {
+      "id": "toolu_162",
+      "name": "Read",
+      "input": {
+        "n": 162
+      }
+    },
+    {
+      "id": "toolu_163",
+      "name": "Bash",
+      "input": {
+        "n": 163
+      }
+    },
+    {
+      "id": "toolu_164",
+      "name": "Bash",
+      "input": {
+        "n": 164
+      }
+    },
+    {
+      "id": "toolu_165",
+      "name": "Read",
+      "input": {
+        "n": 165
+      }
+    },
+    {
+      "id": "toolu_166",
+      "name": "Bash",
+      "input": {
+        "n": 166
+      }
+    },
+    {
+      "id": "toolu_167",
+      "name": "Bash",
+      "input": {
+        "n": 167
+      }
+    },
+    {
+      "id": "toolu_168",
+      "name": "Read",
+      "input": {
+        "n": 168
+      }
+    },
+    {
+      "id": "toolu_169",
+      "name": "Bash",
+      "input": {
+        "n": 169
+      }
+    },
+    {
+      "id": "toolu_170",
+      "name": "Bash",
+      "input": {
+        "n": 170
+      }
+    },
+    {
+      "id": "toolu_171",
+      "name": "Read",
+      "input": {
+        "n": 171
+      }
+    },
+    {
+      "id": "toolu_172",
+      "name": "Bash",
+      "input": {
+        "n": 172
+      }
+    },
+    {
+      "id": "toolu_173",
+      "name": "Bash",
+      "input": {
+        "n": 173
+      }
+    },
+    {
+      "id": "toolu_174",
+      "name": "Read",
+      "input": {
+        "n": 174
+      }
+    },
+    {
+      "id": "toolu_175",
+      "name": "Bash",
+      "input": {
+        "n": 175
+      }
+    },
+    {
+      "id": "toolu_176",
+      "name": "Bash",
+      "input": {
+        "n": 176
+      }
+    },
+    {
+      "id": "toolu_177",
+      "name": "Read",
+      "input": {
+        "n": 177
+      }
+    },
+    {
+      "id": "toolu_178",
+      "name": "Bash",
+      "input": {
+        "n": 178
+      }
+    },
+    {
+      "id": "toolu_179",
+      "name": "Bash",
+      "input": {
+        "n": 179
+      }
+    },
+    {
+      "id": "toolu_180",
+      "name": "Read",
+      "input": {
+        "n": 180
+      }
+    },
+    {
+      "id": "toolu_181",
+      "name": "Bash",
+      "input": {
+        "n": 181
+      }
+    },
+    {
+      "id": "toolu_182",
+      "name": "Bash",
+      "input": {
+        "n": 182
+      }
+    },
+    {
+      "id": "toolu_183",
+      "name": "Read",
+      "input": {
+        "n": 183
+      }
+    },
+    {
+      "id": "toolu_184",
+      "name": "Bash",
+      "input": {
+        "n": 184
+      }
+    },
+    {
+      "id": "toolu_185",
+      "name": "Bash",
+      "input": {
+        "n": 185
+      }
+    },
+    {
+      "id": "toolu_186",
+      "name": "Read",
+      "input": {
+        "n": 186
+      }
+    },
+    {
+      "id": "toolu_187",
+      "name": "Bash",
+      "input": {
+        "n": 187
+      }
+    },
+    {
+      "id": "toolu_188",
+      "name": "Bash",
+      "input": {
+        "n": 188
+      }
+    },
+    {
+      "id": "toolu_189",
+      "name": "Read",
+      "input": {
+        "n": 189
+      }
+    },
+    {
+      "id": "toolu_190",
+      "name": "Bash",
+      "input": {
+        "n": 190
+      }
+    },
+    {
+      "id": "toolu_191",
+      "name": "Bash",
+      "input": {
+        "n": 191
+      }
+    },
+    {
+      "id": "toolu_192",
+      "name": "Read",
+      "input": {
+        "n": 192
+      }
+    },
+    {
+      "id": "toolu_193",
+      "name": "Bash",
+      "input": {
+        "n": 193
+      }
+    },
+    {
+      "id": "toolu_194",
+      "name": "Bash",
+      "input": {
+        "n": 194
+      }
+    },
+    {
+      "id": "toolu_195",
+      "name": "Read",
+      "input": {
+        "n": 195
+      }
+    },
+    {
+      "id": "toolu_196",
+      "name": "Bash",
+      "input": {
+        "n": 196
+      }
+    },
+    {
+      "id": "toolu_197",
+      "name": "Bash",
+      "input": {
+        "n": 197
+      }
+    },
+    {
+      "id": "toolu_198",
+      "name": "Read",
+      "input": {
+        "n": 198
+      }
+    },
+    {
+      "id": "toolu_199",
+      "name": "Bash",
+      "input": {
+        "n": 199
+      }
+    },
+    {
+      "id": "toolu_200",
+      "name": "Bash",
+      "input": {
+        "n": 200
+      }
+    },
+    {
+      "id": "toolu_201",
+      "name": "Read",
+      "input": {
+        "n": 201
+      }
+    },
+    {
+      "id": "toolu_202",
+      "name": "Bash",
+      "input": {
+        "n": 202
+      }
+    },
+    {
+      "id": "toolu_203",
+      "name": "Bash",
+      "input": {
+        "n": 203
+      }
+    },
+    {
+      "id": "toolu_204",
+      "name": "Read",
+      "input": {
+        "n": 204
+      }
+    },
+    {
+      "id": "toolu_205",
+      "name": "Bash",
+      "input": {
+        "n": 205
+      }
+    },
+    {
+      "id": "toolu_206",
+      "name": "Bash",
+      "input": {
+        "n": 206
+      }
+    },
+    {
+      "id": "toolu_207",
+      "name": "Read",
+      "input": {
+        "n": 207
+      }
+    },
+    {
+      "id": "toolu_208",
+      "name": "Bash",
+      "input": {
+        "n": 208
+      }
+    },
+    {
+      "id": "toolu_209",
+      "name": "Bash",
+      "input": {
+        "n": 209
+      }
+    },
+    {
+      "id": "toolu_210",
+      "name": "Read",
+      "input": {
+        "n": 210
+      }
+    },
+    {
+      "id": "toolu_211",
+      "name": "Bash",
+      "input": {
+        "n": 211
+      }
+    },
+    {
+      "id": "toolu_212",
+      "name": "Bash",
+      "input": {
+        "n": 212
+      }
+    },
+    {
+      "id": "toolu_213",
+      "name": "Read",
+      "input": {
+        "n": 213
+      }
+    },
+    {
+      "id": "toolu_214",
+      "name": "Bash",
+      "input": {
+        "n": 214
+      }
+    },
+    {
+      "id": "toolu_215",
+      "name": "Bash",
+      "input": {
+        "n": 215
+      }
+    },
+    {
+      "id": "toolu_216",
+      "name": "Read",
+      "input": {
+        "n": 216
+      }
+    },
+    {
+      "id": "toolu_217",
+      "name": "Bash",
+      "input": {
+        "n": 217
+      }
+    },
+    {
+      "id": "toolu_218",
+      "name": "Bash",
+      "input": {
+        "n": 218
+      }
+    },
+    {
+      "id": "toolu_219",
+      "name": "Read",
+      "input": {
+        "n": 219
+      }
+    }
+  ],
+  "totalUsage": {
+    "inputTokens": 2600,
+    "outputTokens": 520,
+    "cacheCreationInputTokens": 0,
+    "cacheReadInputTokens": 0
+  },
+  "finalText": "A crisp one-line pitch, and the single biggest risk is whether anyone will keep the app open.",
+  "pluginErrors": []
+}

@@ -1,0 +1,101 @@
+# CI: install → build → lint → typecheck → test on Windows, macOS, and Linux.
+# Anvil is authored on Windows; the matrix guards the cross-platform path
+# handling (transcript project-hash, atomic file rename) on every push/PR.
+#
+# The `live-smoke` job is SEPARATE and OPT-IN (manual `workflow_dispatch` only).
+# It would run a tiny REAL eval against a Claude subscription, which costs quota
+# and needs auth — so it must NOT run on normal pushes and is NOT a required
+# check. It is scaffolded + documented here; it is a no-op placeholder until a
+# maintainer wires real credentials (see the job body).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # The live smoke test is dispatched manually from the Actions tab.
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: ${{ matrix.os }} · lint · typecheck · test
+    # On a manual dispatch we only want the live-smoke job; skip the matrix.
+    if: github.event_name != 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build (compile workspaces)
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Validate the committed demo dataset against @anvil/core
+        run: npm run validate:data -w @anvil/ui
+
+  # ---------------------------------------------------------------------------
+  # OPT-IN live smoke test (manual only). Runs a tiny real eval as a smoke
+  # check. NOT required, NOT on pushes — it costs subscription quota + needs
+  # auth. This scaffold documents how a maintainer would wire it; until then it
+  # only verifies the server boots, so a dispatch never silently burns quota.
+  # ---------------------------------------------------------------------------
+  live-smoke:
+    name: Live smoke (opt-in, manual)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node LTS
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Boot the Anvil server (smoke — no real eval, no quota)
+        # Real eval execution happens INSIDE a Claude Code session via subagents
+        # (the `Task` tool), which a headless CI runner cannot drive. A true live
+        # eval is therefore run by a maintainer locally (docs/running-live.md);
+        # this CI job only proves the server binary starts + answers, so the
+        # smoke is cheap and auth-free. To extend it into a real eval you would
+        # need a Claude Code auth token (a repo secret) and a harness that
+        # scripts a session — explicitly out of scope for this gate.
+        run: |
+          # `info` prints schema/version JSON and exits — the cheapest liveness check.
+          node packages/server/dist/bin/anvil-server.js info
+          # And the REST liveness probe boots the companion API and hits /api/results.
+          node packages/server/dist/bin/anvil-server.js serve --port 4319 &
+          SERVER_PID=$!
+          sleep 3
+          curl -fsS http://127.0.0.1:4319/api/results
+          kill $SERVER_PID

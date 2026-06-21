@@ -1,0 +1,23 @@
+{
+  "name": "@anvil/server",
+  "version": "0.1.0",
+  "description": "Anvil MCP server (stdio) + companion REST/WS API + JSON storage.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "anvil-server": "./dist/bin/anvil-server.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --root ../.. packages/server"
+  },
+  "dependencies": {
+    "@anvil/core": "*",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "ws": "^8.21.0"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
+  }
+}

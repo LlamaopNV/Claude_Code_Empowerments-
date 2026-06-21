@@ -1,0 +1,9 @@
+# Shell scripts must keep LF line endings so they run under bash on every OS.
+# CRLF in a .sh file breaks with "bad interpreter" / $'\r' errors on macOS,
+# Linux, and Git Bash on Windows. This overrides core.autocrlf=true.
+*.sh text eol=lf
+
+# Normalise common text types to LF in the repo; let Git decide the working
+# copy ending for non-script files.
+*.json text
+*.md   text

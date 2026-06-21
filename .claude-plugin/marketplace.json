@@ -6,23 +6,64 @@
     "email": "llama.op@gmail.com"
   },
   "description": "A personal marketplace of Claude Code plugins and skills — empowerments for everyday coding.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "metadata": {
     "pluginRoot": "./plugins"
   },
   "plugins": [
     {
-      "name": "example-empowerment",
-      "displayName": "Example Empowerment",
-      "source": "./plugins/example-empowerment",
-      "description": "A copy-me template plugin demonstrating a skill, a command, and an agent.",
-      "version": "0.1.0",
-      "author": {
-        "name": "LlamaopNV",
-        "email": "llama.op@gmail.com"
-      },
+      "name": "bitbucket-repo",
+      "source": "./plugins/bitbucket-repo",
+      "description": "Browse Bitbucket repositories — list repos, branches, commits, and read files at any ref.",
+      "version": "1.0.0",
+      "author": { "name": "LlamaopNV" },
       "category": "development",
-      "keywords": ["template", "example", "starter"]
+      "keywords": ["bitbucket", "git", "repository"]
+    },
+    {
+      "name": "bitbucket-pipeline",
+      "source": "./plugins/bitbucket-pipeline",
+      "description": "Manage Bitbucket CI/CD pipelines — list, inspect, trigger, and stop pipeline runs.",
+      "version": "1.0.0",
+      "author": { "name": "LlamaopNV" },
+      "category": "development",
+      "keywords": ["bitbucket", "ci", "pipeline"]
+    },
+    {
+      "name": "bitbucket-pr",
+      "source": "./plugins/bitbucket-pr",
+      "description": "Manage Bitbucket pull requests — list, view, create, update, review, merge, and comment.",
+      "version": "1.0.1",
+      "author": { "name": "LlamaopNV" },
+      "category": "development",
+      "keywords": ["bitbucket", "pull-request", "code-review"]
+    },
+    {
+      "name": "jira-api",
+      "source": "./plugins/jira-api",
+      "description": "Jira REST API reference and prebuilt scripts for auth, search, issue CRUD, transitions, comments, sprints, and ADF format.",
+      "version": "1.0.0",
+      "author": { "name": "LlamaopNV" },
+      "category": "productivity",
+      "keywords": ["jira", "atlassian", "issue-tracking"]
+    },
+    {
+      "name": "md-with-mermaid-to-pdf",
+      "source": "./plugins/md-with-mermaid-to-pdf",
+      "description": "Convert a markdown file containing mermaid diagrams to PDF. Renders all mermaid code blocks to SVGs, produces a rendered markdown file, then converts to PDF.",
+      "version": "1.0.0",
+      "author": { "name": "LlamaopNV" },
+      "category": "productivity",
+      "keywords": ["markdown", "mermaid", "pdf"]
+    },
+    {
+      "name": "new-aspire-project",
+      "source": "./plugins/new-aspire-project",
+      "description": "Bootstrap a new .NET Aspire project from a clean-architecture / CQRS template — copies the template, renames namespaces, configures the database, and builds.",
+      "version": "1.0.1",
+      "author": { "name": "LlamaopNV" },
+      "category": "development",
+      "keywords": ["dotnet", "aspire", "cqrs", "scaffold"]
     },
     {
       "name": "bake-to-completion",
@@ -36,6 +77,15 @@
       },
       "category": "development",
       "keywords": ["idea", "brainstorming", "validation", "product", "interview"]
+    },
+    {
+      "name": "anvil",
+      "source": "./plugins/anvil",
+      "description": "Native effectiveness evals & improvement loop for Claude Code skills, subagents & plugins — generate balanced test data, run in-session A/B trials on your subscription, score activation / quality-delta / cost with confidence intervals, and propose improvements.",
+      "version": "0.1.0",
+      "author": { "name": "LlamaopNV" },
+      "category": "development",
+      "keywords": ["evals", "testing", "quality", "skills", "agents"]
     }
   ]
 }

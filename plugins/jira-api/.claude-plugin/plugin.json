@@ -1,0 +1,8 @@
+{
+    "name": "jira-api",
+    "description": "Jira REST API reference and prebuilt scripts for auth, search, issue CRUD, transitions, comments, sprints, and ADF format.",
+    "version": "1.0.0",
+    "author": {
+        "name": "LlamaopNV"
+    }
+}

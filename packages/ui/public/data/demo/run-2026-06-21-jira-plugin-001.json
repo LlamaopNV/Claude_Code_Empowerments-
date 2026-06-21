@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-2026-06-21-jira-plugin-001",
+  "suiteName": "jira-api plugin integrity & usefulness",
+  "artifact": {
+    "kind": "plugin",
+    "name": "jira-api",
+    "path": "plugins/jira-api",
+    "marketplace": "claude-code-empowerments"
+  },
+  "createdAt": "2026-06-21T17:10:00.000Z",
+  "judgeModel": "claude-opus-4-20250514",
+  "runModel": "claude-sonnet-4-20250514",
+  "repetitions": 3,
+  "metrics": {
+    "activation.precision": {
+      "metric": "activation.precision",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 9,
+      "stdDev": 0.0,
+      "ci": { "level": 0.95, "lower": 0.7, "upper": 1.0 }
+    },
+    "activation.recall": {
+      "metric": "activation.recall",
+      "value": 0.83,
+      "unit": "ratio",
+      "n": 6,
+      "stdDev": 0.41,
+      "ci": { "level": 0.95, "lower": 0.5, "upper": 0.97 }
+    },
+    "activation.f1": {
+      "metric": "activation.f1",
+      "value": 0.91,
+      "unit": "ratio",
+      "n": 9,
+      "stdDev": 0.22,
+      "ci": { "level": 0.95, "lower": 0.66, "upper": 0.98 }
+    },
+    "quality.delta": {
+      "metric": "quality.delta",
+      "value": 0.38,
+      "unit": "ratio",
+      "n": 6,
+      "stdDev": 0.3,
+      "ci": { "level": 0.95, "lower": 0.09, "upper": 0.67 }
+    },
+    "cost.tokens": {
+      "metric": "cost.tokens",
+      "value": 14980,
+      "unit": "tokens",
+      "n": 18,
+      "stdDev": 3600.0,
+      "ci": { "level": 0.95, "lower": 13900, "upper": 16060 }
+    },
+    "plugin.loadOk": {
+      "metric": "plugin.loadOk",
+      "value": 1.0,
+      "unit": "ratio",
+      "n": 18,
+      "stdDev": 0.0
+    }
+  },
+  "confusion": {
+    "truePositive": 2,
+    "falsePositive": 0,
+    "trueNegative": 1,
+    "falseNegative": 1,
+    "falsePositiveCaseIds": [],
+    "falseNegativeCaseIds": ["sf-sprint-velocity"]
+  },
+  "cases": [
+    {
+      "caseId": "sf-search-issues",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "With the plugin the run used the JQL search script and returned a structured issue list; baseline hand-rolled a guessy curl call." },
+        { "verdict": "treatment", "swapped": true, "rationale": "Swap held — the scripted path was more reliable." }
+      ],
+      "treatmentTraceId": "agent-jr11aa22bb33cc44",
+      "baselineTraceId": "agent-jr55dd66ee77ff88"
+    },
+    {
+      "caseId": "sf-create-issue",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [
+        { "verdict": "treatment", "swapped": false, "rationale": "Correct ADF body and required fields via the plugin's create script." },
+        { "verdict": "tie", "swapped": true, "rationale": "Both produced a valid payload after swap." }
+      ],
+      "treatmentTraceId": "agent-jr99aa00bb11cc22",
+      "baselineTraceId": "agent-jrdd33ee44ff5566"
+    },
+    {
+      "caseId": "sf-sprint-velocity",
+      "activated": false,
+      "activationCorrect": false,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        { "verdict": "tie", "swapped": false, "rationale": "Plugin did not surface a sprint-velocity helper; both answers improvised." }
+      ],
+      "treatmentTraceId": "agent-jraaaabbbbcccc01",
+      "baselineTraceId": "agent-jraaaabbbbcccc02"
+    },
+    {
+      "caseId": "snf-explain-rest-concept",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [true],
+      "judgeSamples": [],
+      "treatmentTraceId": "agent-jraaaabbbbcccc03"
+    }
+  ],
+  "pluginLoadOk": true,
+  "pluginErrors": []
+}

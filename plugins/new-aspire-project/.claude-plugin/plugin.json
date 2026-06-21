@@ -1,0 +1,8 @@
+{
+    "name": "new-aspire-project",
+    "description": "Bootstrap a new .NET Aspire project from a clean-architecture / CQRS template — copies the template, renames namespaces, configures the database, and builds.",
+    "version": "1.0.1",
+    "author": {
+        "name": "LlamaopNV"
+    }
+}

@@ -1,0 +1,6 @@
+**/dist/**
+**/coverage/**
+**/node_modules/**
+External plugins/**
+.venv/**
+package-lock.json

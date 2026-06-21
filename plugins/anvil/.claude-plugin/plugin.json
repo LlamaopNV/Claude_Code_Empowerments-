@@ -1,0 +1,8 @@
+{
+  "name": "anvil",
+  "description": "Anvil — native effectiveness evals & improvement loop for Claude Code skills, subagents & plugins. Generate balanced test data, run in-session A/B trials on your subscription, score activation / quality-delta / cost with confidence intervals, and propose improvements.",
+  "version": "0.1.0",
+  "author": {
+    "name": "LlamaopNV"
+  }
+}

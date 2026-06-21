@@ -1,0 +1,58 @@
+{
+  "agentId": "agent-aa11bb22cc33dd44",
+  "sessionId": "2b67b33f-0000-4000-8000-000000000000",
+  "isSubagent": true,
+  "events": [
+    {
+      "index": 0,
+      "kind": "user",
+      "timestamp": "2026-06-21T16:40:00.000Z",
+      "text": "I have a rough idea for a plant-watering reminder app; interview me before we design anything."
+    },
+    {
+      "index": 1,
+      "kind": "tool_use",
+      "timestamp": "2026-06-21T16:40:02.000Z",
+      "toolUse": {
+        "id": "toolu_01skill",
+        "name": "Skill",
+        "input": { "skill": "bake-to-completion" },
+        "skill": "bake-to-completion"
+      },
+      "usage": {
+        "inputTokens": 1840,
+        "outputTokens": 62,
+        "cacheCreationInputTokens": 0,
+        "cacheReadInputTokens": 12030
+      }
+    },
+    {
+      "index": 2,
+      "kind": "assistant",
+      "timestamp": "2026-06-21T16:40:08.000Z",
+      "text": "Before we design anything, who exactly forgets to water plants — and how often does that actually cause a plant to die?",
+      "usage": {
+        "inputTokens": 2100,
+        "outputTokens": 410,
+        "cacheCreationInputTokens": 1840,
+        "cacheReadInputTokens": 12030
+      }
+    }
+  ],
+  "toolUses": [
+    {
+      "id": "toolu_01skill",
+      "name": "Skill",
+      "input": { "skill": "bake-to-completion" },
+      "skill": "bake-to-completion"
+    }
+  ],
+  "totalUsage": {
+    "inputTokens": 3940,
+    "outputTokens": 472,
+    "cacheCreationInputTokens": 1840,
+    "cacheReadInputTokens": 24060
+  },
+  "finalText": "Before we design anything, who exactly forgets to water plants — and how often does that actually cause a plant to die?",
+  "pluginErrors": []
+}
