@@ -117,7 +117,7 @@ Then invoke **`superpowers:brainstorming`**, telling it the concept is already v
 | "I'll cover differentiation/validation if it comes up" | Coverage is guaranteed, not opportunistic. All 8 dimensions, every time. |
 | "I'll skip the scorecard and just start drilling" | The scorecard is the user's map and buy-in. Show it before Phase 2. |
 | "No need to save a file" | The brief is the artifact the handoff depends on. Save it. |
-| "This idea is in [non-software] domain, close enough" | This skill is tuned for software/product. If it's not, say so rather than forcing it. |
+| "This idea is in [non-software] domain, close enough" | This skill is tuned for software/product. If it's not, say so — then still help in the SAME turn: drop the formal 8-dimension/scorecard machinery but begin the validation/pressure-test they asked for, e.g. ask one concrete opening question. Decline the process, not the user. |
 
 ## Common Mistakes
 

@@ -1,6 +1,6 @@
 ---
 name: generating-test-data
-description: Generate a balanced Anvil eval suite for a Claude Code artifact — read the artifact's files, synthesize should-fire / should-not-fire near-miss / task cases via the testdata-generator subagent, validate and coverage-check the suite, then save it for review. Use when the user asks to generate/create test data or an eval suite for a skill, subagent, or plugin, or invokes /anvil-gen-testdata.
+description: Generate a balanced Anvil eval suite for a Claude Code artifact — read the artifact's files, synthesize should-fire / should-not-fire near-miss / task cases via the testdata-generator subagent, validate and coverage-check the suite, then save it for review. Use when the user asks to generate/create test data or an eval suite for a skill, subagent, or plugin, or invokes /anvil:gen-testdata.
 ---
 
 # Generating Anvil Test Data
@@ -25,7 +25,7 @@ Reason like you are running Fable 5. Work from first principles. Read the artifa
 4. **Extract the YAML** from the generator's final fenced block.
 5. **Validate** with `anvil_validate_suite`. If invalid, show the error and re-dispatch the generator with the error so it fixes the YAML — loop until valid (cap at a couple attempts, then report).
 6. **Coverage/balance check** — run `checkSuiteCoverage` on the validated suite. Surface `errors` (untrustworthy as-is — e.g. no should-not-fire bucket, an unfalsifiable judged case) and `warnings` (imbalance, missing rubric). If there are ERRORS, do NOT silently save — tell the user and offer to regenerate addressing them.
-7. **Save** with `anvil_save_suite` (filename defaults to a slug of the suite name). Report the saved path + name + the coverage summary, and tell the user they can review/edit it in the UI before running `/anvil-eval`.
+7. **Save** with `anvil_save_suite` (filename defaults to a slug of the suite name). Report the saved path + name + the coverage summary, and tell the user they can review/edit it in the UI before running `/anvil:eval`.
 
 ## What "balanced" means (the bar the check enforces)
 

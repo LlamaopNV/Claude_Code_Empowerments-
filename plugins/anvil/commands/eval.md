@@ -3,7 +3,7 @@ description: Run an Anvil effectiveness eval (in-session A/B + judge) for a skil
 argument-hint: <suite-name | artifact> [--reps N] [--no-cache | --refresh]
 ---
 
-# /anvil-eval
+# /anvil:eval
 
 Run an effectiveness eval for a Claude Code artifact and record its scorecard. This is a thin entry point: it hands off to the **`running-an-eval`** skill, which dispatches treatment/baseline task-runner subagents and position-swapped judges for each case, recovers activation + token usage from the transcripts, scores the run, and persists it via the Anvil MCP server — all on your subscription, no external `claude -p`.
 
@@ -11,7 +11,7 @@ Run an effectiveness eval for a Claude Code artifact and record its scorecard. T
 
 `$ARGUMENTS`
 
-- **suite-name | artifact** (required): the eval suite to run (by `name`), or an artifact (skill/subagent/plugin) whose suite should be found. If several suites match, you'll be asked which one. If none exists, you'll be pointed to `/anvil-gen-testdata` to generate one first.
+- **suite-name | artifact** (required): the eval suite to run (by `name`), or an artifact (skill/subagent/plugin) whose suite should be found. If several suites match, you'll be asked which one. If none exists, you'll be pointed to `/anvil:gen-testdata` to generate one first.
 - **`--reps N`** (optional): override the suite's repetitions for this run (e.g. `--reps 1` for a quick smoke).
 - **`--no-cache`** (optional): ignore the run cache; re-execute every case.
 - **`--refresh`** (optional): force re-execution and overwrite stale cache entries.

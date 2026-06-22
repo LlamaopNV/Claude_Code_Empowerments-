@@ -32,7 +32,13 @@ export async function probeLive(
     const res = await doFetch(`${apiBase.replace(/\/+$/, '')}/results`, {
       signal: ctrl?.signal,
     });
-    return res.ok;
+    // Require a JSON response, not just a 200. A static host (e.g. `vite preview`
+    // or GitHub Pages) answers unknown paths with an index.html SPA-fallback that
+    // is 200 but text/html — treating that as "live" makes us parse HTML as JSON
+    // ("Unexpected token '<'"). Only the real anvil-server returns application/json.
+    if (!res.ok) return false;
+    const contentType = res.headers.get('content-type') ?? '';
+    return contentType.toLowerCase().includes('application/json');
   } catch {
     return false;
   } finally {

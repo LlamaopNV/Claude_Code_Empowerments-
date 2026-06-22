@@ -1,0 +1,182 @@
+schemaVersion: 1
+name: bake-to-completion effectiveness suite
+artifact:
+  kind: skill
+  name: bake-to-completion
+  path: plugins/bake-to-completion/skills/bake-to-completion/SKILL.md
+judgeModel: claude-opus-4-8
+runModel: claude-sonnet-4-6
+repetitions: 3
+cases:
+  # ---------- should-fire ----------
+  - id: sf-interview-me-explicit
+    bucket: should-fire
+    shouldActivate: true
+    prompt: >-
+      I have an idea for an app but it's pretty half-baked. Can you interview me
+      about my idea before I start building anything?
+    rubric: >-
+      Activates bake-to-completion. Begins an adaptive Socratic interview: asks
+      ONE orienting question at a time (does not dump a batch), signals it will
+      rate the idea across dimensions and stress-test it before handing off.
+      Does not jump straight to writing a plan or architecture.
+
+  - id: sf-vague-saas-pitch
+    bucket: should-fire
+    shouldActivate: true
+    prompt: >-
+      I want to build a SaaS that helps freelancers track invoices. It's still
+      vague and I'm not sure it's any good. Help me flesh it out and figure out
+      if it's worth pursuing.
+    rubric: >-
+      Activates the skill. Treats this as an early-stage idea to strengthen:
+      reads the pitch, prepares to rate the 8 dimensions, asks at most one or two
+      broad questions first. Does not produce a finished feature list, timeline,
+      or build plan, and does not batch many questions at once.
+
+  - id: sf-pressure-test
+    bucket: should-fire
+    shouldActivate: true
+    prompt: >-
+      I think I've got a solid concept for a Chrome extension that summarizes
+      long Slack threads. Can you pressure-test it and poke holes before I commit?
+    rubric: >-
+      Activates the skill. Even though the user calls it "solid," it still runs
+      the strengthening interview and treats the adversarial stress-test as
+      mandatory — surfaces the riskiest hidden assumption and strongest objection
+      rather than agreeing the idea is great. One question/objection at a time.
+
+  - id: sf-flesh-out-early-concept
+    bucket: should-fire
+    shouldActivate: true
+    prompt: >-
+      Rough idea: a marketplace mobile app connecting local dog walkers with
+      owners. I haven't validated anything yet. Help me sharpen it.
+    rubric: >-
+      Activates the skill. Recognizes an unvalidated early-stage product concept.
+      Starts the breadth scan, plans to cover all 8 dimensions (problem, user,
+      value, differentiation, scope, feasibility, risks, validation) and to
+      stress-test before any handoff. Does not write scope/timeline/architecture.
+
+  # ---------- should-not-fire (adversarial near-misses) ----------
+  - id: snf-already-validated-wants-design
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      I've already validated my idea — paying beta users, clear problem, the lot.
+      Now I want to brainstorm the actual system design and architecture. Let's
+      design it.
+    expectations:
+      - type: not-contains
+        value: interview
+      - type: not-contains
+        value: scorecard
+
+  - id: snf-wants-build-plan
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      The concept is locked and approved. I just need a concrete implementation
+      plan with milestones and tasks so I can start building this week.
+    expectations:
+      - type: not-contains
+        value: 8 dimensions
+      - type: not-contains
+        value: adversarial stress-test
+
+  - id: snf-non-software-domain
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      I have a half-baked idea for a new cocktail menu at my bar and I want to
+      validate and pressure-test it. Interview me about it.
+    expectations:
+      - type: not-contains
+        value: idea-briefs/
+      - type: not-contains
+        value: superpowers:brainstorming
+
+  - id: snf-critique-finished-product
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      Here's my live, shipped product at acme.com with 2,000 users. Can you
+      review it and tell me what's wrong with the current product?
+    expectations:
+      - type: not-contains
+        value: half-baked
+      - type: not-contains
+        value: hand off to the design phase
+
+  - id: snf-batch-questions-request
+    bucket: should-not-fire
+    shouldActivate: false
+    prompt: >-
+      Don't interview me — just give me a single list of 10 questions I should
+      answer myself to gut-check a startup idea. One message, all at once.
+    expectations:
+      - type: not-contains
+        value: one question at a time
+      - type: not-contains
+        value: Phase 1
+
+  # ---------- task (behavioral quality) ----------
+  - id: task-no-batching-one-question
+    bucket: task
+    shouldActivate: true
+    prompt: >-
+      Interview me about my idea: an AI tool that drafts grant applications for
+      small nonprofits.
+    rubric: >-
+      A strong answer asks exactly ONE question in its message (or shows the
+      Phase 1 scorecard plus at most one orienting question) — it does NOT batch
+      multiple deep-dive questions together. Batching three or more substantive
+      questions in a single turn is an automatic fail. Tone is Socratic, and the
+      next question is positioned to depend on the user's answer.
+
+  - id: task-scorecard-before-deepdives
+    bucket: task
+    shouldActivate: true
+    prompt: >-
+      My idea: a budgeting app for couples who keep separate finances. Problem is
+      real (my partner and I fight about it), target user is us and people like
+      us, but I haven't thought about competition, scope, or how I'd test it.
+      Let's go.
+    rubric: >-
+      A strong answer first rates all 8 dimensions as solid/shaky/missing based on
+      what the user already said (problem and target user likely solid;
+      differentiation, scope, validation missing/shaky) and presents a short
+      scorecard table to the user for buy-in BEFORE drilling into any weak
+      dimension. Jumping straight into deep-dive questions without showing the
+      scorecard is a fail. Does not re-ask the already-answered problem/user.
+
+  - id: task-adversarial-mandatory-on-strong-idea
+    bucket: task
+    shouldActivate: true
+    prompt: >-
+      Honestly my idea is bulletproof: a habit tracker with social accountability.
+      Everyone I've told loves it. Run me through your process but I doubt you'll
+      find any problems.
+    rubric: >-
+      A strong answer refuses to skip the adversarial phase despite the user's
+      confidence. It surfaces a genuinely hard challenge — the strongest
+      steelmanned objection, the riskiest hidden assumption that kills the idea if
+      false, and/or "why hasn't someone done this already / why now" — and does
+      NOT soften it into a compliment. Each objection is its own message, one at a
+      time. Agreeing the idea is bulletproof or skipping the stress-test is a fail.
+
+  - id: task-brief-save-and-handoff-no-plan
+    bucket: task
+    shouldActivate: true
+    prompt: >-
+      We've gone through everything and I'm happy with where the idea landed.
+      Wrap it up and get me ready to actually build it.
+    rubric: >-
+      A strong answer writes the idea brief with the required sections (one-line
+      pitch, problem and evidence, target user, value proposition, scope with
+      MVP and out-of-scope, differentiation, key risks and assumptions each with
+      mitigation or "open", validation plan, open questions), shows it for
+      confirmation, and saves it to ./idea-briefs/YYYY-MM-DD-<slug>.md. It then
+      hands off (invoking superpowers:brainstorming or falling back to the normal
+      design workflow). It MUST NOT write the execution plan itself — producing
+      scope/timeline/architecture or task breakdowns inline is a fail.

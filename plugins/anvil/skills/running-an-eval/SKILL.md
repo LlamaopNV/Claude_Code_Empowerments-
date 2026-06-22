@@ -1,6 +1,6 @@
 ---
 name: running-an-eval
-description: Run an Anvil effectiveness eval for a Claude Code artifact — dispatch in-session treatment/baseline task-runner subagents and position-swapped judges for each case, recover activation + token usage from the transcripts, score it, and record the run. Use when the user asks to run/evaluate/score/A-B-test a skill, subagent, or plugin, or invokes /anvil-eval. Runs on the subscription via subagents; no external claude -p.
+description: Run an Anvil effectiveness eval for a Claude Code artifact — dispatch in-session treatment/baseline task-runner subagents and position-swapped judges for each case, recover activation + token usage from the transcripts, score it, and record the run. Use when the user asks to run/evaluate/score/A-B-test a skill, subagent, or plugin, or invokes /anvil:eval. Runs on the subscription via subagents; no external claude -p.
 ---
 
 # Running an Anvil Eval

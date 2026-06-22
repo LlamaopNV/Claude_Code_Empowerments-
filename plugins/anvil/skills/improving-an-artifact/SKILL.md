@@ -1,6 +1,6 @@
 ---
 name: improving-an-artifact
-description: Close the Anvil improvement loop — run the analyst on a Scorecard to get concrete edit proposals, present them, and ONLY on explicit user confirmation apply the edits to the artifact, re-run the eval, and report the measured before/after delta. Use when the user asks to improve/fix/iterate on a skill, subagent, or plugin based on its eval results, or invokes /anvil-improve. Never edits files without confirmation.
+description: Close the Anvil improvement loop — run the analyst on a Scorecard to get concrete edit proposals, present them, and ONLY on explicit user confirmation apply the edits to the artifact, re-run the eval, and report the measured before/after delta. Use when the user asks to improve/fix/iterate on a skill, subagent, or plugin based on its eval results, or invokes /anvil:improve. Never edits files without confirmation.
 ---
 
 # Improving an Anvil Artifact

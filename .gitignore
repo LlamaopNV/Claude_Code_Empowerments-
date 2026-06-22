@@ -27,3 +27,6 @@ coverage/
 results/*
 !results/.gitkeep
 !results/demo/
+
+# Third-party plugins cloned locally for reference — not part of this marketplace
+External plugins/

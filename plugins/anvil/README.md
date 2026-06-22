@@ -8,7 +8,7 @@ and agents are filled in by later epics (E3–E5).
 
 - `.claude-plugin/plugin.json` — plugin manifest (`name: anvil`).
 - `.mcp.json` — registers the **`anvil`** MCP server.
-- `commands/` — `/anvil-eval`, `/anvil-gen-testdata`, `/anvil-improve` (Epic 3–5).
+- `commands/` — `/anvil:eval`, `/anvil:gen-testdata`, `/anvil:improve` (Epic 3–5).
 - `skills/` — `running-an-eval`, `generating-test-data`, `improving-an-artifact` (Epic 3–5).
 - `agents/` — `anvil-task-runner`, `anvil-judge`, `anvil-testdata-generator`, `anvil-analyst` (Epic 3–5).
 

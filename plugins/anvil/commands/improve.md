@@ -3,7 +3,7 @@ description: Get concrete edit proposals from an Anvil scorecard and, on your co
 argument-hint: <artifact | run-id>
 ---
 
-# /anvil-improve
+# /anvil:improve
 
 Close the Anvil improvement loop for an artifact. Thin entry point: hands off to the **`improving-an-artifact`** skill, which runs the `anvil-analyst` subagent on the artifact's scorecard to produce concrete, minimal edit proposals, presents them, and — **only after you explicitly confirm** — applies the edits, re-runs the eval, and reports the measured before/after delta.
 

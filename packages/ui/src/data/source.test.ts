@@ -11,15 +11,26 @@ const fixtures = resolve(here, '../../../core/fixtures');
 const read = (n: string) => JSON.parse(readFileSync(resolve(fixtures, n), 'utf8'));
 
 /** A fetch stub that routes by URL substring. */
-function stubFetch(routes: Record<string, unknown>, opts: { fail?: string[] } = {}): typeof fetch {
+function stubFetch(
+  routes: Record<string, unknown>,
+  opts: { fail?: string[]; contentType?: string } = {},
+): typeof fetch {
+  const headers = (ct: string) => ({
+    get: (h: string) => (h.toLowerCase() === 'content-type' ? ct : null),
+  });
   return vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
     if (opts.fail?.some((f) => url.includes(f))) {
-      return { ok: false, status: 500, json: async () => ({}) } as Response;
+      return { ok: false, status: 500, headers: headers('application/json'), json: async () => ({}) } as Response;
     }
     const key = Object.keys(routes).find((k) => url.includes(k));
-    if (!key) return { ok: false, status: 404, json: async () => ({}) } as Response;
-    return { ok: true, status: 200, json: async () => routes[key] } as Response;
+    if (!key) return { ok: false, status: 404, headers: headers('text/html'), json: async () => ({}) } as Response;
+    return {
+      ok: true,
+      status: 200,
+      headers: headers(opts.contentType ?? 'application/json; charset=utf-8'),
+      json: async () => routes[key],
+    } as Response;
   }) as unknown as typeof fetch;
 }
 
@@ -121,6 +132,13 @@ describe('live source', () => {
 describe('createDataSource probe + fallback', () => {
   it('probeLive is true when /results answers ok', async () => {
     expect(await probeLive('/api', stubFetch({ '/api/results': read('index.json') }))).toBe(true);
+  });
+  it('probeLive is false when a 200 SPA-fallback returns text/html, not JSON', async () => {
+    // Regression: `vite preview` / GitHub Pages answer unknown paths with index.html
+    // (200 but text/html). Treating that as "live" makes the app parse HTML as JSON.
+    expect(
+      await probeLive('/api', stubFetch({ '/api/results': read('index.json') }, { contentType: 'text/html; charset=utf-8' })),
+    ).toBe(false);
   });
   it('probeLive is false when the server fails', async () => {
     expect(await probeLive('/api', stubFetch({}, { fail: ['/api/results'] }))).toBe(false);
