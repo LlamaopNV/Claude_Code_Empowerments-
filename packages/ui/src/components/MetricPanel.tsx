@@ -18,7 +18,7 @@ export function MetricTile({
   if (!metric) {
     return (
       <Panel title={label}>
-        <div className="text-2xl font-semibold text-anvil-muted">—</div>
+        <div className="text-3xl font-semibold tracking-tight text-anvil-muted">—</div>
         <div className="mt-1 text-xs text-anvil-muted">not reported</div>
       </Panel>
     );
@@ -26,12 +26,14 @@ export function MetricTile({
   const spread = formatSpread(metric);
   return (
     <Panel title={label}>
-      <div className="text-2xl font-semibold text-slate-100">{formatMetricValue(metric)}</div>
-      <div className="mt-1 text-xs text-anvil-muted">
+      <div className="tnum text-3xl font-semibold tracking-tight text-slate-100">
+        {formatMetricValue(metric)}
+      </div>
+      <div className="mt-1.5 text-xs text-anvil-muted">
         {spread ? <span data-testid="metric-spread">{spread}</span> : <span>single sample</span>}
         <span className="ml-2 opacity-70">n={metric.n}</span>
       </div>
-      {hint && <div className="mt-2 text-xs text-anvil-muted/80">{hint}</div>}
+      {hint && <div className="mt-2 text-xs leading-relaxed text-anvil-muted/80">{hint}</div>}
     </Panel>
   );
 }

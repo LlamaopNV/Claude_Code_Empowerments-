@@ -17,4 +17,40 @@ body {
   margin: 0;
   font-family:
     ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* Subtle layered glow so the flat dark background has depth. */
+  background-image:
+    radial-gradient(60rem 40rem at 12% -10%, rgba(91, 157, 255, 0.08), transparent 60%),
+    radial-gradient(50rem 36rem at 100% 0%, rgba(167, 139, 250, 0.07), transparent 55%);
+  background-attachment: fixed;
+}
+
+@layer utilities {
+  /* Tabular, lined figures for metric columns so numbers align cleanly. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+}
+
+/* Quieter, theme-matched scrollbars. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #2c3650 transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #2c3650;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #3a4a6a;
+}
+
+::selection {
+  background: rgba(91, 157, 255, 0.3);
 }

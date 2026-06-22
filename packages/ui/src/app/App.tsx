@@ -25,15 +25,26 @@ export function App(): JSX.Element {
 function Header(): JSX.Element {
   const { source } = useDataSource();
   return (
-    <header className="border-b border-anvil-border bg-anvil-panel/60">
+    <header className="sticky top-0 z-20 border-b border-anvil-border bg-anvil-bg/80 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-lg font-bold text-slate-100">Anvil</span>
-          <span className="text-xs text-anvil-muted">effectiveness dashboard</span>
+        <Link to="/" className="group flex items-center gap-2.5">
+          <span
+            aria-hidden
+            className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-anvil-accent to-anvil-accent2 text-sm font-black text-anvil-bg shadow-glow transition-transform group-hover:scale-105"
+          >
+            A
+          </span>
+          <span className="text-lg font-bold tracking-tight text-slate-100">Anvil</span>
+          <span className="hidden text-xs text-anvil-muted sm:inline">effectiveness dashboard</span>
         </Link>
         <div className="ml-auto">
           {source ? (
             <Badge tone={source.mode === 'live' ? 'good' : 'neutral'}>
+              <span
+                className={`h-1.5 w-1.5 rounded-full ${
+                  source.mode === 'live' ? 'bg-anvil-good' : 'bg-anvil-muted'
+                }`}
+              />
               {source.mode === 'live' ? 'live server' : 'static demo'}
             </Badge>
           ) : (
