@@ -1,0 +1,531 @@
+{
+  "schemaVersion": 1,
+  "runId": "bake-to-completion-2026-06-21",
+  "suiteName": "bake-to-completion effectiveness suite",
+  "artifact": {
+    "kind": "skill",
+    "name": "bake-to-completion",
+    "path": "plugins/bake-to-completion/skills/bake-to-completion/SKILL.md"
+  },
+  "createdAt": "2026-06-21T12:00:00Z",
+  "judgeModel": "claude-opus-4-8",
+  "runModel": "claude-sonnet-4-6",
+  "repetitions": 3,
+  "metrics": {
+    "activation.precision": {
+      "metric": "activation.precision",
+      "value": 1,
+      "unit": "ratio",
+      "n": 8,
+      "stdDev": 0
+    },
+    "activation.recall": {
+      "metric": "activation.recall",
+      "value": 1,
+      "unit": "ratio",
+      "n": 8,
+      "stdDev": 0
+    },
+    "activation.f1": {
+      "metric": "activation.f1",
+      "value": 1,
+      "unit": "ratio",
+      "n": 13,
+      "stdDev": 0
+    },
+    "quality.delta": {
+      "metric": "quality.delta",
+      "value": 0.6923076923076923,
+      "unit": "ratio",
+      "n": 13,
+      "stdDev": 0.5130074445625894,
+      "ci": {
+        "level": 0.95,
+        "lower": 0.3822737650941541,
+        "upper": 1.0023416195212305
+      }
+    }
+  },
+  "confusion": {
+    "truePositive": 8,
+    "falsePositive": 0,
+    "trueNegative": 5,
+    "falseNegative": 0,
+    "falsePositiveCaseIds": [],
+    "falseNegativeCaseIds": []
+  },
+  "cases": [
+    {
+      "caseId": "sf-interview-me-explicit",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "tie",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a67dabb61f6ab2f91",
+      "baselineTraceId": "a38da3b53b9010157"
+    },
+    {
+      "caseId": "sf-vague-saas-pitch",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a8df51b242f5eb9a6",
+      "baselineTraceId": "a8a8f4865703253cb"
+    },
+    {
+      "caseId": "sf-pressure-test",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "ab9697bcd760ff13f",
+      "baselineTraceId": "ad4d5999f378eefa3"
+    },
+    {
+      "caseId": "sf-flesh-out-early-concept",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a30feed14d21a5381",
+      "baselineTraceId": "a7046a10f8f7248b4"
+    },
+    {
+      "caseId": "snf-already-validated-wants-design",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [
+        true,
+        true
+      ],
+      "judgeSamples": [
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "tie",
+          "swapped": true
+        },
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "tie",
+          "swapped": true
+        },
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "tie",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a2139385929296827",
+      "baselineTraceId": "a6907dd68a2452f58"
+    },
+    {
+      "caseId": "snf-wants-build-plan",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [
+        true,
+        true
+      ],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "aa5915340291cf68a",
+      "baselineTraceId": "ad551f1d1d34e8336"
+    },
+    {
+      "caseId": "snf-non-software-domain",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [
+        true,
+        true
+      ],
+      "judgeSamples": [
+        {
+          "verdict": "baseline",
+          "swapped": false
+        },
+        {
+          "verdict": "baseline",
+          "swapped": true
+        },
+        {
+          "verdict": "baseline",
+          "swapped": false
+        },
+        {
+          "verdict": "baseline",
+          "swapped": true
+        },
+        {
+          "verdict": "baseline",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "ac59473afdb20e6ec",
+      "baselineTraceId": "a47d5374ac122b2f1"
+    },
+    {
+      "caseId": "snf-critique-finished-product",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [
+        true,
+        true
+      ],
+      "judgeSamples": [
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "baseline",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "acc88656362d95a27",
+      "baselineTraceId": "ad0733992cc6351b2"
+    },
+    {
+      "caseId": "snf-batch-questions-request",
+      "activated": false,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [
+        true,
+        true
+      ],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "tie",
+          "swapped": false
+        },
+        {
+          "verdict": "tie",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "af51c7c5c53666a85",
+      "baselineTraceId": "ad6d306fcdedba7be"
+    },
+    {
+      "caseId": "task-no-batching-one-question",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a463381aace2e4538",
+      "baselineTraceId": "a73dca59a661b163b"
+    },
+    {
+      "caseId": "task-scorecard-before-deepdives",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "ac59b8459a5b11b65",
+      "baselineTraceId": "a0a45bc7eda4e4cd4"
+    },
+    {
+      "caseId": "task-adversarial-mandatory-on-strong-idea",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a4711c750a5453423",
+      "baselineTraceId": "ab2fea2422439009b"
+    },
+    {
+      "caseId": "task-brief-save-and-handoff-no-plan",
+      "activated": true,
+      "activationCorrect": true,
+      "expectationsPassed": true,
+      "expectationResults": [],
+      "judgeSamples": [
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        },
+        {
+          "verdict": "treatment",
+          "swapped": false
+        },
+        {
+          "verdict": "treatment",
+          "swapped": true
+        }
+      ],
+      "treatmentTraceId": "a7d7ec1ca5f965588",
+      "baselineTraceId": "a64bc8c565780a4ee"
+    }
+  ],
+  "pluginLoadOk": true,
+  "pluginErrors": []
+}

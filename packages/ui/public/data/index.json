@@ -2,6 +2,30 @@
   "schemaVersion": 1,
   "runs": [
     {
+      "runId": "bake-to-completion-2026-06-22",
+      "suiteName": "bake-to-completion effectiveness suite",
+      "artifactKind": "skill",
+      "artifactName": "bake-to-completion",
+      "createdAt": "2026-06-22T07:30:00Z",
+      "headline": {
+        "activationF1": 1,
+        "qualityDelta": 0.46153846153846156
+      },
+      "resultPath": "bake-to-completion-2026-06-22.json"
+    },
+    {
+      "runId": "bake-to-completion-2026-06-21",
+      "suiteName": "bake-to-completion effectiveness suite",
+      "artifactKind": "skill",
+      "artifactName": "bake-to-completion",
+      "createdAt": "2026-06-21T12:00:00Z",
+      "headline": {
+        "activationF1": 1,
+        "qualityDelta": 0.6923076923076923
+      },
+      "resultPath": "bake-to-completion-2026-06-21.json"
+    },
+    {
       "runId": "run-2026-06-21-jira-plugin-001",
       "suiteName": "jira-api plugin integrity & usefulness",
       "artifactKind": "plugin",
@@ -21,7 +45,7 @@
       "artifactName": "claude-code-guide",
       "createdAt": "2026-06-21T17:05:00.000Z",
       "headline": {
-        "activationF1": 1.0,
+        "activationF1": 1,
         "qualityDelta": 0.55,
         "costTokens": 22150
       },
