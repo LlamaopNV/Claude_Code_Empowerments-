@@ -86,6 +86,19 @@
       "author": { "name": "LlamaopNV" },
       "category": "development",
       "keywords": ["evals", "testing", "quality", "skills", "agents"]
+    },
+    {
+      "name": "github-project-triage",
+      "displayName": "GitHub Project Triage",
+      "source": "./plugins/github-project-triage",
+      "description": "Maintainer-facing GitHub issue/PR triage: URL-first item cards with author trust, fit, risk, proof/CI state, blockers, and the exact next action. Adapted (with attribution) from steipete/agent-scripts and generalized to run in any repo.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Peter Steinberger (steipete)",
+        "url": "https://github.com/steipete"
+      },
+      "category": "development",
+      "keywords": ["github", "triage", "issues", "pull-requests", "maintainer"]
     }
   ]
 }
