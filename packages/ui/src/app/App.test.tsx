@@ -133,7 +133,7 @@ describe('ScorecardPage', () => {
 
     // Verdict
     await waitFor(() =>
-      expect(screen.getByText('Helps — measurable improvement')).toBeInTheDocument(),
+      expect(screen.getByText('Helps: measurable improvement')).toBeInTheDocument(),
     );
     // A confidence interval is rendered (quality delta CI).
     expect(screen.getByText('95% CI [18.0%, 66.0%]')).toBeInTheDocument();

@@ -18,7 +18,7 @@ export function MetricTile({
   if (!metric) {
     return (
       <Panel title={label}>
-        <div className="text-3xl font-semibold tracking-tight text-anvil-muted">—</div>
+        <div className="text-3xl font-semibold tracking-tight text-anvil-muted">n/a</div>
         <div className="mt-1 text-xs text-anvil-muted">not reported</div>
       </Panel>
     );

@@ -135,7 +135,7 @@ export function headlineVerdict(card: Scorecard): Verdict {
   if (deltaPos && deltaCertain && f1Ok) {
     return {
       tone: 'good',
-      label: 'Helps — measurable improvement',
+      label: 'Helps: measurable improvement',
       detail: `Quality delta ${delta ? formatRatio(delta.value) : ''} (CI excludes 0) with F1 ${
         f1 ? formatRatio(f1.value) : ''
       }.`,
@@ -144,7 +144,7 @@ export function headlineVerdict(card: Scorecard): Verdict {
   if (delta && delta.value < 0) {
     return {
       tone: 'bad',
-      label: 'Hurts — negative quality delta',
+      label: 'Hurts: negative quality delta',
       detail: `Treatment scored worse than baseline (${formatRatio(delta.value)}).`,
     };
   }

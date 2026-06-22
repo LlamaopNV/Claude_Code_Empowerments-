@@ -30,7 +30,7 @@ function Header(): JSX.Element {
         <Link to="/" className="group flex items-center gap-2.5">
           <span
             aria-hidden
-            className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-anvil-accent to-anvil-accent2 text-sm font-black text-anvil-bg shadow-glow transition-transform group-hover:scale-105"
+            className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-anvil-accent to-[#3b7de0] text-sm font-black text-anvil-bg shadow-glow transition-transform group-hover:scale-105"
           >
             A
           </span>
@@ -69,8 +69,8 @@ function SampleDataBanner(): JSX.Element | null {
   return (
     <div className="border-b border-amber-500/40 bg-amber-500/10 text-amber-200">
       <div className="mx-auto max-w-6xl px-4 py-2 text-sm">
-        <strong>Illustrative sample data.</strong> These scorecards are hand-curated examples to
-        demonstrate the dashboard — not real measured eval runs. Run{' '}
+        <strong>Illustrative sample data.</strong> These scorecards are hand-curated examples that
+        demonstrate the dashboard. They are not real measured eval runs. Run{' '}
         <code className="rounded bg-anvil-bg px-1">/anvil-eval</code> on your own subscription and
         open the live dashboard to see real numbers.
       </div>

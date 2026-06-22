@@ -27,7 +27,7 @@ export function CostOverheadChart({ points }: { points: OverheadPoint[] }): JSX.
     );
   }
   return (
-    <Panel title="Cost overhead — treatment vs baseline (tokens)">
+    <Panel title="Cost overhead: treatment vs baseline (tokens)">
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>

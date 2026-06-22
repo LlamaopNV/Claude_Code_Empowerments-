@@ -128,7 +128,7 @@ export function ScorecardPage(): JSX.Element {
           <div className="mt-3 text-sm text-anvil-muted">
             Net win fraction:{' '}
             <span className="font-medium text-slate-200">
-              {tally.net === null ? '—' : formatRatio(tally.net)}
+              {tally.net === null ? 'n/a' : formatRatio(tally.net)}
             </span>{' '}
             across {tally.total} samples.
           </div>

@@ -65,7 +65,7 @@ function Rate({ label, value }: { label: string; value: number | null }): JSX.El
   return (
     <div className="rounded border border-anvil-border bg-anvil-bg p-2 text-center">
       <dt className="text-xs text-anvil-muted">{label}</dt>
-      <dd className="text-base font-medium">{value === null ? '—' : formatRatio(value)}</dd>
+      <dd className="text-base font-medium">{value === null ? 'n/a' : formatRatio(value)}</dd>
     </div>
   );
 }

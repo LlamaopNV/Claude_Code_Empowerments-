@@ -117,7 +117,7 @@ export function Leaderboard(): JSX.Element {
                   {e.headline.activationF1 !== undefined ? (
                     <F1Value value={e.headline.activationF1} />
                   ) : (
-                    <span className="text-anvil-muted">—</span>
+                    <span className="text-anvil-muted">n/a</span>
                   )}
                 </td>
                 <td className="px-4 py-3.5 text-right tnum text-slate-300">
@@ -127,7 +127,7 @@ export function Leaderboard(): JSX.Element {
                       <span className="ml-1 text-xs text-anvil-muted">tok</span>
                     </>
                   ) : (
-                    <span className="text-anvil-muted">—</span>
+                    <span className="text-anvil-muted">n/a</span>
                   )}
                 </td>
                 <td className="px-4 py-3.5 text-right tnum text-anvil-muted">
@@ -182,7 +182,7 @@ function FilterTabs({
 
 /** Quality delta as a diverging bar centred at 0 (red left / green right) plus the value. */
 function DeltaCell({ value }: { value?: number }): JSX.Element {
-  if (value === undefined) return <span className="text-anvil-muted">—</span>;
+  if (value === undefined) return <span className="text-anvil-muted">n/a</span>;
   const positive = value > 0;
   const zero = value === 0;
   const tone = positive ? 'text-anvil-good' : zero ? 'text-anvil-muted' : 'text-anvil-bad';
