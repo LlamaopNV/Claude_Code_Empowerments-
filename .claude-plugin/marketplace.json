@@ -86,6 +86,19 @@
       "author": { "name": "LlamaopNV" },
       "category": "development",
       "keywords": ["evals", "testing", "quality", "skills", "agents"]
+    },
+    {
+      "name": "design-taste-frontend",
+      "displayName": "Design Taste (Anti-Slop Frontend)",
+      "source": "./plugins/design-taste-frontend",
+      "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns — reads the brief, infers a design direction, reaches for real design systems, and runs a strict pre-flight check against AI-design tells. Vendored with attribution from Leonxlnx/taste-skill (MIT).",
+      "version": "0.1.0",
+      "author": {
+        "name": "Leonxlnx",
+        "url": "https://github.com/Leonxlnx"
+      },
+      "category": "development",
+      "keywords": ["frontend", "design", "landing-page", "portfolio", "tailwind"]
     }
   ]
 }

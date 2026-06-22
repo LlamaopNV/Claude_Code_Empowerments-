@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "design-taste-frontend",
+  "displayName": "Design Taste (Anti-Slop Frontend)",
+  "version": "0.1.0",
+  "description": "Anti-slop frontend skill for landing pages, portfolios, and redesigns: reads the brief, infers a design direction, reaches for real design systems when applicable, and runs a strict pre-flight check against the AI-design tells. (Not for dashboards/data tables — see Section 13.)",
+  "author": {
+    "name": "Leonxlnx",
+    "url": "https://github.com/Leonxlnx"
+  },
+  "homepage": "https://github.com/Leonxlnx/taste-skill/blob/main/skills/taste-skill/SKILL.md",
+  "repository": "https://github.com/Leonxlnx/taste-skill",
+  "license": "MIT",
+  "keywords": ["frontend", "design", "landing-page", "portfolio", "redesign", "tailwind", "anti-slop"],
+  "skills": "./skills/"
+}
