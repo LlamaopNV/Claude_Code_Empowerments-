@@ -1,6 +1,9 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { HashRouter } from 'react-router-dom';
+// Self-hosted variable fonts (skill 3.A: never <link> Google Fonts in prod).
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
 import { App } from './app/App.js';
 import './index.css';
 

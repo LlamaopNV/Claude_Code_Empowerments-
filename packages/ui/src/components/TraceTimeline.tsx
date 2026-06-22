@@ -60,7 +60,7 @@ function TraceRow({ ev }: { ev: TraceEvent }): JSX.Element {
   return (
     <li className="rounded border border-anvil-border/40 p-2 text-xs">
       <span className="mr-2 uppercase tracking-wide text-anvil-muted">{ev.kind}</span>
-      {ev.text && <span className="text-slate-300">{truncate(ev.text, 240)}</span>}
+      {ev.text && <span className="text-anvil-fg/80">{truncate(ev.text, 240)}</span>}
     </li>
   );
 }

@@ -31,15 +31,30 @@ export function CostOverheadChart({ points }: { points: OverheadPoint[] }): JSX.
       <div className="h-72 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={points} margin={{ top: 8, right: 8, bottom: 8, left: 8 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#243049" />
-            <XAxis dataKey="caseId" tick={{ fill: '#8b97ab', fontSize: 11 }} interval={0} angle={-15} textAnchor="end" height={60} />
-            <YAxis tick={{ fill: '#8b97ab', fontSize: 11 }} />
-            <Tooltip
-              contentStyle={{ background: '#141a26', border: '1px solid #243049', color: '#e2e8f0' }}
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e222b" vertical={false} />
+            <XAxis
+              dataKey="caseId"
+              tick={{ fill: '#8b919e', fontSize: 11 }}
+              interval={0}
+              angle={-15}
+              textAnchor="end"
+              height={60}
+              stroke="#2b313d"
             />
-            <Legend />
-            <Bar dataKey="baselineTokens" name="Baseline" fill="#8b97ab" />
-            <Bar dataKey="treatmentTokens" name="Treatment" fill="#5b9dff" />
+            <YAxis tick={{ fill: '#8b919e', fontSize: 11 }} stroke="#2b313d" />
+            <Tooltip
+              cursor={{ fill: 'rgba(91,157,255,0.06)' }}
+              contentStyle={{
+                background: '#101218',
+                border: '1px solid #2b313d',
+                borderRadius: 10,
+                color: '#e7e9ee',
+                fontSize: 12,
+              }}
+            />
+            <Legend wrapperStyle={{ fontSize: 12, color: '#8b919e' }} />
+            <Bar dataKey="baselineTokens" name="Baseline" fill="#5b616e" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="treatmentTokens" name="Treatment" fill="#5b9dff" radius={[3, 3, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

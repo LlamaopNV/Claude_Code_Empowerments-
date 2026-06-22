@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, CheckCircle, XCircle, Warning } from '@phosphor-icons/react';
 import { useDataSource } from '../app/useDataSource.js';
 import { useAsync } from '../app/useAsync.js';
 import {
@@ -16,19 +17,14 @@ import { MetricTile } from '../components/MetricPanel.js';
 import { ConfusionMatrixView } from '../components/ConfusionMatrixView.js';
 import { CostOverheadChart } from '../components/CostOverheadChart.js';
 import { CaseDetail } from '../components/CaseDetail.js';
+import { cn } from '../lib/cn.js';
 
 export function ScorecardPage(): JSX.Element {
   const { runId = '' } = useParams();
   const { source, error: dsError } = useDataSource();
 
-  const card = useAsync<Scorecard>(
-    () => source!.getScorecard(runId),
-    [source, runId],
-    !!source,
-  );
+  const card = useAsync<Scorecard>(() => source!.getScorecard(runId), [source, runId], !!source);
 
-  // Resolve traces referenced by cases (for the cost-overhead chart). Best
-  // effort: unavailable traces are simply omitted from the chart.
   const traceIds = useMemo(() => {
     if (card.status !== 'ready') return [] as string[];
     const ids = new Set<string>();
@@ -71,14 +67,21 @@ export function ScorecardPage(): JSX.Element {
       : {};
   const overhead = buildOverhead(c.cases, tokensByTrace);
 
+  const VerdictIcon =
+    verdict.tone === 'good' ? CheckCircle : verdict.tone === 'bad' ? XCircle : Warning;
+
   return (
-    <div className="space-y-6">
+    <div className="animate-fade-in space-y-6">
       <div>
-        <Link to="/" className="text-sm text-anvil-accent hover:underline">
-          ← Leaderboard
+        <Link
+          to="/"
+          className="inline-flex items-center gap-1 text-sm text-anvil-muted transition-colors hover:text-anvil-accent"
+        >
+          <ArrowLeft size={14} weight="bold" />
+          Leaderboard
         </Link>
-        <div className="mt-2 flex flex-wrap items-center gap-3">
-          <h2 className="text-xl font-semibold">{c.artifact.name}</h2>
+        <div className="mt-3 flex flex-wrap items-center gap-3">
+          <h2 className="text-2xl font-semibold tracking-tight text-anvil-fg">{c.artifact.name}</h2>
           <Badge tone="accent">{c.artifact.kind}</Badge>
           {!c.pluginLoadOk && <Badge tone="bad">plugin load failed</Badge>}
           <span className="text-sm text-anvil-muted">
@@ -89,16 +92,31 @@ export function ScorecardPage(): JSX.Element {
 
       {/* Headline verdict */}
       <div
-        className={`rounded-lg border p-4 ${
+        className={cn(
+          'flex items-start gap-3 rounded-xl border p-4 shadow-card',
           verdict.tone === 'good'
-            ? 'border-anvil-good/40 bg-anvil-good/10'
+            ? 'border-anvil-good/30 bg-anvil-good/[0.08]'
             : verdict.tone === 'bad'
-              ? 'border-anvil-bad/40 bg-anvil-bad/10'
-              : 'border-anvil-warn/40 bg-anvil-warn/10'
-        }`}
+              ? 'border-anvil-bad/30 bg-anvil-bad/[0.08]'
+              : 'border-anvil-warn/30 bg-anvil-warn/[0.08]',
+        )}
       >
-        <div className="text-lg font-semibold">{verdict.label}</div>
-        <div className="text-sm text-anvil-muted">{verdict.detail}</div>
+        <VerdictIcon
+          weight="fill"
+          size={22}
+          className={cn(
+            'mt-0.5 shrink-0',
+            verdict.tone === 'good'
+              ? 'text-anvil-good'
+              : verdict.tone === 'bad'
+                ? 'text-anvil-bad'
+                : 'text-anvil-warn',
+          )}
+        />
+        <div>
+          <div className="font-semibold text-anvil-fg">{verdict.label}</div>
+          <div className="mt-0.5 text-sm text-anvil-muted">{verdict.detail}</div>
+        </div>
       </div>
 
       {/* Metric tiles */}
@@ -112,9 +130,7 @@ export function ScorecardPage(): JSX.Element {
         <MetricTile label="Activation precision" metric={getMetric(c, 'activation.precision')} />
         <MetricTile label="Activation recall" metric={getMetric(c, 'activation.recall')} />
         <MetricTile label="Cost" metric={getMetric(c, 'cost.tokens')} />
-        {getMetric(c, 'latency.ms') && (
-          <MetricTile label="Latency" metric={getMetric(c, 'latency.ms')} />
-        )}
+        {getMetric(c, 'latency.ms') && <MetricTile label="Latency" metric={getMetric(c, 'latency.ms')} />}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -127,7 +143,7 @@ export function ScorecardPage(): JSX.Element {
           </div>
           <div className="mt-3 text-sm text-anvil-muted">
             Net win fraction:{' '}
-            <span className="font-medium text-slate-200">
+            <span className="tnum font-medium text-anvil-fg">
               {tally.net === null ? 'n/a' : formatRatio(tally.net)}
             </span>{' '}
             across {tally.total} samples.
@@ -138,7 +154,7 @@ export function ScorecardPage(): JSX.Element {
       <CostOverheadChart points={overhead} />
 
       <div className="space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-anvil-muted">
+        <h3 className="text-[13px] font-semibold uppercase tracking-wider text-anvil-muted">
           Per-case detail ({c.cases.length})
         </h3>
         {c.cases.map((cs) => (
@@ -161,9 +177,9 @@ function TallyCell({
   const cls =
     tone === 'good' ? 'text-anvil-good' : tone === 'bad' ? 'text-anvil-bad' : 'text-anvil-warn';
   return (
-    <div className="rounded border border-anvil-border bg-anvil-bg p-3">
-      <div className={`text-2xl font-semibold ${cls}`}>{value}</div>
-      <div className="text-xs text-anvil-muted">{label}</div>
+    <div className="rounded-lg border border-anvil-border bg-anvil-bg/60 p-3">
+      <div className={cn('tnum text-2xl font-semibold', cls)}>{value}</div>
+      <div className="mt-0.5 text-xs text-anvil-muted">{label}</div>
     </div>
   );
 }

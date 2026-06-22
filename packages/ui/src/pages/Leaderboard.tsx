@@ -1,31 +1,122 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type SortingState,
+} from '@tanstack/react-table';
+import {
+  CaretDown,
+  CaretUp,
+  CaretUpDown,
+  Sparkle,
+  Robot,
+  PuzzlePiece,
+  Function as FnIcon,
+} from '@phosphor-icons/react';
 import { useDataSource } from '../app/useDataSource.js';
 import { useAsync } from '../app/useAsync.js';
-import {
-  sortEntries,
-  filterByKind,
-  formatRatio,
-  type RunIndex,
-  type SortKey,
-} from '../dataLayer.js';
+import { filterByKind, formatRatio, type RunIndex } from '../dataLayer.js';
 import { Loading, ErrorState, EmptyState, Badge, Panel } from '../components/primitives.js';
+import { cn } from '../lib/cn.js';
 
 type KindFilter = 'all' | 'skill' | 'subagent' | 'plugin';
+type Entry = RunIndex['runs'][number];
 
-/** Small glyph per artifact kind so rows are scannable at a glance. */
-const KIND_GLYPH: Record<string, string> = { skill: '◆', subagent: '⬡', plugin: '⧉' };
+/** Columns whose cells + headers are right-aligned (numeric / date). */
+const RIGHT_ALIGNED = new Set(['activationF1', 'costTokens', 'createdAt']);
+
+const KIND_ICON: Record<string, JSX.Element> = {
+  skill: <Sparkle weight="fill" className="opacity-80" />,
+  subagent: <Robot weight="fill" className="opacity-80" />,
+  plugin: <PuzzlePiece weight="fill" className="opacity-80" />,
+};
+
+const columnHelper = createColumnHelper<Entry>();
 
 export function Leaderboard(): JSX.Element {
   const { source, error: dsError } = useDataSource();
+  const navigate = useNavigate();
   const idx = useAsync<RunIndex>(() => source!.getRunIndex(), [source], !!source);
   const [kind, setKind] = useState<KindFilter>('all');
-  const [sortKey, setSortKey] = useState<SortKey>('qualityDelta');
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'qualityDelta', desc: true }]);
 
-  const rows = useMemo(() => {
-    if (idx.status !== 'ready') return [];
-    return sortEntries(filterByKind(idx.data.runs, kind), sortKey);
-  }, [idx, kind, sortKey]);
+  const data = useMemo(
+    () => (idx.status === 'ready' ? filterByKind(idx.data.runs, kind) : []),
+    [idx, kind],
+  );
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('artifactName', {
+        header: 'Artifact',
+        cell: (info) => (
+          <div className="min-w-0">
+            <Link
+              to={`/run/${info.row.original.runId}`}
+              onClick={(e) => e.stopPropagation()}
+              className="font-medium text-anvil-fg decoration-anvil-accent/50 underline-offset-4 hover:text-anvil-accent hover:underline"
+            >
+              {info.getValue()}
+            </Link>
+            <div className="truncate text-xs text-anvil-muted">{info.row.original.suiteName}</div>
+          </div>
+        ),
+      }),
+      columnHelper.accessor('artifactKind', {
+        header: 'Kind',
+        cell: (info) => (
+          <Badge tone="accent">
+            {KIND_ICON[info.getValue()] ?? <FnIcon />}
+            {info.getValue()}
+          </Badge>
+        ),
+      }),
+      columnHelper.accessor((r) => r.headline.qualityDelta ?? null, {
+        id: 'qualityDelta',
+        header: 'Quality Δ',
+        sortUndefined: 'last',
+        cell: (info) => <DeltaCell value={info.getValue() ?? undefined} />,
+      }),
+      columnHelper.accessor((r) => r.headline.activationF1 ?? null, {
+        id: 'activationF1',
+        header: 'Activation F1',
+        cell: (info) => <F1Cell value={info.getValue()} />,
+      }),
+      columnHelper.accessor((r) => r.headline.costTokens ?? null, {
+        id: 'costTokens',
+        header: 'Cost',
+        cell: (info) => {
+          const v = info.getValue();
+          return v === null || v === undefined ? (
+            <span className="text-anvil-faint">n/a</span>
+          ) : (
+            <span className="tnum text-anvil-fg/90">
+              {v.toLocaleString()}
+              <span className="ml-1 text-xs text-anvil-faint">tok</span>
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor('createdAt', {
+        header: 'When',
+        cell: (info) => <span className="tnum text-anvil-muted">{shortDate(info.getValue())}</span>,
+      }),
+    ],
+    [],
+  );
+
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   if (dsError) return <ErrorState message={dsError} />;
   if (!source || idx.status === 'loading') return <Loading what="leaderboard" />;
@@ -36,9 +127,9 @@ export function Leaderboard(): JSX.Element {
       <EmptyState title="No eval runs yet">
         <p>
           Anvil hasn&apos;t scored any artifacts. From inside Claude Code, generate a suite with{' '}
-          <code className="rounded bg-anvil-bg px-1">/anvil-gen-testdata &lt;artifact&gt;</code> and
-          run it with <code className="rounded bg-anvil-bg px-1">/anvil-eval &lt;artifact&gt;</code>.
-          Results land here automatically.
+          <code className="rounded bg-anvil-bg px-1 font-mono">/anvil-gen-testdata</code> and run it
+          with <code className="rounded bg-anvil-bg px-1 font-mono">/anvil-eval</code>. Results land
+          here automatically.
         </p>
       </EmptyState>
     );
@@ -47,111 +138,85 @@ export function Leaderboard(): JSX.Element {
   return (
     <div className="animate-fade-in space-y-5">
       <div>
-        <h1 className="text-xl font-semibold tracking-tight text-slate-100">Effectiveness runs</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-anvil-fg">Effectiveness runs</h1>
         <p className="mt-1 text-sm text-anvil-muted">
-          {idx.data.runs.length} recorded {idx.data.runs.length === 1 ? 'run' : 'runs'} · ranked by{' '}
-          {SORT_LABEL[sortKey]}
+          {idx.data.runs.length} recorded {idx.data.runs.length === 1 ? 'run' : 'runs'}. Click a
+          column to sort, a row to open its scorecard.
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
-        <FilterTabs value={kind} onChange={setKind} />
-        <div className="ml-auto flex items-center gap-2 text-sm">
-          <label className="text-anvil-muted" htmlFor="sort">
-            Sort by
-          </label>
-          <select
-            id="sort"
-            value={sortKey}
-            onChange={(e) => setSortKey(e.target.value as SortKey)}
-            className="rounded-lg border border-anvil-border bg-anvil-panel px-2.5 py-1.5 text-slate-200 transition-colors hover:border-anvil-accent/50 focus:border-anvil-accent focus:outline-none focus:ring-1 focus:ring-anvil-accent/40"
-          >
-            <option value="qualityDelta">Quality delta</option>
-            <option value="activationF1">Activation F1</option>
-            <option value="costTokens">Cost (tokens)</option>
-            <option value="createdAt">Newest</option>
-            <option value="artifactName">Name</option>
-          </select>
-        </div>
-      </div>
+      <FilterTabs value={kind} onChange={setKind} />
 
-      <Panel className="overflow-x-auto p-0">
-        <table className="w-full border-collapse text-left text-sm">
-          <thead className="border-b border-anvil-border text-xs uppercase tracking-wide text-anvil-muted">
-            <tr>
-              <th className="px-4 py-3 font-semibold">Artifact</th>
-              <th className="px-4 py-3 font-semibold">Kind</th>
-              <th className="px-4 py-3 font-semibold">Quality Δ</th>
-              <th className="px-4 py-3 text-right font-semibold">Activation F1</th>
-              <th className="px-4 py-3 text-right font-semibold">Cost</th>
-              <th className="px-4 py-3 text-right font-semibold">When</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((e) => (
-              <tr
-                key={e.runId}
-                className="group border-b border-anvil-border/40 transition-colors last:border-0 hover:bg-anvil-panel2/70"
-              >
-                <td className="px-4 py-3.5">
-                  <Link
-                    className="font-medium text-slate-100 decoration-anvil-accent/50 underline-offset-4 group-hover:text-anvil-accent group-hover:underline"
-                    to={`/run/${e.runId}`}
-                  >
-                    {e.artifactName}
-                  </Link>
-                  <div className="mt-0.5 text-xs text-anvil-muted">{e.suiteName}</div>
-                </td>
-                <td className="px-4 py-3.5">
-                  <Badge tone="accent">
-                    <span aria-hidden className="opacity-80">
-                      {KIND_GLYPH[e.artifactKind] ?? '•'}
-                    </span>
-                    {e.artifactKind}
-                  </Badge>
-                </td>
-                <td className="px-4 py-3.5">
-                  <DeltaCell value={e.headline.qualityDelta} />
-                </td>
-                <td className="px-4 py-3.5 text-right tnum">
-                  {e.headline.activationF1 !== undefined ? (
-                    <F1Value value={e.headline.activationF1} />
-                  ) : (
-                    <span className="text-anvil-muted">n/a</span>
-                  )}
-                </td>
-                <td className="px-4 py-3.5 text-right tnum text-slate-300">
-                  {e.headline.costTokens !== undefined ? (
-                    <>
-                      {e.headline.costTokens.toLocaleString()}
-                      <span className="ml-1 text-xs text-anvil-muted">tok</span>
-                    </>
-                  ) : (
-                    <span className="text-anvil-muted">n/a</span>
-                  )}
-                </td>
-                <td className="px-4 py-3.5 text-right tnum text-anvil-muted">
-                  {shortDate(e.createdAt)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <Panel className="overflow-hidden p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-left text-sm">
+            <thead>
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id} className="border-b border-anvil-border">
+                  {hg.headers.map((h) => {
+                    const align = RIGHT_ALIGNED.has(h.column.id) ? 'right' : undefined;
+                    const sorted = h.column.getIsSorted();
+                    return (
+                      <th
+                        key={h.id}
+                        onClick={h.column.getToggleSortingHandler()}
+                        className={cn(
+                          'select-none px-4 py-3 text-[11px] font-semibold uppercase tracking-wider text-anvil-muted',
+                          'cursor-pointer transition-colors hover:text-anvil-fg',
+                          align === 'right' ? 'text-right' : 'text-left',
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            'inline-flex items-center gap-1',
+                            align === 'right' && 'flex-row-reverse',
+                          )}
+                        >
+                          {flexRender(h.column.columnDef.header, h.getContext())}
+                          <SortGlyph state={sorted} />
+                        </span>
+                      </th>
+                    );
+                  })}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  onClick={() => navigate(`/run/${row.original.runId}`)}
+                  className="group cursor-pointer border-b border-anvil-border/40 transition-colors last:border-0 hover:bg-anvil-panel2/70"
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    const align = RIGHT_ALIGNED.has(cell.column.id) ? 'right' : undefined;
+                    return (
+                      <td
+                        key={cell.id}
+                        className={cn('px-4 py-3.5 align-middle', align === 'right' && 'text-right')}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </Panel>
-      {rows.length === 0 && (
-        <p className="text-sm text-anvil-muted">No runs match the “{kind}” filter.</p>
+      {data.length === 0 && (
+        <p className="text-sm text-anvil-muted">No runs match the &ldquo;{kind}&rdquo; filter.</p>
       )}
     </div>
   );
 }
 
-const SORT_LABEL: Record<SortKey, string> = {
-  qualityDelta: 'quality delta',
-  activationF1: 'activation F1',
-  costTokens: 'cost',
-  createdAt: 'recency',
-  artifactName: 'name',
-};
+function SortGlyph({ state }: { state: false | 'asc' | 'desc' }): JSX.Element {
+  if (state === 'asc') return <CaretUp weight="bold" className="text-anvil-accent" size={11} />;
+  if (state === 'desc') return <CaretDown weight="bold" className="text-anvil-accent" size={11} />;
+  return <CaretUpDown className="text-anvil-faint opacity-0 group-hover:opacity-100" size={11} />;
+}
 
 function FilterTabs({
   value,
@@ -162,16 +227,17 @@ function FilterTabs({
 }): JSX.Element {
   const kinds: KindFilter[] = ['all', 'skill', 'subagent', 'plugin'];
   return (
-    <div className="flex gap-1 rounded-lg border border-anvil-border bg-anvil-panel p-1">
+    <div className="inline-flex gap-1 rounded-lg border border-anvil-border bg-anvil-panel p-1">
       {kinds.map((k) => (
         <button
           key={k}
           onClick={() => onChange(k)}
-          className={`rounded-md px-3 py-1 text-sm capitalize transition-colors ${
+          className={cn(
+            'rounded-md px-3 py-1 text-sm capitalize transition-colors',
             value === k
-              ? 'bg-anvil-accent/20 text-anvil-accent shadow-sm'
-              : 'text-anvil-muted hover:text-slate-200'
-          }`}
+              ? 'bg-anvil-accent/15 text-anvil-accent ring-1 ring-inset ring-anvil-accent/30'
+              : 'text-anvil-muted hover:text-anvil-fg',
+          )}
         >
           {k}
         </button>
@@ -182,26 +248,21 @@ function FilterTabs({
 
 /** Quality delta as a diverging bar centred at 0 (red left / green right) plus the value. */
 function DeltaCell({ value }: { value?: number }): JSX.Element {
-  if (value === undefined) return <span className="text-anvil-muted">n/a</span>;
+  if (value === undefined) return <span className="text-anvil-faint">n/a</span>;
   const positive = value > 0;
   const zero = value === 0;
   const tone = positive ? 'text-anvil-good' : zero ? 'text-anvil-muted' : 'text-anvil-bad';
-  // Map the delta (roughly -1..1) to a 0..50% half-width fill from centre.
   const pct = Math.min(50, Math.abs(value) * 50);
   return (
     <div className="flex items-center gap-2.5">
-      <div className="relative hidden h-1.5 w-24 overflow-hidden rounded-full bg-anvil-border/60 sm:block">
+      <div className="relative hidden h-1.5 w-20 overflow-hidden rounded-full bg-anvil-border2/70 sm:block">
         <span className="absolute left-1/2 top-0 h-full w-px bg-anvil-muted/40" />
         <span
-          className={`absolute top-0 h-full ${positive ? 'bg-anvil-good' : 'bg-anvil-bad'}`}
-          style={
-            positive
-              ? { left: '50%', width: `${pct}%` }
-              : { right: '50%', width: `${pct}%` }
-          }
+          className={cn('absolute top-0 h-full', positive ? 'bg-anvil-good' : 'bg-anvil-bad')}
+          style={positive ? { left: '50%', width: `${pct}%` } : { right: '50%', width: `${pct}%` }}
         />
       </div>
-      <span className={`tnum font-medium ${tone}`}>
+      <span className={cn('tnum font-medium', tone)}>
         {positive ? '+' : ''}
         {formatRatio(value)}
       </span>
@@ -209,9 +270,10 @@ function DeltaCell({ value }: { value?: number }): JSX.Element {
   );
 }
 
-function F1Value({ value }: { value: number }): JSX.Element {
-  const tone = value >= 0.999 ? 'text-anvil-good' : value >= 0.8 ? 'text-slate-200' : 'text-anvil-warn';
-  return <span className={tone}>{formatRatio(value)}</span>;
+function F1Cell({ value }: { value: number | null }): JSX.Element {
+  if (value === null) return <span className="tnum text-anvil-faint">n/a</span>;
+  const tone = value >= 0.999 ? 'text-anvil-good' : value >= 0.8 ? 'text-anvil-fg' : 'text-anvil-warn';
+  return <span className={cn('tnum', tone)}>{formatRatio(value)}</span>;
 }
 
 function shortDate(iso: string): string {
