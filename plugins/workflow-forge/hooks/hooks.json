@@ -1,0 +1,60 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/session-check.sh\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/precommit-gate.sh\""
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/tdd-guard.sh\""
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/symmetric-reminder.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "bash",
+            "command": "\"${CLAUDE_PLUGIN_ROOT}/scripts/worklog-reminder.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}

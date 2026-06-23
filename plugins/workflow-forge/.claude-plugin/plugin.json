@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "workflow-forge",
+  "displayName": "Workflow Forge",
+  "version": "1.0.0",
+  "description": "Bootstraps a project-tailored CLAUDE.md plus TDD, iterative review, a pre-commit test gate, symmetric-surface audits, capability sync, and TODO/WORKLOG tracking into any repo. Detects stack and OS to adapt.",
+  "author": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["workflow", "tdd", "claude-md", "bootstrap", "code-review", "scaffold"],
+  "userConfig": {
+    "tdd_mode": {
+      "type": "string",
+      "title": "TDD enforcement",
+      "description": "How strictly to enforce test-first. One of: enforced (block writing source with no matching test), warn (remind only), off.",
+      "default": "warn"
+    },
+    "pr_target_branch": {
+      "type": "string",
+      "title": "PR target branch",
+      "description": "Branch that PRs open against and feature branches are cut from (for example staging or main).",
+      "default": "staging"
+    },
+    "precommit_gate": {
+      "type": "boolean",
+      "title": "Pre-commit test gate",
+      "description": "Run lint and tests before any git commit and block the commit if they fail.",
+      "default": true
+    },
+    "maintain_tracking_files": {
+      "type": "boolean",
+      "title": "Maintain WORKLOG.md and TODO.md",
+      "description": "Keep an append-only WORKLOG.md and a living TODO.md at the repo root, and remind when WORKLOG.md falls behind.",
+      "default": true
+    },
+    "no_em_dash": {
+      "type": "boolean",
+      "title": "House style: no em dashes",
+      "description": "Generate the CLAUDE.md and write commit/doc text without em dashes, first-person voice.",
+      "default": true
+    }
+  }
+}
