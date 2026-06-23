@@ -1,9 +1,9 @@
 ---
-name: establishing-intent-before-resolving-a-failing-test
+name: dont-just-make-it-green
 description: Use when a test is failing and you're about to change code or the test to make it pass — especially under time pressure, when the test's name disagrees with its assertion, when no ticket/spec confirms the expected value/boundary, or when the fix is a guess between two plausible behaviors. Keywords: failing test, get the build green, off-by-one, boundary, which is right the code or the test.
 ---
 
-# Establishing Intent Before Resolving a Failing Test
+# Don't Just Make It Green
 
 ## Overview
 

@@ -101,9 +101,9 @@
       "keywords": ["frontend", "design", "landing-page", "portfolio", "tailwind"]
     },
     {
-      "name": "establishing-intent-before-resolving-a-failing-test",
-      "displayName": "Establish Intent Before Resolving a Failing Test",
-      "source": "./plugins/establishing-intent-before-resolving-a-failing-test",
+      "name": "dont-just-make-it-green",
+      "displayName": "Don't Just Make It Green",
+      "source": "./plugins/dont-just-make-it-green",
       "description": "When a test is failing, establish the intended behavior (ticket / spec / human) before changing code OR the test. A failing test is a question, not always the answer — guards against silently picking a side of an unverified or self-contradictory test under pressure.",
       "version": "0.1.0",
       "author": { "name": "LlamaopNV", "email": "llama.op@gmail.com" },

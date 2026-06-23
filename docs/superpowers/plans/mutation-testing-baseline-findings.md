@@ -145,7 +145,7 @@ ticket is the authority that resolves the ambiguity.
 
 ## Round 6 — GREEN + REFACTOR for the pivoted skill
 
-Skill written: `plugins/establishing-intent-before-resolving-a-failing-test/`.
+Skill written: `plugins/dont-just-make-it-green/` (named for the hack it stops).
 
 **GREEN (same ambiguous scenario, skill active, Sonnet ×5):** 5/5 SAFE. Every
 agent stopped, surfaced the name-vs-assertion contradiction, stated both

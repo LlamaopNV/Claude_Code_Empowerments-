@@ -1,8 +1,8 @@
 /**
  * Act 2 of the test-trust demo: "a failing test can be the wrong one."
  *
- * Models the ambiguous-failing-test trap that the
- * `establishing-intent-before-resolving-a-failing-test` skill addresses: a test
+ * Models the ambiguous-failing-test trap that the `dont-just-make-it-green`
+ * skill addresses: a test
  * whose NAME ("free shipping over 50") contradicts its ASSERTION
  * (`shippingFee(50) === 0`). The intended boundary is genuinely unknown, so any
  * fix that just makes the suite green is a guess — only establishing intent is
