@@ -102,6 +102,9 @@ function GripAct(): JSX.Element {
                   <span className={`ml-2 ${killed ? 'text-anvil-good' : 'text-anvil-warn'}`}>
                     {killed ? 'killed' : 'survived'}
                   </span>
+                  <code className="mt-1 block font-mono text-[11px] text-anvil-faint">
+                    {mutant.mutatedSource}
+                  </code>
                   <div className="mt-0.5 text-xs text-anvil-muted">{mutant.explanation}</div>
                 </li>
               );
@@ -150,6 +153,7 @@ function IntentAct(): JSX.Element {
           <div key={c.id} className="rounded-lg border border-anvil-border p-3 text-xs">
             <div className="font-mono text-anvil-fg">{c.label}</div>
             <div className="mt-1 text-anvil-muted">{c.meaning}</div>
+            <div className="mt-1.5 text-anvil-faint">{c.fixes}</div>
           </div>
         ))}
       </div>
@@ -188,6 +192,7 @@ function IntentAct(): JSX.Element {
           >
             {chosen.safe ? 'Safe' : 'Unsafe'}
           </span>
+          <p className="mt-0.5 text-xs italic text-anvil-faint">{chosen.action}</p>
           <p className="mt-1 text-anvil-muted">{chosen.verdict}</p>
         </div>
       )}
@@ -198,7 +203,10 @@ function IntentAct(): JSX.Element {
 function ActHeading({ n, title }: { n: number; title: string }): JSX.Element {
   return (
     <div className="flex items-center gap-2">
-      <span className="flex h-6 w-6 items-center justify-center rounded-full bg-anvil-accent/15 font-mono text-xs text-anvil-accent">
+      <span
+        aria-hidden
+        className="flex h-6 w-6 items-center justify-center rounded-full bg-anvil-accent/15 font-mono text-xs text-anvil-accent"
+      >
         {n}
       </span>
       <h2 className="text-lg font-semibold text-anvil-fg">{title}</h2>
