@@ -3,6 +3,7 @@ import { Lightning, Warning } from '@phosphor-icons/react';
 import { DataSourceProvider, useDataSource } from './useDataSource.js';
 import { Leaderboard } from '../pages/Leaderboard.js';
 import { ScorecardPage } from '../pages/ScorecardPage.js';
+import TestTrustDemo from '../demos/test-trust/TestTrustDemo.js';
 import { Badge } from '../components/primitives.js';
 
 export function App(): JSX.Element {
@@ -15,6 +16,7 @@ export function App(): JSX.Element {
           <Routes>
             <Route path="/" element={<Leaderboard />} />
             <Route path="/run/:runId" element={<ScorecardPage />} />
+            <Route path="/demos/test-trust" element={<TestTrustDemo />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -39,6 +41,11 @@ function Header(): JSX.Element {
           <span className="text-[15px] font-semibold tracking-tight text-anvil-fg">Anvil</span>
           <span className="hidden text-xs text-anvil-muted sm:inline">effectiveness dashboard</span>
         </Link>
+        <nav className="ml-6 hidden items-center gap-4 text-sm sm:flex">
+          <Link to="/demos/test-trust" className="text-anvil-muted transition-colors hover:text-anvil-fg">
+            Test-trust demo
+          </Link>
+        </nav>
         <div className="ml-auto">
           {source ? (
             <Badge tone={source.mode === 'live' ? 'good' : 'neutral'}>
