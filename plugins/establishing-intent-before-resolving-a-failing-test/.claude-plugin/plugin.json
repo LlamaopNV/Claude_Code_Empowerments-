@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "establishing-intent-before-resolving-a-failing-test",
+  "displayName": "Establish Intent Before Resolving a Failing Test",
+  "version": "0.1.0",
+  "description": "When a test is failing, establish the intended behavior (ticket / spec / human) before changing code OR the test. A failing test is a question, not always the answer — guards against silently picking a side of an unverified or self-contradictory test under pressure.",
+  "author": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "homepage": "https://github.com/LlamaopNV/Claude_Code_Empowerments-",
+  "repository": "https://github.com/LlamaopNV/Claude_Code_Empowerments-",
+  "license": "MIT",
+  "keywords": ["testing", "tdd", "failing-test", "intent", "spec", "boundary", "ambiguity"],
+  "skills": "./skills/"
+}

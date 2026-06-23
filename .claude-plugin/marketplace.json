@@ -6,7 +6,7 @@
     "email": "llama.op@gmail.com"
   },
   "description": "A personal marketplace of Claude Code plugins and skills — empowerments for everyday coding.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "metadata": {
     "pluginRoot": "./plugins"
   },
@@ -99,6 +99,16 @@
       },
       "category": "development",
       "keywords": ["frontend", "design", "landing-page", "portfolio", "tailwind"]
+    },
+    {
+      "name": "establishing-intent-before-resolving-a-failing-test",
+      "displayName": "Establish Intent Before Resolving a Failing Test",
+      "source": "./plugins/establishing-intent-before-resolving-a-failing-test",
+      "description": "When a test is failing, establish the intended behavior (ticket / spec / human) before changing code OR the test. A failing test is a question, not always the answer — guards against silently picking a side of an unverified or self-contradictory test under pressure.",
+      "version": "0.1.0",
+      "author": { "name": "LlamaopNV", "email": "llama.op@gmail.com" },
+      "category": "development",
+      "keywords": ["testing", "tdd", "failing-test", "intent", "spec", "boundary"]
     }
   ]
 }
