@@ -99,6 +99,32 @@
       },
       "category": "development",
       "keywords": ["frontend", "design", "landing-page", "portfolio", "tailwind"]
+    },
+    {
+      "name": "workflow-forge",
+      "displayName": "Workflow Forge",
+      "source": "./plugins/workflow-forge",
+      "description": "Bootstraps a project-tailored CLAUDE.md plus TDD, iterative review, a pre-commit test gate, symmetric-surface audits, capability sync, and TODO/WORKLOG tracking into any repo. Detects stack and OS to adapt.",
+      "version": "1.0.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["workflow", "tdd", "claude-md", "bootstrap", "code-review", "scaffold"]
+    },
+    {
+      "name": "skill-installer",
+      "displayName": "Skill Installer",
+      "source": "./plugins/skill-installer",
+      "description": "Browse a bundled catalog of team skills and selectively install them into your user-global or current-project skills directory.",
+      "version": "1.1.2",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["skills", "catalog", "install", "scaffold", "workflow"]
     }
   ]
 }
