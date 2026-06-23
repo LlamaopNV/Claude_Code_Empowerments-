@@ -63,16 +63,16 @@ For each skill show: the number, the `name`, an install-status marker, and the
 `description`. Order alphabetically by `name`. Use this shape:
 
 ```
-Skill catalog (8). Status: [installed: global] / [installed: project] / [available]
+Skill catalog (4). Status: [installed: global] / [installed: project] / [available]
 
-  1. changelog-update      [available]
-     Folds conventional commits since the last release into CHANGELOG.md.
-  2. conventional-commits  [installed: global]
+  1. conventional-commits  [installed: global]
      Enforces Conventional Commits 1.0.0 for all git commits.
+  2. iterative-review-fix  [available]
+     Automated review, evaluate, and fix loop before commit/PR. Invokes symmetric-audit first.
   ...
 
-Reply with the skills to install — numbers or names, e.g. "1, 4, 7" or
-"conventional-commits, jira-ticket". You can also say "all" or "none".
+Reply with the skills to install — numbers or names, e.g. "1, 4" or
+"conventional-commits, symmetric-audit". You can also say "all" or "none".
 ```
 
 Showing each skill's description and its install status is core to this skill —

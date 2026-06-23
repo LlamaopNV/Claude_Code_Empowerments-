@@ -32,11 +32,7 @@ The installable skills live in [`catalog/`](./catalog/). Current contents:
 | `conventional-commits` | Enforces Conventional Commits 1.0.0 for all git commits. |
 | `symmetric-audit` | Audits sibling files (create/edit/view, schema consumers, route families) for divergence and fixes them. |
 | `iterative-review-fix` | Automated review → evaluate → fix loop before commit/PR. Invokes `symmetric-audit` first. |
-| `jira-ticket` | End-to-end Jira ticket workflow: brainstorm → plan → branch → TDD → audit → review → commit → handoff. |
 | `web-smoke-test` | Drives a real Chrome (via the chrome-devtools MCP) through a web change and reports browser + server failures. |
-| `pr-description` | Drafts a PR title and body from the branch diff. Bitbucket / GitHub / GitLab aware. |
-| `changelog-update` | Folds conventional commits since the last release into `CHANGELOG.md`. |
-| `standup-from-worklog` | Turns `WORKLOG.md` into a yesterday / today / blockers standup or Jira comment. |
 
 > `iterative-review-fix` depends on `symmetric-audit` — install both together.
 > `web-smoke-test` requires the `chrome-devtools-mcp` plugin.
