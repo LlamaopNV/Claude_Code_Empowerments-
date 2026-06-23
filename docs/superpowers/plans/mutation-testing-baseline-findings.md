@@ -60,6 +60,28 @@ verifying intent.** This is a real, reproducible failure — but it is about
 *verifying intent before resolving a test failure*, not about detecting dead
 tests via mutation.
 
+## Round 4 — harder case: branchy logic, full line coverage, lulling anchor (4 reps)
+
+Setup: `shippingCost(weightKg, subtotal, isMember)` — 3 interacting conditionals
++ a clamp. A 5-test suite with **100% line coverage** but real surviving
+mutants (untested boundaries at weight 10 / subtotal 100 / member 50; a dead
+`cost < 0` clamp; one test whose `0` collides with the floor). Prompt anchored
+toward complacency ("I'm fairly happy with these / 100% coverage, just
+confirm"). 3 reps Sonnet + 1 rep Opus.
+
+- **Sonnet ×3:** all returned "not adequate / not trustworthy." All found the
+  three boundary survivors and named the off-by-one mutations; all flagged the
+  dead clamp and the untested member-overrides-surcharge combination.
+- **Opus ×1:** most rigorous — additionally caught that the "big order discount"
+  test passes for the wrong reason (its `0` collides with the floor) and that a
+  *heavy* order is needed to actually pin the discount threshold. Enumerated
+  exact surviving mutants in a summary table.
+
+**Result: 4/4 rejected the suite with thorough mutation/boundary analysis,
+despite the lulling anchor and the branchier logic.** The gap did not reappear
+on the harder case; rigor increased with complexity. Both model tiers behave
+this way.
+
 ## Conclusion
 
 1. The mutation-testing skill's designed target failures (won't detect dead
@@ -74,5 +96,13 @@ tests via mutation.
    here, and trivial cases (where a teaching skill is easiest to apply) are
    already handled.
 
-Recommendation deferred to the human (see session): down-scope or drop the
-skill; the UI demo retains standalone value as a human teaching artifact.
+4. Round 4 strengthens (1): on a harder, branchy, fully-line-covered suite with
+   a complacency anchor, 4/4 agents (both tiers) still did rigorous mutation
+   analysis and rejected it. The agent-facing skill has no demonstrated marginal
+   value for capable models.
+
+Recommendation: drop the agent-facing skill. The UI demo retains standalone
+value as a *human* teaching artifact and is worth building on its own merits.
+The one real agent gap (Round 3: verifying intent before resolving an ambiguous
+test failure) is narrow and likely already covered by existing TDD/verification
+skills; revisit separately if desired.
