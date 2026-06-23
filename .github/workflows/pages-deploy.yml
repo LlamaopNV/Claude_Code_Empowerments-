@@ -1,17 +1,14 @@
-# Build the Anvil dashboard (with its committed illustrative demo data) and
-# deploy it to GitHub Pages on every push to `main`.
+# Publish the static "skill showcase" hub in `site/` to GitHub Pages on every
+# push to `main`.
 #
-# Why the base path is `/<repo>/`:
-#   GitHub Pages serves a *project site* at https://<owner>.github.io/<repo>/.
-#   Every asset URL and the dashboard's `data/*.json` fetches must be prefixed
-#   with that subpath or they 404 against the domain root. We pass it to Vite via
-#   ANVIL_BASE (vite.config.ts reads process.env.ANVIL_BASE → `base`). The repo
-#   here is `Claude_Code_Empowerments-`, so the base is
-#   `/Claude_Code_Empowerments-/`. If you fork/rename, change ANVIL_BASE to match
-#   `/<your-repo>/` (or set it from the runner via ${{ github.event.repository.name }}).
+# `site/` is a no-build static site (plain HTML + CDN Tailwind + CDN Phosphor +
+# vanilla JS). There is nothing to compile, so we upload the directory as-is.
+# All internal links inside the site are relative, so it works unchanged whether
+# it is served at the project-site subpath https://<owner>.github.io/<repo>/ or
+# at a domain root. No base-path injection is needed.
 #
-# Build order matters: @anvil/ui imports @anvil/core's compiled output, so core
-# must be built first.
+# This replaced the earlier Anvil dashboard deploy. The dashboard code still
+# lives in `packages/` for local use; it is just no longer the published artifact.
 
 name: Deploy Pages
 
@@ -33,48 +30,21 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build dashboard
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node LTS
-        uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-
-      - name: Install
-        run: npm ci
-
-      - name: Build @anvil/core (UI depends on its compiled output)
-        run: npm run build -w @anvil/core
-
-      - name: Validate the committed demo dataset against @anvil/core
-        run: npm run validate:data -w @anvil/ui
-
-      - name: Build @anvil/ui with the Pages project-site base path
-        env:
-          # Project site lives at /<repo>/. Derived from the repo name so a
-          # fork/rename Just Works without editing this file.
-          ANVIL_BASE: /${{ github.event.repository.name }}/
-        run: npm run build -w @anvil/ui
-
-      - name: Upload Pages artifact (the built UI incl. data/)
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: packages/ui/dist
-
   deploy:
-    name: Deploy to GitHub Pages
-    needs: build
+    name: Deploy site/ to GitHub Pages
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload Pages artifact (the static site/ directory)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
       - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4

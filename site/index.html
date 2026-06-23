@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Claude skill showcase</title>
+<meta name="description" content="Interactive showcases for the skills in the catalog. Pick one and watch it work, then install it." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="./shared/site.css" />
+
+<style>
+  .card {
+    position: relative; display: flex; flex-direction: column; justify-content: space-between;
+    gap: 20px; padding: 24px; min-height: 230px;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2);
+    overflow: hidden; transition: transform .2s cubic-bezier(.16,1,.3,1), border-color .2s ease;
+  }
+  .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c) 55%, var(--border)); }
+  .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: var(--c); opacity: .85; }
+  .card::after {
+    content: ""; position: absolute; right: -28%; top: -42%; width: 58%; height: 82%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--c) 17%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  .card__tag { font-family: var(--font-mono); font-size: 12px; color: var(--c); }
+  .card__name { font-family: var(--font-mono); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin-top: 10px; }
+  .card__desc { color: var(--text-dim); line-height: 1.55; max-width: 52ch; margin-top: 10px; }
+  .card__view { display: inline-flex; align-items: center; gap: 7px; color: var(--c); font-size: 14px; font-weight: 500; }
+  .card__view i { transition: transform .2s ease; }
+  .card:hover .card__view i { transform: translateX(3px); }
+  .card--wide { min-height: 170px; }
+  .card--wide .top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-20 md:pt-28 pb-12">
+  <h1 class="font-semibold tracking-tighter leading-[1.05] text-[2.6rem] md:text-6xl max-w-[18ch]">
+    Claude Code skills, shown not told.
+  </h1>
+  <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[56ch] leading-relaxed">
+    Interactive showcases for the skills in the catalog. Pick one and watch it work, then install it.
+  </p>
+  <div class="mt-8 flex flex-wrap items-center gap-3">
+    <a href="#grid" class="btn-primary"><i class="ph-bold ph-squares-four" aria-hidden="true"></i> Browse the showcases</a>
+    <a href="https://github.com/llamaopnv" class="btn-ghost"><i class="ph ph-github-logo" aria-hidden="true"></i> Source</a>
+  </div>
+</section>
+
+<!-- ===== SKILL GRID ===== -->
+<section id="grid" class="max-w-content mx-auto px-5 pb-24 pt-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+    <!-- featured -->
+    <a class="card md:col-span-2 reveal" href="./symmetric-audit/" style="--c:#e8a33d">
+      <div>
+        <span class="card__tag">create / edit / view</span>
+        <div class="card__name">symmetric-audit</div>
+        <p class="card__desc">Change one surface, prove every related one is in sync. It walks the family of files a change touches and catches the asymmetric bug your diff hides.</p>
+      </div>
+      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
+    </a>
+
+    <!-- anvil -->
+    <a class="card reveal" href="./anvil/" style="--c:#6ea8e6">
+      <div>
+        <span class="card__tag">evals / scorecards</span>
+        <div class="card__name">anvil</div>
+        <p class="card__desc">Native effectiveness evals for your skills, agents, and plugins. Measure the before and after.</p>
+      </div>
+      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
+    </a>
+
+    <!-- tdd-heartbeat, full width -->
+    <a class="card card--wide md:col-span-3 reveal" href="https://llamaopnv.github.io/tdd-heartbeat/" style="--c:#e5675f">
+      <div class="top">
+        <div>
+          <span class="card__tag">red / green / refactor</span>
+          <div class="card__name">tdd-heartbeat</div>
+        </div>
+        <p class="card__desc">Your tests have a heartbeat. An EKG of a coding session that scores whether you really practiced TDD.</p>
+      </div>
+      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
+    </a>
+
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#e8a33d',
+    homeUrl: './',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [],
+    footNote: 'a showcase of the Claude Code skill catalog',
+  };
+</script>
+<script src="./shared/shell.js" defer></script>
+
+<script>
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>

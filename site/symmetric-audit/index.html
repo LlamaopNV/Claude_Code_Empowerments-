@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Symmetric Audit · the sibling you forgot</title>
+<meta name="description" content="Change one surface, prove every related one is in sync. A showcase of the symmetric-audit skill: it walks the family of files a change touches and catches the asymmetric bug your diff hides." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* page-specific: the mirror seam, crack, demo chrome */
+  .seam { position: relative; width: 38px; flex: 0 0 38px; align-self: stretch; }
+  .seam::before {
+    content: ""; position: absolute; left: 50%; top: 6%; bottom: 6%;
+    width: 1px; transform: translateX(-0.5px); background: var(--border-2);
+  }
+  .seam svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .crack path {
+    fill: none; stroke: var(--miss); stroke-width: 1.6; stroke-linecap: round;
+    stroke-dasharray: 520; stroke-dashoffset: 520; opacity: 0;
+    filter: drop-shadow(0 0 5px rgba(215,112,104,0.5));
+  }
+  .seam.cracked .crack path { opacity: 1; animation: draw 1s cubic-bezier(.7,0,.3,1) forwards; }
+  .seam.healed::before { background: linear-gradient(rgba(92,191,142,0), var(--add), rgba(92,191,142,0)); transition: background .6s; }
+  .seam.healed .crack path { opacity: 0; transition: opacity .55s ease; }
+  .seam.frosted::before { width: 7px; transform: translateX(-3.5px); background: repeating-linear-gradient(45deg, rgba(139,139,149,0.5) 0 2px, transparent 2px 5px); }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  @media (prefers-reduced-motion: reduce) { .seam.cracked .crack path { animation: none; stroke-dashoffset: 0; } }
+
+  .hero-crack path {
+    fill: none; stroke: var(--miss); stroke-width: 1.6; stroke-linecap: round;
+    stroke-dasharray: 520; stroke-dashoffset: 520;
+    filter: drop-shadow(0 0 6px rgba(215,112,104,0.45));
+  }
+  @media (prefers-reduced-motion: no-preference) { .hero-crack path { animation: draw 1.4s cubic-bezier(.7,0,.3,1) .35s forwards; } }
+  @media (prefers-reduced-motion: reduce) { .hero-crack path { stroke-dashoffset: 0; } }
+
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #14100a; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+
+  .summary { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; }
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-10 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      The bug isn't in the<br class="hidden md:block" /> file you changed.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[34ch] leading-relaxed">
+      It's in the sibling you forgot. Symmetric audit walks every related surface and proves each one is in sync.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-[1fr_30px_1fr] items-stretch" aria-hidden="true">
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-file-plus" style="color:var(--add)"></i> user-create.form</div>
+      <div class="pane__body">
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>fields = {</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>  name,</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>  email,</span></div>
+        <div class="row add"><span class="gut">+</span><span>  phoneNumber,</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>}</span></div>
+      </div>
+    </div>
+    <div class="relative">
+      <svg class="hero-crack absolute inset-0 w-full h-full" viewBox="0 0 30 230" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M15 4 L19 44 L9 78 L21 120 L11 158 L22 196 L15 226" />
+      </svg>
+    </div>
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-file" style="color:var(--miss)"></i> user-edit.form</div>
+      <div class="pane__body">
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>fields = {</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>  name,</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>  email,</span></div>
+        <div class="row miss"><span class="gut">!</span><span>  // no phoneNumber</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>}</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE GAP ===== -->
+<section id="cost" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">Green CI. Complete diff. Still broken.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[60ch] mx-auto leading-relaxed">
+      You shipped the create path. The edit form and the export route never got the memo.
+      The asymmetry never appears in the diff, so review waves it through.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Pick a change. Watch the mirror.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[58ch] leading-relaxed">
+      Each is a real divergence class. The left surface changes, the audit enumerates the family,
+      and the seam cracks where a sibling fell out of sync. Then it repairs the glass.
+    </p>
+  </div>
+
+  <div id="chips" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Choose a scenario"></div>
+
+  <div class="mt-7 reveal">
+    <div id="mirror" class="grid grid-cols-1 md:grid-cols-[1fr_38px_1fr] gap-3 md:gap-0 items-stretch">
+      <div id="paneLeft" class="pane"></div>
+      <div id="seam" class="seam hidden md:block">
+        <svg class="crack" viewBox="0 0 38 360" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M19 6 L24 64 L11 116 L26 176 L13 232 L27 292 L19 354" />
+        </svg>
+      </div>
+      <div id="paneRight" class="pane"></div>
+    </div>
+
+    <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+      <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+      <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+      <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> In sync</span>
+      <span class="flex items-center gap-2"><span class="dot" style="background:var(--miss)"></span> Diverged, then fixed</span>
+      <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Intentionally asymmetric</span>
+    </div>
+
+    <div id="summary" class="summary mt-6 p-5 opacity-0 transition-opacity duration-500"></div>
+  </div>
+</section>
+
+<!-- ===== PRE-COMMIT GATE ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Run it as your pre-commit gate.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        It is entity-driven and stack-agnostic. Point it at a change set, it greps the full CRUD
+        lifecycle, renders a verdict per sibling, and fixes the diverged ones before the commit lands.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-git-diff accent mt-0.5"></i> Walks create, read, update, delete and render surfaces.</li>
+        <li class="flex gap-3"><i class="ph ph-check-circle accent mt-0.5"></i> Writes a verdict for every sibling, including the in-sync ones.</li>
+        <li class="flex gap-3"><i class="ph ph-wrench accent mt-0.5"></i> Step one of the iterative-review-fix loop.</li>
+      </ul>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and gate</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add it from the catalog</div>
+        <div><span class="accent">/skill-installer</span></div>
+        <div style="color:var(--text-dim)">&gt; pick <span style="color:#fff">symmetric-audit</span>, target project or global</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># then run it before every commit</div>
+        <div><span class="accent">/symmetric-audit</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># or just ask</div>
+        <div style="color:var(--text-dim)">"did I miss the edit form?"</div>
+        <div style="color:var(--text-dim)">"check the siblings of this change"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#e8a33d',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The gap', href: '#cost' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Pre-commit', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'symmetric-audit · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const SCENARIOS = [
+    {
+      id: 'edit-form', chip: 'Forgotten edit form', entity: 'user', change: 'phoneNumber',
+      left: { file: 'user-create.form', icon: 'ph-file-plus', lines: [
+        ['ctx','','fields = {'], ['ctx','','  name,'], ['ctx','','  email,'],
+        ['add','+','  phoneNumber,'], ['ctx','','}'] ] },
+      right: { file: 'user-edit.form',
+        before: [ ['ctx','','fields = {'], ['ctx','','  name,'], ['ctx','','  email,'],
+          ['miss','!','  // phoneNumber missing'], ['ctx','','}'] ],
+        after:  [ ['ctx','','fields = {'], ['ctx','','  name,'], ['ctx','','  email,'],
+          ['fix','+','  phoneNumber,'], ['ctx','','}'] ] },
+      verdict: 'diverged',
+      diverge: 'user-edit.form never absorbed phoneNumber.',
+      fixed: 'added phoneNumber to the edit form layout.',
+      siblings: [
+        ['user.schema','sync','field already declared on the model'],
+        ['user-create.form','source','the change you made'],
+        ['user-edit.form','diverged','added phoneNumber'],
+        ['user-detail.view','sync','renders all fields via spread'],
+      ],
+    },
+    {
+      id: 'route', chip: 'Unguarded route', entity: 'reports', change: 'requireAdmin guard',
+      left: { file: 'routes/reports.get', icon: 'ph-shield-check', lines: [
+        ['ctx','','route("/reports", {'], ['add','+','  guard: requireAdmin,'],
+        ['ctx','','  handler: listReports,'], ['ctx','','})'] ] },
+      right: { file: 'routes/reports.export.get',
+        before: [ ['ctx','','route("/reports/export", {'], ['miss','!','  // no guard. public'],
+          ['ctx','','  handler: exportReports,'], ['ctx','','})'] ],
+        after:  [ ['ctx','','route("/reports/export", {'], ['fix','+','  guard: requireAdmin,'],
+          ['ctx','','  handler: exportReports,'], ['ctx','','})'] ] },
+      verdict: 'diverged',
+      diverge: 'the export route in the same family is still public.',
+      fixed: 'applied requireAdmin to the export route.',
+      siblings: [
+        ['routes/reports.get','source','guard added here'],
+        ['routes/reports.export.get','diverged','was public, now guarded'],
+        ['routes/reports.summary.get','sync','already behind requireAdmin'],
+      ],
+    },
+    {
+      id: 'enum', chip: 'Half-handled enum', entity: 'OrderStatus', change: 'REFUNDED',
+      left: { file: 'order-status.badge', icon: 'ph-tag', lines: [
+        ['ctx','','switch (status) {'], ['ctx','','  case PAID:     ...'],
+        ['ctx','','  case SHIPPED:  ...'], ['add','+','  case REFUNDED: ...'], ['ctx','','}'] ] },
+      right: { file: 'orders-filter.dropdown',
+        before: [ ['ctx','','options = ['], ['ctx','','  PAID,'], ['ctx','','  SHIPPED,'],
+          ['miss','!','  // REFUNDED absent. throws'], ['ctx','',']'] ],
+        after:  [ ['ctx','','options = ['], ['ctx','','  PAID,'], ['ctx','','  SHIPPED,'],
+          ['fix','+','  REFUNDED,'], ['ctx','',']'] ] },
+      verdict: 'diverged',
+      diverge: 'the filter dropdown crashes on the unknown value.',
+      fixed: 'added REFUNDED to the filter options.',
+      siblings: [
+        ['order-status.enum','sync','REFUNDED added to the enum'],
+        ['order-status.badge','source','new case handled'],
+        ['orders-filter.dropdown','diverged','unknown value no longer crashes'],
+      ],
+    },
+    {
+      id: 'projection', chip: 'Projection gap', entity: 'order', change: 'archivedAt',
+      left: { file: 'order.write', icon: 'ph-database', lines: [
+        ['ctx','','write("orders", {'], ['ctx','','  total,'], ['ctx','','  status,'],
+        ['add','+','  archivedAt,'], ['ctx','','})'] ] },
+      right: { file: 'orders.list.query',
+        before: [ ['ctx','','read("orders", {'], ['ctx','','  select: [id, total,'],
+          ['miss','!','    status], // no archivedAt'], ['ctx','','})'] ],
+        after:  [ ['ctx','','read("orders", {'], ['ctx','','  select: [id, total,'],
+          ['fix','+','    status, archivedAt],'], ['ctx','','})'] ] },
+      verdict: 'diverged',
+      diverge: 'the list projection never returns archivedAt, so the UI cannot read it.',
+      fixed: 'added archivedAt to the list projection.',
+      siblings: [
+        ['order.write','source','archivedAt now persisted'],
+        ['orders.list.query','diverged','projection now returns it'],
+        ['order.detail.query','sync','selects the full row already'],
+      ],
+    },
+    {
+      id: 'intent', chip: 'Deliberate omission', entity: 'user', change: 'password',
+      left: { file: 'user-create.input', icon: 'ph-lock-key', lines: [
+        ['ctx','','input = {'], ['ctx','','  email,'], ['add','+','  password,'], ['ctx','','}'] ] },
+      right: { file: 'user-edit.input',
+        before: [ ['ctx','','input = {'], ['ctx','','  email,'],
+          ['intent','~','  // no password by design'], ['ctx','','}'] ],
+        after:  [ ['ctx','','input = {'], ['ctx','','  email,'],
+          ['intent','~','  // no password by design'], ['ctx','','}'] ] },
+      verdict: 'intentional',
+      diverge: 'user-edit.input must not change the password here.',
+      fixed: '',
+      siblings: [
+        ['user-create.input','source','password accepted on create'],
+        ['user-edit.input','intentional','edit must not accept password'],
+        ['auth.reset-password','sync','owns password changes separately'],
+      ],
+    },
+  ];
+
+  const chipsEl = document.getElementById('chips');
+  const paneL = document.getElementById('paneLeft');
+  const paneR = document.getElementById('paneRight');
+  const seam = document.getElementById('seam');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const summary = document.getElementById('summary');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  let current = SCENARIOS[0];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderPane(el, file, icon, lines, animate) {
+    const rows = lines.map(([m, gut, text]) =>
+      `<div class="row ${m} ${animate ? 'row-anim' : ''}"><span class="gut">${gut || '&nbsp;'}</span><span>${escapeHtml(text)}</span></div>`
+    ).join('');
+    el.innerHTML = `<div class="pane__bar"><i class="ph ${icon || 'ph-file'}"></i> ${file}</div><div class="pane__body">${rows}</div>`;
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  function renderSummary(s) {
+    const groups = { sync: [], diverged: [], intentional: [] };
+    let source = null;
+    s.siblings.forEach(([f, v, n]) => { if (v === 'source') { source = [f, n]; return; } groups[v].push([f, n]); });
+    const sec = (title, dotColor, items, suffix) => {
+      if (!items.length) return '';
+      const rows = items.map(([f, n]) =>
+        `<div class="flex gap-2.5 pl-1 py-0.5"><span class="dot mt-1.5" style="background:${dotColor}"></span>` +
+        `<span><span style="color:#fff">${f}</span><span style="color:var(--text-faint)">  ${n}</span></span></div>`
+      ).join('');
+      return `<div class="mt-3 first:mt-0"><div style="color:var(--text-dim)">${title} (${items.length})${suffix || ''}</div>${rows}</div>`;
+    };
+    summary.innerHTML =
+      `<div style="color:var(--text-faint)">symmetric audit  ·  entity: ${s.entity}  ·  change set: ${source ? source[0] : '-'}</div>` +
+      sec('In sync', 'var(--add)', groups.sync) +
+      sec('Diverged', 'var(--miss)', groups.diverged, ', fixed in this audit') +
+      sec('Intentionally asymmetric', 'var(--intent)', groups.intentional);
+    summary.style.opacity = '1';
+  }
+
+  function resetSeam() { seam.classList.remove('cracked', 'healed', 'frosted'); }
+
+  function play(scenario) {
+    clearTimers();
+    current = scenario;
+    resetSeam();
+    summary.style.opacity = '0';
+
+    const leftBase = scenario.left.lines.map(([m, g, t]) => [m === 'add' ? 'ctx' : m, m === 'add' ? '' : g, t]);
+    renderPane(paneL, scenario.left.file, scenario.left.icon, leftBase, false);
+    renderPane(paneR, scenario.right.file, scenario.verdict === 'intentional' ? 'ph-lock-simple' : 'ph-file', scenario.right.before, false);
+
+    if (reduce) {
+      renderPane(paneL, scenario.left.file, scenario.left.icon, scenario.left.lines, false);
+      if (scenario.verdict === 'diverged') { renderPane(paneR, scenario.right.file, 'ph-file', scenario.right.after, false); seam.classList.add('healed'); }
+      else { seam.classList.add('frosted'); }
+      setAudit(scenario.verdict === 'diverged' ? 'Fixed. ' + scenario.fixed : 'Left as is. ' + scenario.diverge, false);
+      renderSummary(scenario);
+      return;
+    }
+
+    setAudit('', true);
+    after(350, () => { renderPane(paneL, scenario.left.file, scenario.left.icon, scenario.left.lines, true); setAudit('change on ' + scenario.left.file + ':  + ' + scenario.change, true); });
+    after(1250, () => setAudit('enumerating siblings of "' + scenario.entity + '" across the CRUD lifecycle', true));
+    after(2350, () => {
+      if (scenario.verdict === 'diverged') { seam.classList.add('cracked'); setAudit('diverged: ' + scenario.diverge, true); }
+      else { seam.classList.add('frosted'); setAudit('intentionally asymmetric: ' + scenario.diverge, false); after(700, () => renderSummary(scenario)); }
+    });
+    if (scenario.verdict === 'diverged') {
+      after(3700, () => { renderPane(paneR, scenario.right.file, 'ph-file-text', scenario.right.after, true); seam.classList.remove('cracked'); seam.classList.add('healed'); setAudit('fixed: ' + scenario.fixed, false); });
+      after(4500, () => renderSummary(scenario));
+    }
+  }
+
+  SCENARIOS.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = s.chip;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      [...chipsEl.children].forEach(c => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      play(s);
+    });
+    chipsEl.appendChild(b);
+  });
+  replayBtn.addEventListener('click', () => play(current));
+
+  (function initStatic() {
+    const s = SCENARIOS[0];
+    const leftBase = s.left.lines.map(([m, g, t]) => [m === 'add' ? 'ctx' : m, m === 'add' ? '' : g, t]);
+    renderPane(paneL, s.left.file, s.left.icon, leftBase, false);
+    renderPane(paneR, s.right.file, 'ph-file', s.right.before, false);
+    setAudit('select a change to run the audit', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(SCENARIOS[0]); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>

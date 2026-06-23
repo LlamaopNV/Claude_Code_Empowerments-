@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>anvil · forge your skills</title>
+<meta name="description" content="anvil runs your Claude Code skill on real cases, with your change and without, then scores what actually moved. A showcase of native effectiveness evals: A/B runs, a judged scorecard, and an improvement loop that shows the before and after delta." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* anvil-specific: the delta gauge, demo chrome, scorecard readout */
+
+  /* hero "measure what moved" gauge: a real reading of quality delta and its 95% CI */
+  .gauge { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 22px 18px; }
+  .gauge__track { position: relative; height: 60px; margin: 14px 4px 6px; }
+  .gauge__axis { position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--border-2); }
+  .gauge__zero { position: absolute; top: 8px; bottom: 8px; width: 1px; background: var(--text-faint); left: 50%; }
+  .gauge__zero span { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-faint); }
+  .gauge__band {
+    position: absolute; top: calc(50% - 7px); height: 14px; border-radius: 4px;
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    left: 50%; width: 0; transition: left .9s cubic-bezier(.16,1,.3,1), width .9s cubic-bezier(.16,1,.3,1);
+  }
+  .gauge__mark {
+    position: absolute; top: 50%; left: 50%; width: 12px; height: 12px; border-radius: 999px;
+    background: var(--accent); transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+    transition: left .9s cubic-bezier(.16,1,.3,1);
+  }
+  .gauge__ends { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  @media (prefers-reduced-motion: reduce) { .gauge__band, .gauge__mark { transition: none; } }
+
+  /* demo */
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #0b1016; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* scorecard readout */
+  .sc { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; }
+  .sc__row { display: grid; grid-template-columns: 92px 1fr; gap: 12px; padding: 7px 0; border-top: 1px solid var(--border); }
+  .sc__row:first-of-type { border-top: 0; }
+  .sc__k { color: var(--text-faint); }
+  .sc__v { color: #cfcfd6; }
+  .sc__v b { color: #fff; font-weight: 500; }
+  .sc__hot .sc__k, .sc__hot .sc__v b { color: var(--accent); }
+  .delta-badge {
+    display: inline-flex; align-items: center; gap: 5px; margin-left: 8px;
+    font-size: 11px; padding: 1px 7px; border-radius: 999px;
+    color: var(--add); background: rgba(92,191,142,0.12); border: 1px solid rgba(92,191,142,0.3);
+  }
+  .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-12 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      Skills aren't shipped.<br class="hidden md:block" /> They're forged.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[40ch] leading-relaxed">
+      anvil runs your skill on real cases, with your change and without, then scores what actually moved.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <div class="gauge" aria-hidden="true">
+    <div class="flex items-baseline justify-between">
+      <span class="font-mono text-[12px] text-[color:var(--text-faint)]">quality delta</span>
+      <span id="heroDelta" class="font-mono text-2xl accent num">+0.00</span>
+    </div>
+    <div class="gauge__track">
+      <div class="gauge__axis"></div>
+      <div class="gauge__zero"><span>0</span></div>
+      <div id="heroBand" class="gauge__band"></div>
+      <div id="heroMark" class="gauge__mark"></div>
+    </div>
+    <div class="gauge__ends"><span>baseline wins</span><span>treatment wins</span></div>
+    <div class="mt-4 pt-4 border-t hairline font-mono text-[11px] text-[color:var(--text-faint)] flex flex-wrap gap-x-5 gap-y-1">
+      <span>13 cases</span><span>3 reps</span><span id="heroCi">95% CI [0.38, 1.00]</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">It felt better. Did it get better?</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[60ch] mx-auto leading-relaxed">
+      You tweak a skill, it reads sharper, you ship. But a vibe is not a measurement. anvil replaces the hunch with an A/B run, a judge, and a confidence interval, so you keep the changes that actually pay.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Strike the skill. Read the scorecard.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[60ch] leading-relaxed">
+      Each is a real way a skill underperforms. anvil runs treatment against baseline, a position-swapped judge scores every case, then anvil:improve proposes one edit and re-strikes. Watch the metric that mattered climb.
+    </p>
+  </div>
+
+  <div id="chips" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Choose a scenario"></div>
+
+  <div class="mt-7 reveal grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-4 items-stretch">
+    <!-- the judge tape: A vs B per case -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-scales"></i> <span id="tapeTitle">judge tape</span><span class="ml-auto text-[color:var(--text-faint)]" style="font-size:11px">A treatment · B baseline</span></div>
+      <div id="tape" class="pane__body" style="min-height:208px"></div>
+    </div>
+    <!-- the scorecard -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-gauge"></i> scorecard <span id="scState" class="ml-auto" style="font-size:11px;color:var(--text-faint)">awaiting run</span></div>
+      <div id="scorecard" class="pane__body sc" style="padding:14px 16px 16px; min-height:208px"></div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+    <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> Treatment wins</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--miss)"></span> Baseline wins</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Tie</span>
+    <span class="ml-auto font-mono text-[11px] text-[color:var(--text-faint)]">Illustrative run. Example data.</span>
+  </div>
+</section>
+
+<!-- ===== INSTALL / INVOKE ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Run it on your own skill.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        anvil works on any skill, subagent, or plugin. It generates a balanced suite, runs the A/B in-session on your subscription, scores it, and proposes edits you approve before they land.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-target accent mt-0.5"></i> Activation precision, recall, and F1 from the real transcripts.</li>
+        <li class="flex gap-3"><i class="ph ph-scales accent mt-0.5"></i> A judged quality delta with a 95 percent confidence interval.</li>
+        <li class="flex gap-3"><i class="ph ph-arrows-clockwise accent mt-0.5"></i> An improvement loop that re-runs and reports the before and after.</li>
+      </ul>
+      <p class="mt-7 font-mono text-[12px] text-[color:var(--text-faint)] leading-relaxed">
+        3 skills: generating-test-data, running-an-eval, improving-an-artifact.<br />
+        4 subagents: anvil-analyst, anvil-judge, anvil-task-runner, anvil-testdata-generator.
+      </p>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and run</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add the marketplace once</div>
+        <div><span class="accent">/plugin marketplace add</span> LlamaopNV/Claude_Code_Empowerments-</div>
+        <div style="color:var(--text-dim)">&gt; then <span class="accent">/plugin</span>, install <span style="color:#fff">anvil</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># generate a balanced suite</div>
+        <div><span class="accent">/anvil:gen-testdata</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># run the A/B eval and judge, record a scorecard</div>
+        <div><span class="accent">/anvil:eval</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># get edit proposals, apply, re-run, report the delta</div>
+        <div><span class="accent">/anvil:improve</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># runs in-session on your subscription. no external key.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#6ea8e6',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The problem', href: '#problem' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'anvil · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // map a value in [-1, 1] to a track percentage
+  const pct = (v) => ((Math.max(-1, Math.min(1, v)) + 1) / 2) * 100;
+
+  // ----- hero gauge: animate the delta marker and CI band into place once -----
+  (function heroGauge() {
+    const mark = document.getElementById('heroMark');
+    const band = document.getElementById('heroBand');
+    const val = document.getElementById('heroDelta');
+    const D = 0.69, LO = 0.38, HI = 1.00;
+    const place = () => {
+      mark.style.left = pct(D) + '%';
+      band.style.left = pct(LO) + '%';
+      band.style.width = (pct(HI) - pct(LO)) + '%';
+    };
+    if (reduce) { place(); val.textContent = '+0.69'; return; }
+    requestAnimationFrame(() => requestAnimationFrame(place));
+    let t0 = null;
+    const step = (ts) => {
+      if (t0 === null) t0 = ts;
+      const p = Math.min(1, (ts - t0) / 900);
+      val.textContent = '+' + (D * p).toFixed(2);
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  })();
+
+  // ----- demo scenarios (illustrative example data, true to anvil's metric shapes) -----
+  const SCENARIOS = [
+    {
+      id: 'wont-fire', chip: "Won't fire", dim: 'recall',
+      artifact: 'skill · release-notes',
+      fix: 'tighten the trigger description so it fires on the should-fire cases',
+      headline: { key: 'activation', label: 'recall', from: '0.50', to: '1.00', delta: 'recall +0.50' },
+      before: {
+        tape: [
+          ['intent', 'sf-tag-release', 'tie  · skill never fired'],
+          ['add',    'sf-changelog',    'A wins'],
+          ['intent', 'sf-bugfix-notes', 'tie  · skill never fired'],
+          ['intent', 'sf-minor-bump',   'tie  · skill never fired'],
+          ['add',    'sf-major-bump',   'A wins'],
+          ['ctx',    'sn-internal-memo', 'B held · correctly idle'],
+        ],
+        sc: { cases: 13, ap: '1.00', ar: '0.50', af: '0.67', qd: '+0.15', ci: '[-0.10, +0.40]', tp: 4, fp: 0, tn: 5, fn: 4, tok: '8.4k' },
+      },
+      after: {
+        tape: [
+          ['add', 'sf-tag-release', 'A wins'],
+          ['add', 'sf-changelog',    'A wins'],
+          ['add', 'sf-bugfix-notes', 'A wins'],
+          ['add', 'sf-minor-bump',   'A wins'],
+          ['add', 'sf-major-bump',   'A wins'],
+          ['ctx', 'sn-internal-memo', 'B held · correctly idle'],
+        ],
+        sc: { cases: 13, ap: '1.00', ar: '1.00', af: '1.00', qd: '+0.62', ci: '[0.34, 0.90]', tp: 8, fp: 0, tn: 5, fn: 0, tok: '8.6k' },
+      },
+    },
+    {
+      id: 'worse', chip: 'Worse than baseline', dim: 'quality',
+      artifact: 'subagent · code-explainer',
+      fix: 'drop the over-eager rewrite step, keep the plain summary',
+      headline: { key: 'quality', label: 'delta', from: '-0.08', to: '+0.69', delta: 'delta +0.77' },
+      before: {
+        tape: [
+          ['miss', 'task-explain-auth',  'B wins · rewrite drifted'],
+          ['add',  'task-explain-query', 'A wins'],
+          ['miss', 'task-explain-hook',  'B wins · rewrite drifted'],
+          ['intent','task-explain-enum', 'tie'],
+          ['miss', 'task-explain-route', 'B wins · rewrite drifted'],
+        ],
+        sc: { cases: 13, ap: '1.00', ar: '1.00', af: '1.00', qd: '-0.08', ci: '[-0.39, +0.23]', tp: 8, fp: 0, tn: 5, fn: 0, tok: '11.0k' },
+      },
+      after: {
+        tape: [
+          ['add',  'task-explain-auth',  'A wins'],
+          ['add',  'task-explain-query', 'A wins'],
+          ['add',  'task-explain-hook',  'A wins'],
+          ['intent','task-explain-enum', 'tie'],
+          ['add',  'task-explain-route', 'A wins'],
+        ],
+        sc: { cases: 13, ap: '1.00', ar: '1.00', af: '1.00', qd: '+0.69', ci: '[0.38, 1.00]', tp: 8, fp: 0, tn: 5, fn: 0, tok: '7.2k' },
+      },
+    },
+    {
+      id: 'expensive', chip: 'Too expensive', dim: 'cost',
+      artifact: 'skill · doc-summarizer',
+      fix: 'drop the redundant re-read, cache the outline once',
+      headline: { key: 'cost', label: 'tokens / run', from: '18.2k', to: '7.4k', delta: 'cost -59%' },
+      before: {
+        tape: [
+          ['add', 'task-readme',   'A wins · but pricey'],
+          ['add', 'task-api-doc',  'A wins · but pricey'],
+          ['add', 'task-guide',    'A wins · but pricey'],
+          ['intent','task-faq',    'tie'],
+        ],
+        sc: { cases: 13, ap: '1.00', ar: '1.00', af: '1.00', qd: '+0.41', ci: '[0.12, 0.70]', tp: 8, fp: 0, tn: 5, fn: 0, tok: '18.2k' },
+      },
+      after: {
+        tape: [
+          ['add', 'task-readme',   'A wins'],
+          ['add', 'task-api-doc',  'A wins'],
+          ['add', 'task-guide',    'A wins'],
+          ['intent','task-faq',    'tie'],
+        ],
+        sc: { cases: 13, ap: '1.00', ar: '1.00', af: '1.00', qd: '+0.38', ci: '[0.10, 0.66]', tp: 8, fp: 0, tn: 5, fn: 0, tok: '7.4k' },
+      },
+    },
+  ];
+
+  const chipsEl = document.getElementById('chips');
+  const tapeEl = document.getElementById('tape');
+  const tapeTitle = document.getElementById('tapeTitle');
+  const scEl = document.getElementById('scorecard');
+  const scState = document.getElementById('scState');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  let current = SCENARIOS[0];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function renderTape(rows, animate) {
+    tapeEl.innerHTML = rows.map(([state, id, note]) => {
+      const sig = state === 'add' ? 'A' : state === 'miss' ? 'B' : state === 'intent' ? '=' : '·';
+      const text = id.padEnd(20, ' ') + note;
+      return `<div class="row ${state} ${animate ? 'row-anim' : ''}"><span class="gut">${sig}</span><span>${escapeHtml(text)}</span></div>`;
+    }).join('');
+  }
+
+  function renderScorecard(s, phase) {
+    const sc = s[phase].sc;
+    const h = current.headline;
+    const hot = (k) => h.key === k ? ' sc__hot' : '';
+    const badge = phase === 'after'
+      ? `<span class="delta-badge"><i class="ph-bold ph-arrow-up" aria-hidden="true"></i> ${escapeHtml(h.delta)}</span>` : '';
+    scEl.innerHTML =
+      `<div class="sc__row"><span class="sc__k">suite</span><span class="sc__v"><b>${escapeHtml(current.artifact)}</b> · ${sc.cases} cases · 3 reps</span></div>` +
+      `<div class="sc__row${hot('activation')}"><span class="sc__k">activation</span><span class="sc__v num">precision <b>${sc.ap}</b>  recall <b>${sc.ar}</b>  f1 <b>${sc.af}</b>${current.dim === 'recall' && phase === 'after' ? badge : ''}</span></div>` +
+      `<div class="sc__row${hot('quality')}"><span class="sc__k">quality</span><span class="sc__v num">delta <b>${sc.qd}</b>  95% CI ${escapeHtml(sc.ci)}${current.dim === 'quality' && phase === 'after' ? badge : ''}</span></div>` +
+      `<div class="sc__row"><span class="sc__k">confusion</span><span class="sc__v num">TP ${sc.tp}  FP ${sc.fp}  TN ${sc.tn}  FN ${sc.fn}</span></div>` +
+      `<div class="sc__row${hot('cost')}"><span class="sc__k">cost</span><span class="sc__v num"><b>${sc.tok}</b> tokens / run${current.dim === 'cost' && phase === 'after' ? badge : ''}</span></div>` +
+      `<div class="sc__row"><span class="sc__k">judge</span><span class="sc__v">claude-opus-4-8 · position-swapped</span></div>`;
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  function play(scenario) {
+    clearTimers();
+    current = scenario;
+    tapeTitle.textContent = scenario.artifact;
+
+    if (reduce) {
+      renderTape(scenario.after.tape, false);
+      renderScorecard(scenario, 'after');
+      scState.textContent = 'tempered';
+      setAudit('tempered. ' + scenario.headline.label + ' ' + scenario.headline.from + ' to ' + scenario.headline.to, false);
+      return;
+    }
+
+    // 1. run treatment vs baseline
+    tapeEl.innerHTML = '';
+    scEl.innerHTML = '';
+    scState.textContent = 'running';
+    setAudit('running ' + scenario.before.sc.cases + ' cases. treatment vs baseline, 3 reps', true);
+    after(450, () => renderTape(scenario.before.tape, true));
+    after(1500, () => setAudit('scoring each case with a position-swapped judge', true));
+    // 2. before scorecard
+    after(2400, () => { renderScorecard(scenario, 'before'); scState.textContent = 'scored'; setAudit('weak spot: ' + scenario.headline.label + ' is ' + scenario.headline.from, true); });
+    // 3. improvement loop
+    after(3700, () => setAudit('anvil:improve proposes 1 edit. ' + scenario.fix, true));
+    after(4600, () => { renderTape(scenario.after.tape, true); scState.textContent = 're-running'; });
+    // 4. after scorecard + delta
+    after(5600, () => { renderScorecard(scenario, 'after'); scState.textContent = 'tempered'; setAudit('tempered. ' + scenario.headline.label + ' ' + scenario.headline.from + ' to ' + scenario.headline.to, false); });
+  }
+
+  SCENARIOS.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = s.chip;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      [...chipsEl.children].forEach((c) => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      play(s);
+    });
+    chipsEl.appendChild(b);
+  });
+  replayBtn.addEventListener('click', () => play(current));
+
+  // static first paint until the demo scrolls into view
+  (function initStatic() {
+    const s = SCENARIOS[0];
+    tapeTitle.textContent = s.artifact;
+    renderTape(s.before.tape.map(([st, id]) => ['ctx', id, 'awaiting run']), false);
+    scEl.innerHTML = '<div class="sc__row"><span class="sc__k">suite</span><span class="sc__v">select a scenario to run the eval</span></div>';
+    setAudit('select a scenario above', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(SCENARIOS[0]); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>
