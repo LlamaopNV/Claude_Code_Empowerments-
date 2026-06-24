@@ -14,6 +14,10 @@ export default [
       '**/node_modules/**',
       'External plugins/**',
       '.venv/**',
+      // The static skill-showcase hub is plain browser HTML/JS deployed as-is,
+      // not workspace TypeScript. Linting it with the Node config flags browser
+      // globals (window, document) as undefined.
+      'site/**',
     ],
   },
   js.configs.recommended,
