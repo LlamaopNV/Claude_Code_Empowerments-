@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>new-aspire-project · scaffold the whole stack</title>
+<meta name="description" content="new-aspire-project bootstraps a clean-architecture .NET Aspire solution from a real template: layered Domain, Application, Infrastructure and API, CQRS slices, mappers, a DB migrator and service defaults. A production-shaped starting point, not a toy." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* new-aspire-project specific: the layered blueprint stack and demo chrome */
+
+  /* hero blueprint: the clean-architecture layers stacked, drawn in once */
+  .blueprint { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; }
+  .layer {
+    display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+    border: 1px solid var(--border); border-radius: var(--radius); margin-top: 8px;
+    background: var(--bg-3); color: var(--text-dim);
+    position: relative;
+  }
+  .layer:first-child { margin-top: 0; }
+  .layer i { color: var(--accent); font-size: 17px; flex: 0 0 17px; }
+  .layer__name { color: var(--text); font-weight: 500; font-size: 14px; }
+  .layer__sub { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-faint); margin-left: auto; }
+  .layer__dep { text-align: center; color: var(--text-faint); font-size: 12px; line-height: 0; height: 11px; }
+  .blueprint .layer { opacity: 0; transform: translateY(6px); }
+  @media (prefers-reduced-motion: no-preference) {
+    .blueprint.draw .layer { animation: layerIn .5s cubic-bezier(.16,1,.3,1) both; }
+    .blueprint.draw .layer:nth-child(1) { animation-delay: .15s; }
+    .blueprint.draw .layer:nth-child(3) { animation-delay: .35s; }
+    .blueprint.draw .layer:nth-child(5) { animation-delay: .55s; }
+    .blueprint.draw .layer:nth-child(7) { animation-delay: .75s; }
+    .blueprint.draw .layer__dep { animation: fadeIn .4s ease both; }
+    .blueprint.draw .layer__dep:nth-child(2) { animation-delay: .3s; }
+    .blueprint.draw .layer__dep:nth-child(4) { animation-delay: .5s; }
+    .blueprint.draw .layer__dep:nth-child(6) { animation-delay: .7s; }
+  }
+  @keyframes layerIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .blueprint .layer, .blueprint .layer__dep { opacity: 1 !important; transform: none !important; } }
+
+  /* demo */
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #160d24; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+
+  /* the layer ladder in the demo: each step lights up as it is generated */
+  .step {
+    display: flex; align-items: flex-start; gap: 12px; padding: 11px 13px;
+    border: 1px solid var(--border); border-radius: var(--radius); margin-top: 8px;
+    background: var(--bg-3); transition: border-color .35s ease, background .35s ease;
+  }
+  .step:first-child { margin-top: 0; }
+  .step.pending { opacity: 0.42; }
+  .step.active { border-color: color-mix(in srgb, var(--accent) 55%, transparent); background: color-mix(in srgb, var(--accent) 9%, var(--bg-3)); }
+  .step.done { opacity: 1; }
+  .step__ic { font-size: 16px; flex: 0 0 16px; margin-top: 1px; color: var(--text-faint); transition: color .35s ease; }
+  .step.active .step__ic, .step.done .step__ic { color: var(--accent); }
+  .step__name { color: var(--text); font-weight: 500; font-size: 13.5px; }
+  .step__role { font-size: 12px; color: var(--text-dim); margin-top: 1px; }
+  .step__file { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); margin-top: 4px; word-break: break-all; }
+  .step__check { margin-left: auto; font-size: 15px; color: var(--add); opacity: 0; transition: opacity .3s ease; flex: 0 0 15px; }
+  .step.done .step__check { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .step { transition: none; } }
+
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.04fr_0.96fr] gap-12 lg:gap-12 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      Your next .NET service,<br class="hidden md:block" /> already in shape.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[42ch] leading-relaxed">
+      new-aspire-project scaffolds a clean-architecture Aspire solution: layered, CQRS-sliced, migrated and building. A production-shaped start, not a toy.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <div id="blueprint" class="blueprint" aria-hidden="true">
+    <div class="layer">
+      <i class="ph-bold ph-cube"></i>
+      <span class="layer__name">Domain</span>
+      <span class="layer__sub">entities, no dependencies</span>
+    </div>
+    <div class="layer__dep">depends on</div>
+    <div class="layer">
+      <i class="ph-bold ph-arrows-split"></i>
+      <span class="layer__name">Application</span>
+      <span class="layer__sub">CQRS, mappers, validators</span>
+    </div>
+    <div class="layer__dep">depends on</div>
+    <div class="layer">
+      <i class="ph-bold ph-database"></i>
+      <span class="layer__name">Infrastructure</span>
+      <span class="layer__sub">EF Core, DbContext</span>
+    </div>
+    <div class="layer__dep">depends on</div>
+    <div class="layer">
+      <i class="ph-bold ph-plugs-connected"></i>
+      <span class="layer__name">API</span>
+      <span class="layer__sub">minimal endpoints</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">The empty template is the easy part.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[62ch] mx-auto leading-relaxed">
+      A new Aspire app gives you a blank API and a frontend. The layering, the CQRS slices, the migrator, the database wiring: that is the day you lose to plumbing. new-aspire-project hands you that day finished, named for your project, and already building.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Name it. Pick a database. Watch it build.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[62ch] leading-relaxed">
+      The skill copies the AspireApp1 template, renames every project and namespace, wires your database, then builds and migrates. Below, the layers assemble in dependency order and the real files for the Products feature land in each one.
+    </p>
+  </div>
+
+  <div id="chips" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Choose a database"></div>
+
+  <div class="mt-7 reveal grid grid-cols-1 lg:grid-cols-[0.92fr_1.08fr] gap-4 items-stretch">
+    <!-- the layer ladder: each clean-architecture layer generates in order -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-stack"></i> <span id="ladderTitle">clean architecture layers</span></div>
+      <div id="ladder" class="pane__body" style="padding:13px 14px 15px; min-height:336px"></div>
+    </div>
+    <!-- the file pane: real files written into the active layer -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-file-code"></i> <span id="fileTitle">generated files</span><span id="fileState" class="ml-auto" style="font-size:11px;color:var(--text-faint)">idle</span></div>
+      <div id="filePane" class="pane__body" style="min-height:336px"></div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+    <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--accent)"></span> Layer being generated</span>
+    <span class="flex items-center gap-2"><i class="ph ph-check-circle" style="color:var(--add)"></i> Layer complete</span>
+    <span class="ml-auto font-mono text-[11px] text-[color:var(--text-faint)]">Files and seed data from the template. Real example.</span>
+  </div>
+</section>
+
+<!-- ===== WHAT YOU GET ===== -->
+<section class="max-w-content mx-auto px-5 pb-8 md:pb-12">
+  <div class="reveal grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[1fr]">
+    <!-- featured wide tile -->
+    <div class="md:col-span-2 md:row-span-2 pane" style="padding:22px 24px 24px">
+      <div class="flex items-center gap-2.5"><i class="ph-bold ph-tree-structure accent text-xl"></i><h3 class="font-semibold text-lg">A real CQRS slice, per feature</h3></div>
+      <p class="mt-3 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
+        Every feature gets its own vertical slice in the Application layer: commands with FluentValidation validators, queries, DTOs, a static mapper, and a typed exception. Handlers use C# primary constructors for dependency injection. The API layer stays thin, delegating to MediatR.
+      </p>
+      <div class="mt-5 font-mono text-[12px] text-[color:var(--text-faint)] leading-relaxed">
+        Products/Commands/CreateProduct/ &middot; UpdateProduct/ &middot; DeleteProduct/<br />
+        Products/Queries/GetProductById/ &middot; GetAllProducts/<br />
+        Products/Mappers/ProductMappingExtensions.cs
+      </div>
+    </div>
+
+    <div class="pane" style="padding:20px 22px">
+      <div class="flex items-center gap-2.5"><i class="ph-bold ph-database accent text-lg"></i><h3 class="font-semibold">Four databases, one command</h3></div>
+      <p class="mt-2.5 text-sm text-[color:var(--text-dim)] leading-relaxed">
+        PostgreSQL, SQL Server, MySQL or SQLite. The skill rewrites the packages, the AppHost resource and the DbContext registration to match, and respects Central Package Management.
+      </p>
+    </div>
+
+    <div class="pane" style="padding:20px 22px">
+      <div class="flex items-center gap-2.5"><i class="ph-bold ph-arrow-fat-lines-right accent text-lg"></i><h3 class="font-semibold">A migrator that runs first</h3></div>
+      <p class="mt-2.5 text-sm text-[color:var(--text-dim)] leading-relaxed">
+        A dedicated DbMigrator console app applies EF Core migrations and seeds sample data on startup. The API waits for it, so it never boots against an empty schema.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INSTALL / RUN ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Scaffold it, then run it.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        Give the skill a name and a database. It copies the template to your repo root, renames everything, configures the database, builds, and generates the InitialCreate migration. Then one command brings the whole solution up.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-folder-simple-plus accent mt-0.5"></i> Renames every project, namespace, reference and solution entry.</li>
+        <li class="flex gap-3"><i class="ph ph-hammer accent mt-0.5"></i> Runs dotnet build to catch problems before you do.</li>
+        <li class="flex gap-3"><i class="ph ph-shield-check accent mt-0.5"></i> ServiceDefaults wires OpenTelemetry, health checks and resilience.</li>
+      </ul>
+      <p class="mt-7 font-mono text-[12px] text-[color:var(--text-faint)] leading-relaxed">
+        Targets .NET 10 SDK. Redis caching stays configured for every database choice.
+      </p>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> scaffold and run</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># scaffold a project, choose a database</div>
+        <div><span class="accent">/new-aspire-project</span> ECommerce SqlServer</div>
+        <div style="color:var(--text-dim)">&gt; or just <span class="accent">/new-aspire-project</span> and answer the prompts</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># it copies the template, renames, configures, builds</div>
+        <div style="color:var(--text-dim)">&gt; then generates the InitialCreate migration</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># bring the whole solution up with Aspire</div>
+        <div><span class="accent">dotnet run</span> --project Orchestration/ECommerce.AppHost</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># API docs land at the Scalar UI</div>
+        <div style="color:var(--text-dim)">http://localhost:5000/scalar/v1</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#a87cf0',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The problem', href: '#problem' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'new-aspire-project · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ----- the five layers that generate, in dependency order. -----
+  // Each carries the REAL files the template lands for the Products feature.
+  const LAYERS = [
+    {
+      ic: 'ph-cube', name: 'Domain', role: 'Pure entities, no dependencies',
+      files: [
+        'Source/{P}.Domain/Entities/Product.cs',
+      ],
+      note: 'Product entity: Id, Name, Description, Price, Stock, CreatedAt, UpdatedAt',
+    },
+    {
+      ic: 'ph-arrows-split', name: 'Application', role: 'CQRS slices, validators, mappers',
+      files: [
+        'Products/Commands/CreateProduct/CreateProductCommandHandler.cs',
+        'Products/Queries/GetAllProducts/GetAllProductsQueryHandler.cs',
+        'Products/Mappers/ProductMappingExtensions.cs',
+        'Common/Interfaces/IApplicationDbContext.cs',
+      ],
+      note: 'commands, queries and DTOs dispatched through MediatR',
+    },
+    {
+      ic: 'ph-database', name: 'Infrastructure', role: 'EF Core, DbContext, migrations',
+      files: [
+        'Source/{P}.Infrastructure/Data/ApplicationDbContext.cs',
+        'Source/{P}.Infrastructure/Data/ApplicationDbContextFactory.cs',
+        'Source/{P}.Infrastructure/DependencyInjection.cs',
+      ],
+      note: 'DbContext wired to {DB} via the matching EF Core provider',
+    },
+    {
+      ic: 'ph-plugs-connected', name: 'API', role: 'Minimal endpoints, thin layer',
+      files: [
+        'Source/{P}.Api/Endpoints/ProductEndpoints.cs',
+        'Source/{P}.Api/Program.cs',
+      ],
+      note: 'GET, POST, PUT, DELETE /api/products, documented for Scalar',
+    },
+    {
+      ic: 'ph-arrow-fat-lines-right', name: 'DbMigrator + AppHost', role: 'Orchestration and seed',
+      files: [
+        'Source/{P}.DbMigrator/Program.cs',
+        'Orchestration/{P}.AppHost/AppHost.cs',
+      ],
+      note: 'migrator applies migrations and seeds 10 sample products, API waits for it',
+    },
+  ];
+
+  // database choices change the provider language and the AppHost resource only.
+  const DATABASES = [
+    { id: 'postgresql', chip: 'PostgreSQL', db: 'PostgreSQL', resource: 'AddPostgres("postgres")', provider: 'Aspire.Npgsql.EntityFrameworkCore.PostgreSQL' },
+    { id: 'sqlserver',  chip: 'SQL Server', db: 'SQL Server', resource: 'AddSqlServer("sql")',       provider: 'Aspire.Microsoft.EntityFrameworkCore.SqlServer' },
+    { id: 'mysql',      chip: 'MySQL',      db: 'MySQL',      resource: 'AddMySql("mysql")',         provider: 'MySql.EntityFrameworkCore, manual UseMySQL()' },
+    { id: 'sqlite',     chip: 'SQLite',     db: 'SQLite',     resource: 'shared db file in repo root', provider: 'Microsoft.EntityFrameworkCore.Sqlite' },
+  ];
+
+  const PROJECT = 'ECommerce';
+
+  const ladderEl = document.getElementById('ladder');
+  const ladderTitle = document.getElementById('ladderTitle');
+  const fileEl = document.getElementById('filePane');
+  const fileTitle = document.getElementById('fileTitle');
+  const fileState = document.getElementById('fileState');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const chipsEl = document.getElementById('chips');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  let current = DATABASES[0];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const fill = (s, db) => s.replace(/\{P\}/g, PROJECT).replace(/\{DB\}/g, db.db);
+
+  function renderLadder(activeIdx) {
+    // activeIdx: -1 none, 0..n active that layer, LAYERS.length means all done
+    ladderEl.innerHTML = LAYERS.map((L, i) => {
+      let cls = 'pending';
+      if (i < activeIdx) cls = 'done';
+      else if (i === activeIdx) cls = 'active';
+      return `<div class="step ${cls}">` +
+        `<i class="step__ic ph-bold ${L.ic}"></i>` +
+        `<div><div class="step__name">${esc(L.name)}</div>` +
+        `<div class="step__role">${esc(L.role)}</div></div>` +
+        `<i class="step__check ph-fill ph-check-circle"></i>` +
+        `</div>`;
+    }).join('');
+  }
+
+  function renderFiles(layer, db, animate) {
+    const rows = layer.files.map((f, i) => {
+      const path = fill(f, db);
+      return `<div class="row add ${animate ? 'row-anim' : ''}" style="${animate ? 'animation-delay:' + (i * 90) + 'ms' : ''}">` +
+        `<span class="gut">+</span><span>${esc(path)}</span></div>`;
+    }).join('');
+    const noteRow = `<div class="row intent"><span class="gut">~</span><span>${esc(fill(layer.note, db))}</span></div>`;
+    fileEl.innerHTML =
+      `<div class="row ctx"><span class="gut">&nbsp;</span><span>layer: ${esc(layer.name)}</span></div>` +
+      rows + noteRow;
+  }
+
+  function renderFinalFiles(db) {
+    // end-state: the database wiring summary, grounded in the skill source
+    fileEl.innerHTML =
+      `<div class="row ctx"><span class="gut">&nbsp;</span><span>database: ${esc(db.db)}</span></div>` +
+      `<div class="row add"><span class="gut">+</span><span>AppHost resource: ${esc(db.resource)}</span></div>` +
+      `<div class="row add"><span class="gut">+</span><span>provider: ${esc(db.provider)}</span></div>` +
+      `<div class="row ctx"><span class="gut">&nbsp;</span><span>$ dotnet build  &middot;  solution restored</span></div>` +
+      `<div class="row add"><span class="gut">+</span><span>ef migrations add InitialCreate  &middot;  schema written</span></div>` +
+      `<div class="row ctx"><span class="gut">&nbsp;</span><span>build succeeded, ready to run</span></div>`;
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  function play(db) {
+    clearTimers();
+    current = db;
+    ladderTitle.textContent = PROJECT + ' clean architecture layers';
+    fileTitle.textContent = 'generated files';
+
+    if (reduce) {
+      renderLadder(LAYERS.length);
+      renderFinalFiles(db);
+      fileState.textContent = 'built';
+      setAudit(PROJECT + ' scaffolded for ' + db.db + '. built and migrated.', false);
+      return;
+    }
+
+    renderLadder(-1);
+    fileEl.innerHTML = '';
+    fileState.textContent = 'copying';
+    setAudit('copying the AspireApp1 template, renaming to ' + PROJECT, true);
+
+    const stepEvery = 1150;
+    after(600, () => setAudit('configuring ' + db.db + ' across packages, AppHost and DbContext', true));
+
+    LAYERS.forEach((L, i) => {
+      after(1150 + i * stepEvery, () => {
+        renderLadder(i);
+        renderFiles(L, db, true);
+        fileState.textContent = 'writing ' + L.name;
+        setAudit('generating ' + L.name + ' layer: ' + fill(L.note, db), true);
+      });
+    });
+
+    const end = 1150 + LAYERS.length * stepEvery;
+    after(end, () => { renderLadder(LAYERS.length); fileState.textContent = 'built'; });
+    after(end + 350, () => { renderFinalFiles(db); setAudit('dotnet build succeeded. InitialCreate migration written. ready to run.', false); });
+  }
+
+  DATABASES.forEach((d, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = d.chip;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      [...chipsEl.children].forEach((c) => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      play(d);
+    });
+    chipsEl.appendChild(b);
+  });
+  replayBtn.addEventListener('click', () => play(current));
+
+  // static first paint until the demo scrolls into view
+  (function initStatic() {
+    ladderTitle.textContent = PROJECT + ' clean architecture layers';
+    renderLadder(-1);
+    fileEl.innerHTML = '<div class="row ctx"><span class="gut">&nbsp;</span><span>pick a database to scaffold the solution</span></div>';
+    setAudit('select a database above', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(DATABASES[0]); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+
+  // hero blueprint: draw the layers in once when it scrolls into view
+  const bp = document.getElementById('blueprint');
+  if (reduce) { bp.classList.add('draw'); }
+  else {
+    const bpio = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('draw'); bpio.unobserve(e.target); } });
+    }, { threshold: 0.3 });
+    bpio.observe(bp);
+  }
+})();
+</script>
+</body>
+</html>

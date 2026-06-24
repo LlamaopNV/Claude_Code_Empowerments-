@@ -16,17 +16,21 @@ rules in `docs/superpowers/2026-06-23-anvil-page-handoff.md`. Links stay relativ
 - [x] tdd-heartbeat (external, linked from the grid)
 
 ### Build pages for the rest of the skills
-Strongest interactive-metaphor candidates first:
-- [ ] workflow-forge (bootstrap, iterative review, pre-commit gate, capability sync)
-- [ ] bake-to-completion (interview-driven idea strengthening)
-- [ ] design-taste-frontend (anti-slop preflight)
-- [ ] skill-installer (browse + install from a catalog)
-- [ ] new-aspire-project (clean-architecture scaffold)
-- [ ] md-with-mermaid-to-pdf (mermaid render to PDF)
-- [ ] jira-api (Jira REST reference + scripts)
-- [ ] bitbucket-pr (PR lifecycle)
-- [ ] bitbucket-pipeline (CI/CD runs)
-- [ ] bitbucket-repo (browse repos at any ref)
+All built on the shared shell, each with a locked distinct accent, a central interactive
+metaphor, and a grid tile. Strongest interactive-metaphor candidates were done first:
+- [x] workflow-forge (forge stamps disciplines into a repo) `#9d8cf5`
+- [x] bake-to-completion (doneness probe climbs as the idea is sharpened) `#ee6f9e`
+- [x] design-taste-frontend (slop-vs-passed toggle of the same layout) `#cd7cf0`
+- [x] skill-installer (catalog shelf you pick from and install) `#3fc9b0`
+- [x] new-aspire-project (blueprint assembles in clean-architecture layers) `#a87cf0`
+- [x] md-with-mermaid-to-pdf (real mermaid render onto a paged sheet) `#2fc7d6`
+- [x] jira-api (JQL request out, issue rows back) `#5b8def`
+- [x] bitbucket-pr (PR advances through its lifecycle) `#4aa8f0`
+- [x] bitbucket-pipeline (CI stages stream pass/fail) `#3bb6e8`
+- [x] bitbucket-repo (browse the tree at any ref) `#7d90f5`
+
+The last four (jira-api + the three bitbucket pages) share a cool-blue accent family on
+purpose: they read as one Atlassian integration suite in the grid.
 
 For each new page: drop it at `site/<slug>/index.html`, pick a distinct accent, and add a
 tile to the grid in `site/index.html` with that accent. Reuse `.pane` / `.row` / `.btn-*` /

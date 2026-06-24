@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>bake-to-completion · interview your idea</title>
+<meta name="description" content="bake-to-completion takes a half-baked idea and strengthens it through a one-question-at-a-time interview: it rates every dimension, drills the weak ones, stress-tests the whole thing, then hands off a clean brief. A showcase of the doneness probe in action." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* bake-to-completion specific: the doneness probe, the interview chrome, the scorecard */
+
+  /* hero "doneness" dial: a probe reading how far the idea is baked */
+  .probe { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 22px 18px; }
+  .probe__track {
+    position: relative; height: 14px; border-radius: 999px; margin: 16px 2px 8px;
+    background: var(--bg-3); border: 1px solid var(--border-2); overflow: hidden;
+  }
+  .probe__fill {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 35%, transparent), var(--accent));
+    transition: width 1s cubic-bezier(.16,1,.3,1);
+  }
+  .probe__ends { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  /* the 8 dimension pips */
+  .pips { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-top: 16px; }
+  .pip {
+    height: 26px; border-radius: 6px; border: 1px solid var(--border-2); background: var(--bg-3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 10px; color: var(--text-faint);
+    transition: background .5s ease, border-color .5s ease, color .5s ease;
+  }
+  .pip.solid { background: color-mix(in srgb, var(--accent) 26%, transparent); border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: #fff; }
+  @media (prefers-reduced-motion: reduce) { .probe__fill, .pip { transition: none; } }
+
+  /* demo */
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #1a0d13; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* the scorecard of 8 dimensions */
+  .sc { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; }
+  .sc__row { display: grid; grid-template-columns: 16px 118px 1fr; gap: 10px; align-items: center; padding: 6px 0; border-top: 1px solid var(--border); }
+  .sc__row:first-child { border-top: 0; }
+  .sc__dim { color: #cfcfd6; }
+  .sc__note { color: var(--text-faint); }
+  .sc__rate { font-size: 10px; letter-spacing: .04em; text-transform: uppercase; }
+  .sc__row.r-missing .sc__rate { color: var(--miss); }
+  .sc__row.r-shaky   .sc__rate { color: var(--intent); }
+  .sc__row.r-solid   .sc__rate { color: var(--add); }
+  .sc__row.r-solid   .sc__dim  { color: #fff; }
+  .sc__row.bumped { animation: bump .5s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes bump { from { background: color-mix(in srgb, var(--accent) 16%, transparent); } to { background: transparent; } }
+  @media (prefers-reduced-motion: reduce) { .sc__row.bumped { animation: none; } }
+
+  .stamp {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+    font-size: 11px; padding: 3px 10px; border-radius: 999px;
+    color: var(--add); background: rgba(92,191,142,0.12); border: 1px solid rgba(92,191,142,0.3);
+  }
+  .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-12 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      Your idea isn't done.<br class="hidden md:block" /> It's half-baked.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[42ch] leading-relaxed">
+      One question at a time, bake-to-completion rates every dimension, drills the weak ones, stress-tests the whole thing, then hands off a clean brief.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <div class="probe" aria-hidden="true">
+    <div class="flex items-baseline justify-between">
+      <span class="font-mono text-[12px] text-[color:var(--text-faint)]">doneness</span>
+      <span id="heroPct" class="font-mono text-2xl accent num">12%</span>
+    </div>
+    <div class="probe__track"><div id="heroFill" class="probe__fill"></div></div>
+    <div class="probe__ends"><span>half-baked</span><span>ready to build</span></div>
+    <div id="heroPips" class="pips"></div>
+    <div class="mt-4 pt-4 border-t hairline font-mono text-[11px] text-[color:var(--text-faint)]">
+      8 dimensions probed, then stress-tested before any plan.
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">It sounded great in your head.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[60ch] mx-auto leading-relaxed">
+      So you started building, and three weeks in the riskiest assumption turned out false. A pitch is not a plan. bake-to-completion pressure-tests the idea first, finds the gap that kills it, and only then hands off to design.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Pitch a vague idea. Bake it to done.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[62ch] leading-relaxed">
+      Each starter is a real half-baked pitch. The skill rates all 8 dimensions, then asks one sharp question at a time on the weak ones, stress-tests the riskiest assumption, and the doneness climbs as each gap fills.
+    </p>
+  </div>
+
+  <div id="chips" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Choose a starter idea"></div>
+
+  <div class="mt-7 reveal grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-4 items-stretch">
+    <!-- the interview transcript: one question at a time -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-chats-circle"></i> <span id="tapeTitle">interview</span><span class="ml-auto text-[color:var(--text-faint)]" style="font-size:11px">one question at a time</span></div>
+      <div id="tape" class="pane__body" style="min-height:240px; padding:12px 14px 14px"></div>
+    </div>
+    <!-- the 8-dimension scorecard -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-gauge"></i> scorecard <span id="scState" class="ml-auto" style="font-size:11px;color:var(--text-faint)">awaiting pitch</span></div>
+      <div id="scorecard" class="pane__body sc" style="padding:12px 16px 14px; min-height:240px"></div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+    <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> Solid</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Shaky</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--miss)"></span> Missing</span>
+    <span class="ml-auto font-mono text-[11px] text-[color:var(--text-faint)]">Illustrative interview. Example answers.</span>
+  </div>
+</section>
+
+<!-- ===== INSTALL / INVOKE ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Interview your own idea.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        It works on any early-stage software or product concept. It never batches questions, never writes the plan for you, and the adversarial stress-test is mandatory. The output is one clean brief, then a handoff to design.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-list-checks accent mt-0.5"></i> Rates all 8 dimensions, then drills only the shaky and missing ones.</li>
+        <li class="flex gap-3"><i class="ph ph-sword accent mt-0.5"></i> Steelmans the strongest objection and names the assumption that kills it.</li>
+        <li class="flex gap-3"><i class="ph ph-file-text accent mt-0.5"></i> Saves a strengthened brief, then hands off to brainstorming and planning.</li>
+      </ul>
+      <p class="mt-7 font-mono text-[12px] text-[color:var(--text-faint)] leading-relaxed">
+        The brief is saved to ./idea-briefs/YYYY-MM-DD-slug.md, ready to feed any design process.
+      </p>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and run</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add the marketplace once</div>
+        <div><span class="accent">/plugin marketplace add</span> LlamaopNV/Claude_Code_Empowerments-</div>
+        <div style="color:var(--text-dim)">&gt; then <span class="accent">/plugin</span>, install <span style="color:#fff">bake-to-completion</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># then just ask</div>
+        <div style="color:var(--text-dim)">"interview me about my idea"</div>
+        <div style="color:var(--text-dim)">"help me pressure-test this concept"</div>
+        <div style="color:var(--text-dim)">"flesh out my app idea before I build it"</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># it asks one question at a time, then hands off</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#ee6f9e',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The problem', href: '#problem' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'bake-to-completion · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // The 8 dimensions, in order, with short labels for the scorecard and hero pips.
+  const DIMS = [
+    { key: 'problem',  label: 'Problem',        pip: 'prob' },
+    { key: 'user',     label: 'Target user',    pip: 'user' },
+    { key: 'value',    label: 'Value prop',     pip: 'val' },
+    { key: 'diff',     label: 'Differentiation',pip: 'diff' },
+    { key: 'scope',    label: 'Scope / MVP',    pip: 'scope' },
+    { key: 'feas',     label: 'Feasibility',    pip: 'feas' },
+    { key: 'risk',     label: 'Risks',          pip: 'risk' },
+    { key: 'valid',    label: 'Validation',     pip: 'valid' },
+  ];
+
+  // ----- hero probe: fill to a fully-baked reading once, lighting the 8 pips -----
+  (function heroProbe() {
+    const fill = document.getElementById('heroFill');
+    const pct = document.getElementById('heroPct');
+    const pipsEl = document.getElementById('heroPips');
+    DIMS.forEach((d) => {
+      const el = document.createElement('div');
+      el.className = 'pip';
+      el.textContent = d.pip;
+      el.dataset.k = d.key;
+      pipsEl.appendChild(el);
+    });
+    const lightAll = () => { fill.style.width = '100%'; pct.textContent = '100%'; [...pipsEl.children].forEach((p) => p.classList.add('solid')); };
+    if (reduce) { lightAll(); return; }
+    let t0 = null;
+    const step = (ts) => {
+      if (t0 === null) t0 = ts;
+      const p = Math.min(1, (ts - t0) / 1100);
+      const v = Math.round(12 + p * 88);
+      pct.textContent = v + '%';
+      fill.style.width = v + '%';
+      const lit = Math.floor((v / 100) * DIMS.length);
+      [...pipsEl.children].forEach((el, i) => el.classList.toggle('solid', i < lit));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(step)));
+  })();
+
+  // ----- demo scenarios: real half-baked pitches, illustrative interview answers -----
+  // Each scenario carries: the opening Phase 1 ratings, an ordered list of beats
+  // (a question and the dimension it strengthens), and an adversarial beat.
+  const SCENARIOS = [
+    {
+      id: 'plant', chip: 'Plant care app', title: 'plant-care reminders',
+      pitch: 'an app that reminds you to water your plants',
+      start: { problem:'shaky', user:'missing', value:'shaky', diff:'missing', scope:'missing', feas:'solid', risk:'missing', valid:'missing' },
+      beats: [
+        { dim:'user',  q: 'Who specifically forgets, and how do they cope today?',         a: 'New plant owners who killed one already. Today they guess or use a phone alarm.' },
+        { dim:'diff',  q: 'A generic reminder app already does this. Why yours?',           a: 'It reminds per-species and per-season, not one fixed interval.' },
+        { dim:'scope', q: 'Smallest valuable version, and what is explicitly out?',         a: 'MVP: 10 common species, push reminders. Out: a plant ID camera.' },
+        { dim:'risk',  q: 'The one assumption that, if false, kills it?',                   a: 'That people will log their plants at all. Many will not.' },
+        { dim:'valid', q: 'Cheapest test of that, and what would success look like?',       a: 'A no-code waitlist with a fake setup flow. Success: 40% finish it.' },
+      ],
+      adversarial: { q: 'Steelman the killer objection.', a: 'Phone alarms are free and good enough, so retention may collapse after week one.', risk: 'recorded as an open retention risk to validate first' },
+      done: 'problem and user sharp, MVP scoped, riskiest assumption named with a cheap test.',
+    },
+    {
+      id: 'standup', chip: 'Async standup bot', title: 'async standup bot',
+      pitch: 'a Slack bot that runs async daily standups',
+      start: { problem:'solid', user:'shaky', value:'shaky', diff:'missing', scope:'shaky', feas:'solid', risk:'missing', valid:'missing' },
+      beats: [
+        { dim:'user',  q: 'Which teams, exactly, and what breaks for them now?',            a: 'Remote eng teams across timezones. Live standups exclude half the team.' },
+        { dim:'value', q: 'Why is async strictly better than a thread they already have?',   a: 'It prompts, collects, and posts a digest so nobody chases updates.' },
+        { dim:'diff',  q: 'Geekbot and others exist. What makes yours win?',                 a: 'Honestly, not much yet. That is the gap.' },
+        { dim:'scope', q: 'What is the smallest version that proves the value?',             a: 'One channel, fixed questions, a daily digest. Out: analytics, integrations.' },
+        { dim:'valid', q: 'How would you test demand for the cheapest cost?',               a: 'Run it manually in our own team for two weeks before writing code.' },
+      ],
+      adversarial: { q: 'Why has nobody won this already, and why now?', a: 'The category is crowded and sticky. Without a real wedge this is a feature, not a product.', risk: 'differentiation flagged as the open risk to resolve in design' },
+      done: 'user and value sharpened, differentiation honestly flagged, validation is a free two-week trial.',
+    },
+    {
+      id: 'recipe', chip: 'Pantry recipe finder', title: 'pantry recipe finder',
+      pitch: 'something that suggests recipes from what is in my fridge',
+      start: { problem:'shaky', user:'missing', value:'missing', diff:'missing', scope:'missing', feas:'shaky', risk:'missing', valid:'missing' },
+      beats: [
+        { dim:'problem', q: 'How real and how frequent is this pain, with evidence?',        a: 'I waste food weekly and stare at the fridge. A few friends say the same.' },
+        { dim:'user',    q: 'Who specifically, and what do they do instead today?',          a: 'Solo cooks on a budget. They Google one ingredient and scroll.' },
+        { dim:'value',   q: 'What does it do that a recipe search does not?',                a: 'Ranks recipes by what you already have, fewest missing items first.' },
+        { dim:'scope',   q: 'Smallest valuable version, and what is out?',                   a: 'Type 5 ingredients, get 3 ranked recipes. Out: barcode scanning.' },
+        { dim:'valid',   q: 'The cheapest test of the core assumption?',                     a: 'A spreadsheet of 50 recipes and manual ranking for 10 people.' },
+      ],
+      adversarial: { q: 'What are you tempted to add that the MVP does not need?', a: 'A full pantry inventory with expiry tracking. That is a different, harder product.', risk: 'scope-creep caught, inventory tracking moved out of the MVP' },
+      done: 'problem evidenced, user and value defined, scope held to a manual test before any build.',
+    },
+  ];
+
+  const chipsEl = document.getElementById('chips');
+  const tapeEl = document.getElementById('tape');
+  const tapeTitle = document.getElementById('tapeTitle');
+  const scEl = document.getElementById('scorecard');
+  const scState = document.getElementById('scState');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  let current = SCENARIOS[0];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const RATE_LABEL = { solid: 'solid', shaky: 'shaky', missing: 'missing' };
+
+  // render the 8-dimension scorecard from a ratings map; optionally bump one row
+  function renderScorecard(ratings, bumpKey) {
+    scEl.innerHTML = DIMS.map((d) => {
+      const r = ratings[d.key];
+      const note = r === 'solid' ? 'strengthened' : r === 'shaky' ? 'needs a probe' : 'not addressed';
+      const dot = r === 'solid' ? 'var(--add)' : r === 'shaky' ? 'var(--intent)' : 'var(--miss)';
+      const bump = d.key === bumpKey ? ' bumped' : '';
+      return `<div class="sc__row r-${r}${bump}">` +
+        `<span class="dot" style="background:${dot}"></span>` +
+        `<span class="sc__dim">${d.label}</span>` +
+        `<span><span class="sc__rate">${RATE_LABEL[r]}</span><span class="sc__note">  ${note}</span></span>` +
+        `</div>`;
+    }).join('');
+  }
+
+  // count of solid dims -> doneness percentage
+  const donenessPct = (ratings) => Math.round((Object.values(ratings).filter((r) => r === 'solid').length / DIMS.length) * 100);
+
+  function appendLine(state, gut, text, animate) {
+    const div = document.createElement('div');
+    div.className = `row ${state} ${animate ? 'row-anim' : ''}`;
+    div.innerHTML = `<span class="gut">${gut || '&nbsp;'}</span><span>${escapeHtml(text)}</span>`;
+    tapeEl.appendChild(div);
+    tapeEl.scrollTop = tapeEl.scrollHeight;
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  // render the whole finished interview at once (reduced-motion + end-state)
+  function renderStatic(s) {
+    tapeEl.innerHTML = '';
+    appendLine('intent', '>', 'pitch: ' + s.pitch, false);
+    s.beats.forEach((b) => {
+      appendLine('ctx', 'Q', b.q, false);
+      appendLine('add', 'A', b.a, false);
+    });
+    appendLine('miss', '!', 'stress-test: ' + s.adversarial.q, false);
+    appendLine('add', 'A', s.adversarial.a, false);
+    appendLine('intent', '~', s.adversarial.risk, false);
+    appendLine('add', '+', 'brief saved. handing off to design.', false);
+    const ratings = { ...s.start };
+    DIMS.forEach((d) => { ratings[d.key] = 'solid'; });
+    renderScorecard(ratings, null);
+    scState.innerHTML = '<span class="stamp"><i class="ph-bold ph-seal-check" aria-hidden="true"></i> baked ' + donenessPct(ratings) + '%</span>';
+  }
+
+  function play(scenario) {
+    clearTimers();
+    current = scenario;
+    tapeTitle.textContent = scenario.title;
+
+    if (reduce) {
+      setAudit('baked. ' + scenario.done, false);
+      renderStatic(scenario);
+      return;
+    }
+
+    // live ratings the interview mutates, beat by beat
+    const ratings = { ...scenario.start };
+    tapeEl.innerHTML = '';
+    scState.textContent = 'reading pitch';
+
+    // Phase 1: absorb the pitch, rate all 8 dimensions
+    setAudit('reading the pitch, rating all 8 dimensions', true);
+    after(450, () => appendLine('intent', '>', 'pitch: ' + scenario.pitch, true));
+    after(1100, () => { renderScorecard(ratings, null); scState.textContent = 'scorecard ' + donenessPct(ratings) + '% baked'; setAudit('scorecard shown. now drilling the weak dimensions, one question at a time', true); });
+
+    // Phase 2 + 3: walk the beats, each question strengthens one dimension
+    let t = 2100;
+    scenario.beats.forEach((b) => {
+      after(t, () => { appendLine('ctx', 'Q', b.q, true); setAudit('asking about ' + b.dim + '. one question, then wait', true); });
+      after(t + 900, () => {
+        appendLine('add', 'A', b.a, true);
+        ratings[b.dim] = 'solid';
+        renderScorecard(ratings, b.dim);
+        scState.textContent = donenessPct(ratings) + '% baked';
+      });
+      t += 1700;
+    });
+
+    // adversarial stress-test (mandatory)
+    after(t, () => { appendLine('miss', '!', 'stress-test: ' + scenario.adversarial.q, true); setAudit('mandatory stress-test. making the objection land', true); });
+    after(t + 1000, () => { appendLine('add', 'A', scenario.adversarial.a, true); });
+    after(t + 1800, () => {
+      appendLine('intent', '~', scenario.adversarial.risk, true);
+      // any still-shaky/missing dims resolve as the brief is written
+      DIMS.forEach((d) => { ratings[d.key] = 'solid'; });
+      renderScorecard(ratings, null);
+      scState.textContent = donenessPct(ratings) + '% baked';
+      setAudit('writing the strengthened brief', true);
+    });
+
+    // Phase 4: brief + handoff
+    after(t + 2800, () => {
+      appendLine('add', '+', 'brief saved. handing off to design.', true);
+      scState.innerHTML = '<span class="stamp"><i class="ph-bold ph-seal-check" aria-hidden="true"></i> baked ' + donenessPct(ratings) + '%</span>';
+      setAudit('baked. ' + scenario.done, false);
+    });
+  }
+
+  SCENARIOS.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = s.chip;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      [...chipsEl.children].forEach((c) => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      play(s);
+    });
+    chipsEl.appendChild(b);
+  });
+  replayBtn.addEventListener('click', () => play(current));
+
+  // static first paint until the demo scrolls into view
+  (function initStatic() {
+    const s = SCENARIOS[0];
+    tapeTitle.textContent = s.title;
+    tapeEl.innerHTML = '';
+    appendLine('intent', '>', 'pitch: ' + s.pitch, false);
+    appendLine('ctx', ' ', 'pick a starter idea to run the interview', false);
+    renderScorecard(s.start, null);
+    scState.textContent = donenessPct(s.start) + '% baked';
+    setAudit('select a starter idea above', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(SCENARIOS[0]); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>

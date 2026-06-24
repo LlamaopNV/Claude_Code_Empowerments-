@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>bitbucket-repo · browse any ref</title>
+<meta name="description" content="bitbucket-repo reads a Bitbucket repository at any ref. Switch to a branch, a tag, or a commit and the file tree and file contents follow. A showcase of read-only repo browsing across the Bitbucket Cloud API." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* bitbucket-repo specific: ref dial, file tree, request pane chrome */
+
+  /* hero ref stack: three refs, the active one lit */
+  .refstack { display: flex; flex-direction: column; gap: 9px; }
+  .refrow {
+    display: flex; align-items: center; gap: 11px; padding: 11px 14px;
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2);
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-dim);
+  }
+  .refrow i { font-size: 16px; color: var(--text-faint); flex: 0 0 16px; }
+  .refrow .kind { color: var(--text-faint); margin-left: auto; font-size: 11px; }
+  .refrow.live { border-color: color-mix(in srgb, var(--accent) 55%, transparent); color: var(--text); background: color-mix(in srgb, var(--accent) 9%, var(--bg-2)); }
+  .refrow.live i { color: var(--accent); }
+
+  /* the chips that pick a ref */
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .chip i { font-size: 13px; }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #0c1326; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+  .chip[aria-pressed="true"] i { color: #0c1326; }
+
+  /* file tree rows */
+  .tree { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65; }
+  .tnode {
+    display: flex; align-items: center; gap: 8px; padding: 3px 12px; color: var(--text-dim);
+    cursor: default; border-left: 2px solid transparent;
+  }
+  .tnode i { font-size: 14px; flex: 0 0 14px; color: var(--text-faint); }
+  .tnode.dir i { color: var(--accent); }
+  .tnode.added { color: var(--add); }
+  .tnode.added i { color: var(--add); }
+  .tnode.sel { color: #fff; border-left-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .tnode.sel i { color: var(--accent); }
+  .tnode .sz { margin-left: auto; color: var(--text-faint); font-size: 11px; }
+  .tree-anim { animation: rowIn .42s cubic-bezier(.16,1,.3,1) both; }
+  @media (prefers-reduced-motion: reduce) { .tree-anim { animation: none; } }
+
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* the request line: method + endpoint with the ref highlighted */
+  .reqref { color: var(--accent); }
+  .reqkey { color: var(--text); }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-10 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      Read the repo at<br class="hidden md:block" /> any point in time.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[40ch] leading-relaxed">
+      Point bitbucket-repo at a branch, a tag, or a commit. The file tree and the file you open both follow that ref. Read only.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <div class="refstack" aria-hidden="true">
+    <div class="refrow">
+      <i class="ph ph-git-branch"></i> <span>main</span> <span class="kind">branch</span>
+    </div>
+    <div class="refrow live">
+      <i class="ph ph-tag"></i> <span>v2.3.0</span> <span class="kind">tag</span>
+    </div>
+    <div class="refrow">
+      <i class="ph ph-git-commit"></i> <span>a1f9c4e</span> <span class="kind">commit</span>
+    </div>
+    <div class="refrow" style="border-style:dashed;background:transparent">
+      <i class="ph ph-arrow-right"></i>
+      <span class="reqkey">GET</span>&nbsp;<span>/src/</span><span class="reqref">v2.3.0</span><span>/</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">You needed the file as it was at the release.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[62ch] mx-auto leading-relaxed">
+      Cloning, checking out a tag, and digging through the tree just to read one file is a detour. bitbucket-repo asks the Bitbucket API directly: list the tree at a ref, open a file at that ref, never touch your working copy.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Switch the ref. Watch the tree follow.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[62ch] leading-relaxed">
+      Pick a branch, a tag, or a commit. The file tree re-lists at that ref, the selected file reloads, and the exact API request that fetched it is shown below. Tree and contents are example data.
+    </p>
+  </div>
+
+  <div id="chips" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Choose a ref"></div>
+
+  <div class="mt-7 reveal grid grid-cols-1 lg:grid-cols-[0.82fr_1.18fr] gap-4 items-stretch">
+    <!-- file tree at the chosen ref -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-folder-open"></i> tree <span id="treeRef" class="ml-auto" style="font-size:11px;color:var(--text-faint)">@ ref</span></div>
+      <div id="tree" class="pane__body tree" style="min-height:236px;padding-top:8px"></div>
+    </div>
+    <!-- the open file at the chosen ref -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-file-text"></i> <span id="fileName">README.md</span><span id="fileState" class="ml-auto" style="font-size:11px;color:var(--text-faint)">loaded</span></div>
+      <div id="file" class="pane__body" style="min-height:236px"></div>
+    </div>
+  </div>
+
+  <!-- the real request that fetched this view -->
+  <div class="mt-4 reveal pane">
+    <div class="pane__bar"><i class="ph ph-terminal-window"></i> request</div>
+    <div class="pane__body" style="padding:12px 16px;line-height:1.85">
+      <div class="row ctx"><span class="gut">$</span><span id="reqTree"></span></div>
+      <div class="row ctx"><span class="gut">$</span><span id="reqFile"></span></div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+    <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+    <span class="flex items-center gap-2"><i class="ph ph-git-branch accent"></i> Branch tip</span>
+    <span class="flex items-center gap-2"><i class="ph ph-tag accent"></i> Tag</span>
+    <span class="flex items-center gap-2"><i class="ph ph-git-commit accent"></i> Commit hash</span>
+    <span class="ml-auto font-mono text-[11px] text-[color:var(--text-faint)]">Example repo. Illustrative data.</span>
+  </div>
+</section>
+
+<!-- ===== INSTALL / INVOKE ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Browse a repo without cloning it.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        Four read-only operations over the Bitbucket Cloud API. Auth comes from BB_USER and BB_TOKEN or your ~/.bitbucket file, and every call is a GET.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-list-bullets accent mt-0.5"></i> List repos in a workspace, or branches with a filter.</li>
+        <li class="flex gap-3"><i class="ph ph-git-commit accent mt-0.5"></i> Read the commit log for a branch or a single path.</li>
+        <li class="flex gap-3"><i class="ph ph-file-magnifying-glass accent mt-0.5"></i> Open any file at a branch, tag, or commit hash.</li>
+      </ul>
+      <p class="mt-7 font-mono text-[12px] text-[color:var(--text-faint)] leading-relaxed">
+        Part of the Atlassian integration suite. All operations read-only.
+      </p>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and invoke</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add the marketplace once</div>
+        <div><span class="accent">/plugin marketplace add</span> LlamaopNV/Claude_Code_Empowerments-</div>
+        <div style="color:var(--text-dim)">&gt; then <span class="accent">/plugin</span>, install <span style="color:#fff">bitbucket-repo</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># read a file at a tag, a branch, or a commit</div>
+        <div><span class="accent">/bitbucket-repo</span> file v2.3.0 src/index.ts</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># list branches, or the commit log of a path</div>
+        <div><span class="accent">/bitbucket-repo</span> branches release</div>
+        <div><span class="accent">/bitbucket-repo</span> commits main src/index.ts 10</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># or just ask</div>
+        <div style="color:var(--text-dim)">"show me src/index.ts as it was at v2.3.0"</div>
+        <div style="color:var(--text-dim)">"what changed on the release branch?"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#7d90f5',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The problem', href: '#problem' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'bitbucket-repo · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Example repo: acme / payments-api. Each ref shows a plausible tree + an open file
+  // at that ref, plus the real Bitbucket Cloud API call that fetched it.
+  const WS = 'acme', REPO = 'payments-api';
+
+  const SCENARIOS = [
+    {
+      id: 'main', chip: 'main', icon: 'ph-git-branch', kind: 'branch tip',
+      ref: 'main', open: 'src/refund.ts',
+      tree: [
+        ['dir',   'src/', ''],
+        ['file',  'src/charge.ts', '4.1 KB'],
+        ['file',  'src/refund.ts', '3.6 KB', 'sel'],
+        ['added', 'src/webhook.ts', '2.2 KB'],
+        ['dir',   'tests/', ''],
+        ['file',  'package.json', '1.0 KB'],
+        ['file',  'README.md', '2.8 KB'],
+      ],
+      file: [
+        ['ctx', '1', 'export async function refund('],
+        ['ctx', '2', '  chargeId: string,'],
+        ['add', '3', '  amount: number,        // partial refunds, since v2.3'],
+        ['ctx', '4', ') {'],
+        ['ctx', '5', '  const charge = await getCharge(chargeId);'],
+        ['ctx', '6', '  return gateway.refund(charge, amount);'],
+        ['ctx', '7', '}'],
+      ],
+      note: 'main is ahead of the release: webhook.ts is new and refund takes a partial amount.',
+    },
+    {
+      id: 'tag', chip: 'v2.3.0', icon: 'ph-tag', kind: 'tag',
+      ref: 'v2.3.0', open: 'src/refund.ts',
+      tree: [
+        ['dir',  'src/', ''],
+        ['file', 'src/charge.ts', '4.1 KB'],
+        ['file', 'src/refund.ts', '3.4 KB', 'sel'],
+        ['dir',  'tests/', ''],
+        ['file', 'package.json', '1.0 KB'],
+        ['file', 'README.md', '2.8 KB'],
+      ],
+      file: [
+        ['ctx', '1', 'export async function refund('],
+        ['ctx', '2', '  chargeId: string,'],
+        ['ctx', '3', '  amount: number,'],
+        ['ctx', '4', ') {'],
+        ['ctx', '5', '  const charge = await getCharge(chargeId);'],
+        ['ctx', '6', '  return gateway.refund(charge, amount);'],
+        ['ctx', '7', '}'],
+      ],
+      note: 'the v2.3.0 release: refund already supports amounts, but webhook.ts does not exist yet.',
+    },
+    {
+      id: 'commit', chip: 'a1f9c4e', icon: 'ph-git-commit', kind: 'commit hash',
+      ref: 'a1f9c4e', open: 'src/refund.ts',
+      tree: [
+        ['dir',  'src/', ''],
+        ['file', 'src/charge.ts', '3.9 KB'],
+        ['file', 'src/refund.ts', '2.1 KB', 'sel'],
+        ['dir',  'tests/', ''],
+        ['file', 'package.json', '0.9 KB'],
+        ['file', 'README.md', '2.4 KB'],
+      ],
+      file: [
+        ['ctx',  '1', 'export async function refund('],
+        ['ctx',  '2', '  chargeId: string,'],
+        ['miss', '3', '  // full refunds only at this commit'],
+        ['ctx',  '4', ') {'],
+        ['ctx',  '5', '  const charge = await getCharge(chargeId);'],
+        ['ctx',  '6', '  return gateway.refund(charge);'],
+        ['ctx',  '7', '}'],
+      ],
+      note: 'at commit a1f9c4e, refund was full-amount only. amounts landed later.',
+    },
+  ];
+
+  const chipsEl = document.getElementById('chips');
+  const treeEl = document.getElementById('tree');
+  const treeRef = document.getElementById('treeRef');
+  const fileEl = document.getElementById('file');
+  const fileName = document.getElementById('fileName');
+  const fileState = document.getElementById('fileState');
+  const reqTree = document.getElementById('reqTree');
+  const reqFile = document.getElementById('reqFile');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  let current = SCENARIOS[0];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  function renderTree(rows, animate) {
+    treeEl.innerHTML = rows.map(([kind, name, sz, sel]) => {
+      const icon = kind === 'dir' ? 'ph-folder' : 'ph-file';
+      const cls = [kind, sel ? 'sel' : '', animate ? 'tree-anim' : ''].join(' ');
+      const size = sz ? `<span class="sz">${escapeHtml(sz)}</span>` : '';
+      return `<div class="tnode ${cls}"><i class="ph ${icon}"></i><span>${escapeHtml(name)}</span>${size}</div>`;
+    }).join('');
+  }
+
+  function renderFile(rows, animate) {
+    fileEl.innerHTML = rows.map(([state, gut, text]) =>
+      `<div class="row ${state} ${animate ? 'row-anim' : ''}"><span class="gut">${escapeHtml(gut)}</span><span>${escapeHtml(text)}</span></div>`
+    ).join('');
+  }
+
+  function renderRequests(s) {
+    const treePath = `/2.0/repositories/${WS}/${REPO}/src/`;
+    const filePath = `/2.0/repositories/${WS}/${REPO}/src/`;
+    reqTree.innerHTML = `<span class="reqkey">GET</span> ${treePath}<span class="reqref">${escapeHtml(s.ref)}</span>/`;
+    reqFile.innerHTML = `<span class="reqkey">GET</span> ${filePath}<span class="reqref">${escapeHtml(s.ref)}</span>/${escapeHtml(s.open)}`;
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  function play(scenario) {
+    clearTimers();
+    current = scenario;
+    treeRef.textContent = '@ ' + scenario.ref;
+    fileName.textContent = scenario.open;
+    renderRequests(scenario);
+
+    if (reduce) {
+      renderTree(scenario.tree, false);
+      renderFile(scenario.file, false);
+      fileState.textContent = scenario.kind;
+      setAudit('reading ' + scenario.open + ' at ' + scenario.ref + '. ' + scenario.note, false);
+      return;
+    }
+
+    treeEl.innerHTML = '';
+    fileEl.innerHTML = '';
+    fileState.textContent = 'resolving';
+    setAudit('resolving ref ' + scenario.ref + ' (' + scenario.kind + ')', true);
+
+    after(420, () => { renderTree(scenario.tree, true); fileState.textContent = 'listing'; setAudit('listing the tree at ' + scenario.ref, true); });
+    after(1350, () => { renderFile(scenario.file, true); fileState.textContent = 'loaded'; setAudit('opened ' + scenario.open + ' at ' + scenario.ref, true); });
+    after(2350, () => setAudit(scenario.note, false));
+  }
+
+  SCENARIOS.forEach((s, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.innerHTML = `<i class="ph ${s.icon}" aria-hidden="true"></i>${s.chip}`;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      [...chipsEl.children].forEach((c) => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      play(s);
+    });
+    chipsEl.appendChild(b);
+  });
+  replayBtn.addEventListener('click', () => play(current));
+
+  // static first paint until the demo scrolls into view
+  (function initStatic() {
+    const s = SCENARIOS[0];
+    treeRef.textContent = '@ ' + s.ref;
+    fileName.textContent = s.open;
+    renderTree(s.tree, false);
+    renderFile(s.file, false);
+    renderRequests(s);
+    setAudit('pick a ref above to re-list the tree', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(SCENARIOS[0]); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>

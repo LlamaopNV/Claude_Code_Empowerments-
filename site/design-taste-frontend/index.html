@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>design-taste-frontend · pass the taste review</title>
+<meta name="description" content="The anti-slop preflight for frontend work. design-taste-frontend reads the brief, then catches the AI design tells (em-dashes, three identical cards, fake div dashboards, unmotivated gradients, version-badge heroes) before the page ships." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* design-taste-frontend specific: the mock render, the tell pins, the checklist readout */
+
+  /* the mock "page" that gets reviewed. it is a stylised wireframe, NOT a fake screenshot:
+     no real product chrome, no fake task lists, just labelled placeholder blocks so the
+     viewer reads it as "a layout under review". */
+  .mock {
+    background: var(--bg-3); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 18px; position: relative; overflow: hidden;
+  }
+  .mock__nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .mock__brand { width: 56px; height: 9px; border-radius: 3px; background: var(--text-faint); }
+  .mock__navlinks { display: flex; gap: 9px; }
+  .mock__navlinks span { width: 26px; height: 7px; border-radius: 3px; background: var(--border-2); }
+  .mock__h1 { height: 16px; border-radius: 4px; background: var(--text-dim); margin-bottom: 7px; }
+  .mock__h1.two { width: 70%; }
+  .mock__sub { height: 8px; border-radius: 3px; background: var(--border-2); }
+  .mock__cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; margin-top: 16px; }
+  .mock__card { height: 58px; border-radius: 6px; border: 1px solid var(--border-2); background: var(--bg-2); }
+  .mock__cta { margin-top: 16px; height: 22px; width: 96px; border-radius: 6px; }
+
+  /* the SLOP rendering tics, toggled on the .mock by the "slop" state */
+  .mock.slop { background:
+      radial-gradient(120% 90% at 80% -10%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 60%),
+      var(--bg-3); }
+  .mock.slop .mock__badge { display: inline-flex; }
+  .mock.slop .mock__cta { background: color-mix(in srgb, var(--accent) 65%, #fff 6%); box-shadow: 0 0 22px 1px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .mock.slop .mock__h1 { background: linear-gradient(90deg, #fff, var(--accent)); }
+  .mock.slop .mock__fakeui { display: block; }
+
+  /* the TASTE-PASS rendering: motivated, restrained */
+  .mock.pass { background: var(--bg-3); }
+  .mock.pass .mock__badge { display: none; }
+  .mock.pass .mock__cta { background: var(--accent); box-shadow: none; }
+  .mock.pass .mock__h1 { background: var(--text); }
+  .mock.pass .mock__cards { grid-template-columns: 1.5fr 1fr 1fr; }
+  .mock.pass .mock__card:first-child { background: color-mix(in srgb, var(--accent) 12%, var(--bg-2)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border-2)); }
+  .mock.pass .mock__fakeui { display: none; }
+
+  .mock__badge {
+    display: none; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 9.5px;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 999px; padding: 2px 8px; margin-bottom: 11px;
+  }
+  .mock__fakeui { display: none; margin-top: 14px; border: 1px solid var(--border-2); border-radius: 6px; padding: 9px; background: #0d0d10; }
+  .mock__fakerow { display: flex; align-items: center; gap: 7px; padding: 4px 0; }
+  .mock__fakedot { width: 7px; height: 7px; border-radius: 999px; background: var(--text-faint); flex: 0 0 7px; }
+  .mock__fakebar { height: 6px; border-radius: 3px; background: var(--border-2); }
+  .mock__faketop { display: flex; gap: 4px; margin-bottom: 8px; }
+  .mock__faketop i { width: 7px; height: 7px; border-radius: 999px; background: var(--border-2); }
+
+  /* tell pins overlaid on the slop mock, each one is a numbered marker */
+  .pin {
+    position: absolute; width: 19px; height: 19px; border-radius: 999px;
+    background: var(--miss); color: #1a0c0b; font-family: var(--font-mono); font-size: 11px;
+    font-weight: 600; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 0 0 4px rgba(215,112,104,0.18); cursor: default; z-index: 3;
+    transform: scale(0); transition: transform .3s cubic-bezier(.16,1,.3,1);
+  }
+  .mock.slop .pin.lit { transform: scale(1); }
+  @media (prefers-reduced-motion: reduce) { .pin { transition: none; } .mock.slop .pin.lit { transform: scale(1); } }
+
+  /* toggle control */
+  .toggle { display: inline-flex; border: 1px solid var(--border-2); border-radius: 999px; padding: 3px; background: var(--bg-2); }
+  .toggle button {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 7px 15px; border-radius: 999px;
+    border: 0; background: transparent; color: var(--text-dim); cursor: pointer; transition: color .18s ease;
+  }
+  .toggle button:hover { color: var(--text); }
+  .toggle button[aria-pressed="true"] { color: #1a0c0b; background: var(--accent); font-weight: 500; }
+  .toggle button.tp-pass[aria-pressed="true"] { color: #1a0c0b; }
+
+  /* the tells list / review readout */
+  .tell {
+    display: grid; grid-template-columns: 24px 1fr; gap: 12px; padding: 13px 0;
+    border-top: 1px solid var(--border); align-items: start;
+  }
+  .tell:first-child { border-top: 0; }
+  .tell__no {
+    width: 22px; height: 22px; border-radius: 999px; font-family: var(--font-mono); font-size: 12px;
+    display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    background: rgba(215,112,104,0.14); color: var(--miss); border: 1px solid rgba(215,112,104,0.32);
+    transition: background .35s ease, color .35s ease, border-color .35s ease;
+  }
+  .tells.resolved .tell__no { background: rgba(92,191,142,0.14); color: var(--add); border-color: rgba(92,191,142,0.32); }
+  .tell__name { font-weight: 500; font-size: 14.5px; }
+  .tell__rule { font-family: var(--font-mono); font-size: 11px; color: var(--text-faint); }
+  .tell__slop { color: var(--miss); font-size: 13px; margin-top: 5px; line-height: 1.5; }
+  .tell__fix { color: var(--add); font-size: 13px; margin-top: 3px; line-height: 1.5; display: none; }
+  .tells.resolved .tell__slop { display: none; }
+  .tells.resolved .tell__fix { display: block; }
+  @media (prefers-reduced-motion: reduce) { .tell__no { transition: none; } }
+
+  /* the design-read line (what the skill outputs before any code) */
+  .read { font-family: var(--font-mono); font-size: 12.5px; line-height: 1.7; }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-12 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      It looks designed.<br class="hidden md:block" /> It looks like AI.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[40ch] leading-relaxed">
+      design-taste-frontend reads the brief, then catches the tells every model reaches for and holds the work back until it passes.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <!-- hero visual: the same layout, reviewed. static here, the live toggle lives in the demo. -->
+  <div aria-hidden="true">
+    <div class="mock pass">
+      <span class="mock__badge"><i class="ph ph-seal" style="font-size:9px"></i> v0.6 BETA</span>
+      <div class="mock__nav">
+        <div class="mock__brand"></div>
+        <div class="mock__navlinks"><span></span><span></span><span></span></div>
+      </div>
+      <div class="mock__h1"></div>
+      <div class="mock__h1 two"></div>
+      <div class="mock__sub" style="width:55%;margin-top:9px"></div>
+      <div class="mock__cta"></div>
+      <div class="mock__cards">
+        <div class="mock__card"></div><div class="mock__card"></div><div class="mock__card"></div>
+      </div>
+    </div>
+    <p class="mt-3 font-mono text-[11px] text-[color:var(--text-faint)] text-center">passed the taste review</p>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">A model asked to look designed reaches for the same tells.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[62ch] mx-auto leading-relaxed">
+      Purple glow, three identical cards, a dashboard faked out of divs, a version badge in the hero, an em-dash in the headline. Every site lands on the same template. This skill names each tell and blocks the work until it is gone.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Same layout. One toggle.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[60ch] leading-relaxed">
+      The left is one hero rendered two ways. Flip to "AI slop" and the tells light up red, each pinned to where it lives. Flip to "passed the taste review" and every tell resolves to the fix the skill applies. The rules on the right are pulled straight from the skill source.
+    </p>
+  </div>
+
+  <div class="mt-9 grid lg:grid-cols-[0.95fr_1.05fr] gap-7 lg:gap-9 items-start">
+
+    <!-- the live mock + toggle -->
+    <div class="reveal">
+      <div class="toggle" role="group" aria-label="Choose how to render the page">
+        <button id="tbSlop" class="tp-slop" aria-pressed="true"><i class="ph ph-warning" aria-hidden="true" style="font-size:12px"></i> AI slop</button>
+        <button id="tbPass" class="tp-pass" aria-pressed="false"><i class="ph ph-check" aria-hidden="true" style="font-size:12px"></i> Passed the taste review</button>
+      </div>
+
+      <div id="mock" class="mock slop mt-5">
+        <!-- numbered tell pins, positioned over the offending region -->
+        <span class="pin" data-tell="0" style="top:14px;right:14px">1</span>
+        <span class="pin" data-tell="1" style="top:78px;left:14px">5</span>
+        <span class="pin" data-tell="2" style="top:118px;left:14px">2</span>
+        <span class="pin" data-tell="4" style="top:150px;left:118px">4</span>
+        <span class="pin" data-tell="3" style="bottom:62px;left:14px">3</span>
+
+        <span class="mock__badge"><i class="ph ph-seal" style="font-size:9px"></i> v0.6 BETA</span>
+        <div class="mock__nav">
+          <div class="mock__brand"></div>
+          <div class="mock__navlinks"><span></span><span></span><span></span></div>
+        </div>
+        <div class="mock__h1"></div>
+        <div class="mock__h1 two"></div>
+        <div class="mock__sub" style="width:55%;margin-top:9px"></div>
+        <div class="mock__cta"></div>
+        <div class="mock__cards">
+          <div class="mock__card"></div><div class="mock__card"></div><div class="mock__card"></div>
+        </div>
+        <div class="mock__fakeui">
+          <div class="mock__faketop"><i></i><i></i><i></i></div>
+          <div class="mock__fakerow"><span class="mock__fakedot"></span><span class="mock__fakebar" style="width:64%"></span></div>
+          <div class="mock__fakerow"><span class="mock__fakedot"></span><span class="mock__fakebar" style="width:44%"></span></div>
+          <div class="mock__fakerow"><span class="mock__fakedot"></span><span class="mock__fakebar" style="width:78%"></span></div>
+        </div>
+      </div>
+
+      <div class="mt-4 flex items-center justify-between gap-4 flex-wrap">
+        <div id="verdict" class="read flex items-center gap-2"></div>
+        <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+      </div>
+
+      <div class="mt-5 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+        <span class="flex items-center gap-2"><span class="dot" style="background:var(--miss)"></span> Tell, flagged in preflight</span>
+        <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> Resolved by the rule</span>
+      </div>
+    </div>
+
+    <!-- the tells list, resolves green on pass -->
+    <div id="tells" class="tells reveal">
+      <div class="tell">
+        <div class="tell__no">1</div>
+        <div>
+          <div class="tell__name">Version badge in the hero</div>
+          <div class="tell__rule">Section 9.F · NO version labels in the hero</div>
+          <div class="tell__slop">"v0.6 BETA" as a hero eyebrow. Banned as default unless the brief is a launch.</div>
+          <div class="tell__fix">Dropped. The headline carries the moment, no status stamp needed.</div>
+        </div>
+      </div>
+      <div class="tell">
+        <div class="tell__no">2</div>
+        <div>
+          <div class="tell__name">Three equal feature cards</div>
+          <div class="tell__rule">Section 9.C · NO 3-column equal feature cards</div>
+          <div class="tell__slop">Three identical tiles in a row, the generic feature grid every model ships.</div>
+          <div class="tell__fix">Given rhythm: a featured first tile, two supporting. The grid earns its asymmetry.</div>
+        </div>
+      </div>
+      <div class="tell">
+        <div class="tell__no">3</div>
+        <div>
+          <div class="tell__name">Fake dashboard built from divs</div>
+          <div class="tell__rule">Section 4.8 · Div-based fake screenshots are banned</div>
+          <div class="tell__slop">A fake task list of styled rectangles standing in for a real product shot. The number one tell.</div>
+          <div class="tell__fix">Removed. Use a real screenshot, a generated image, or a real component, or skip the preview.</div>
+        </div>
+      </div>
+      <div class="tell">
+        <div class="tell__no">4</div>
+        <div>
+          <div class="tell__name">Unmotivated purple glow</div>
+          <div class="tell__rule">Section 4.2 · The Lila Rule, no automatic glow</div>
+          <div class="tell__slop">A neon outer glow on the CTA and a mesh gradient behind it, decoration with no job.</div>
+          <div class="tell__fix">Solid accent fill, inner-border depth. One accent, no glow, motion only where it communicates.</div>
+        </div>
+      </div>
+      <div class="tell">
+        <div class="tell__no">5</div>
+        <div>
+          <div class="tell__name">Em-dash in the headline</div>
+          <div class="tell__rule">Section 9.G · The em-dash ban, zero, non-negotiable</div>
+          <div class="tell__slop">The gradient-text headline leans on an em-dash, the single most checked Tell in production.</div>
+          <div class="tell__fix">Restructured to a period, and the gradient on display type is gone too.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== HOW IT THINKS ===== -->
+<section id="read" class="max-w-content mx-auto px-5 pb-20 md:pb-28">
+  <div class="reveal grid lg:grid-cols-[0.85fr_1.15fr] gap-10 items-start">
+    <div>
+      <h2 class="font-semibold tracking-tight text-2xl md:text-4xl leading-tight">It reads the room before it writes a line.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[44ch]">
+        The bans are not a fixed style. Before any code, the skill states a one-line design read: page kind, audience, vibe, and the system or aesthetic it is leaning toward. The tells are checked against that read, not against a default look.
+      </p>
+    </div>
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-eye"></i> the design read, declared first</div>
+      <div class="pane__body" style="padding:18px 18px;font-size:12.5px;line-height:1.85">
+        <div style="color:var(--text-faint)"># one line, before generating anything</div>
+        <div style="color:#cfcfd6;margin-top:6px">Reading this as: <span class="accent">B2B SaaS landing</span> for</div>
+        <div style="color:#cfcfd6">technical buyers, with a Linear-style</div>
+        <div style="color:#cfcfd6">minimalist language, leaning toward</div>
+        <div style="color:#cfcfd6">Tailwind + Geist + restrained motion.</div>
+        <div style="margin-top:14px;color:var(--text-faint)"># three dials set from the read</div>
+        <div style="color:var(--text-dim)">VARIANCE <span style="color:#fff">6</span> · MOTION <span style="color:#fff">4</span> · DENSITY <span style="color:#fff">3</span></div>
+        <div style="margin-top:14px;color:var(--text-faint)"># then the preflight runs, every box</div>
+        <div style="color:var(--add)">zero em-dashes · one accent · hero fits</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INSTALL / RUN ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Run it as your frontend preflight.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        It is for landing pages, portfolios, and redesigns, not dashboards or data tables. Point it at a brief, it declares the design read, picks a real system or an honest aesthetic, and runs the full preflight before the page ships.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-eye accent mt-0.5"></i> Infers the brief and declares a one-line design read first.</li>
+        <li class="flex gap-3"><i class="ph ph-prohibit accent mt-0.5"></i> Bans the AI tells: em-dashes, equal cards, fake screenshots, AI purple.</li>
+        <li class="flex gap-3"><i class="ph ph-check-square accent mt-0.5"></i> Closes with a mechanical preflight check, every box ticked.</li>
+      </ul>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and invoke</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add it from the catalog</div>
+        <div><span class="accent">/skill-installer</span></div>
+        <div style="color:var(--text-dim)">&gt; pick <span style="color:#fff">design-taste-frontend</span>, target project or global</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># then just describe the page</div>
+        <div style="color:var(--text-dim)">"build the landing page for this brief"</div>
+        <div style="color:var(--text-dim)">"redesign this hero, keep the brand"</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># or aim it at work in progress</div>
+        <div style="color:var(--text-dim)">"audit this page for AI tells"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#cd7cf0',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The problem', href: '#problem' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'design-taste-frontend · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const mock = document.getElementById('mock');
+  const tells = document.getElementById('tells');
+  const verdict = document.getElementById('verdict');
+  const tbSlop = document.getElementById('tbSlop');
+  const tbPass = document.getElementById('tbPass');
+  const replayBtn = document.getElementById('replay');
+  const pins = [...document.querySelectorAll('.pin')];
+
+  let timers = [];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  const VERDICT_SLOP = '<i class="ph ph-warning" style="color:var(--miss)"></i> <span style="color:var(--miss)">5 tells flagged in preflight</span>';
+  const VERDICT_PASS = '<i class="ph ph-check-circle" style="color:var(--add)"></i> <span style="color:var(--add)">all 5 resolved, preflight clear</span>';
+
+  function setPressed(slopOn) {
+    tbSlop.setAttribute('aria-pressed', slopOn ? 'true' : 'false');
+    tbPass.setAttribute('aria-pressed', slopOn ? 'false' : 'true');
+  }
+
+  function showSlop(animate) {
+    clearTimers();
+    mock.classList.remove('pass'); mock.classList.add('slop');
+    tells.classList.remove('resolved');
+    setPressed(true);
+    pins.forEach((p) => p.classList.remove('lit'));
+    if (reduce || !animate) {
+      pins.forEach((p) => p.classList.add('lit'));
+      verdict.innerHTML = VERDICT_SLOP;
+      return;
+    }
+    verdict.innerHTML = '<span style="color:var(--text-faint)">reviewing the layout...</span>';
+    // light each pin in sequence so the eye follows the review
+    pins.forEach((p, i) => after(300 + i * 260, () => p.classList.add('lit')));
+    after(300 + pins.length * 260 + 200, () => { verdict.innerHTML = VERDICT_SLOP; });
+  }
+
+  function showPass(animate) {
+    clearTimers();
+    mock.classList.remove('slop'); mock.classList.add('pass');
+    tells.classList.add('resolved');
+    setPressed(false);
+    pins.forEach((p) => p.classList.remove('lit'));
+    verdict.innerHTML = VERDICT_PASS;
+  }
+
+  tbSlop.addEventListener('click', () => showSlop(true));
+  tbPass.addEventListener('click', () => showPass(true));
+  replayBtn.addEventListener('click', () => {
+    // replay walks the full review: flag the tells, then resolve them.
+    showSlop(true);
+    if (!reduce) after(300 + pins.length * 260 + 1100, () => showPass(true));
+  });
+
+  // static initial state matches the default markup (slop, pins unlit until played)
+  verdict.innerHTML = '<span style="color:var(--text-faint)">scroll in to run the review</span>';
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { showSlop(true); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>

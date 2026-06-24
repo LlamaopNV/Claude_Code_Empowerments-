@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>workflow-forge · stamp the disciplines in</title>
+<meta name="description" content="workflow-forge reads a raw repo, detects its stack and host OS, and forges a tailored CLAUDE.md plus the working disciplines: a TDD guard, a pre-commit test gate, symmetric-surface audits, capability sync, and TODO/WORKLOG tracking." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* workflow-forge specific: the forge stamp, chips, the guardrail rail */
+
+  /* hero: a raw repo gets stamped into a disciplined one. A single literal stamp press. */
+  .stamp { background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .stamp__head { display:flex; align-items:center; gap:8px; padding:9px 13px; border-bottom:1px solid var(--border); color:var(--text-dim); font-family:var(--font-mono); font-size:12px; }
+  .stamp__body { padding: 16px; display:grid; gap:9px; }
+  /* the press bar that sweeps once, leaving the disciplines stamped */
+  .press { position:relative; height:3px; border-radius:999px; background:var(--border-2); overflow:hidden; }
+  .press::after { content:""; position:absolute; inset:0; width:0; background:var(--accent); box-shadow:0 0 10px color-mix(in srgb, var(--accent) 60%, transparent); }
+  @media (prefers-reduced-motion: no-preference) { .stamp.go .press::after { animation: sweep 1.5s cubic-bezier(.7,0,.3,1) .2s forwards; } }
+  @media (prefers-reduced-motion: reduce) { .stamp .press::after { width:100%; } }
+  @keyframes sweep { to { width:100%; } }
+  .stamp__line { display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:13px; color:var(--text-faint); opacity:.3; }
+  .stamp__line i { color: var(--accent); font-size:15px; }
+  .stamp.go .stamp__line, .stamp .stamp__line.lit { color: var(--text); opacity:1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .stamp.go .stamp__line { transition: opacity .5s ease, color .5s ease; }
+    .stamp.go .stamp__line:nth-child(2){ transition-delay:.7s } .stamp.go .stamp__line:nth-child(3){ transition-delay:.95s }
+    .stamp.go .stamp__line:nth-child(4){ transition-delay:1.2s } .stamp.go .stamp__line:nth-child(5){ transition-delay:1.45s }
+    .stamp.go .stamp__line:nth-child(6){ transition-delay:1.7s }
+  }
+
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #12101c; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+
+  .chiplabel { font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:.14em; color:var(--text-faint); }
+
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* the guardrail rail: each discipline clicks into place */
+  .rail { display:grid; gap:0; }
+  .guard {
+    display:grid; grid-template-columns: 26px 1fr auto; align-items:start; gap:11px;
+    padding:12px 14px; border-top:1px solid var(--border);
+    opacity:.34; filter:grayscale(1); transition: opacity .45s ease, filter .45s ease, background .45s ease;
+  }
+  .guard:first-child { border-top:0; }
+  .guard.lit { opacity:1; filter:none; background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .guard__ico { width:26px; height:26px; border-radius:7px; display:grid; place-items:center; border:1px solid var(--border-2); color:var(--text-dim); }
+  .guard.lit .guard__ico { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+  .guard__name { font-family:var(--font-mono); font-size:12.5px; color:#fff; }
+  .guard__hook { font-family:var(--font-mono); font-size:11px; color:var(--text-faint); }
+  .guard__desc { font-size:12.5px; color:var(--text-dim); margin-top:3px; line-height:1.5; }
+  .guard__state { font-family:var(--font-mono); font-size:11px; color:var(--text-faint); white-space:nowrap; }
+  .guard.lit .guard__state { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) { .guard { transition:none; } }
+
+  .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.05fr_0.95fr] gap-12 lg:gap-12 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      A raw repo goes in.<br class="hidden md:block" /> Disciplines come out.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[42ch] leading-relaxed">
+      workflow-forge reads your stack and OS, then stamps a tailored CLAUDE.md and the guardrails into place.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <!-- the stamp: a blank repo, the press sweeps, the disciplines appear -->
+  <div id="heroStamp" class="stamp" aria-hidden="true">
+    <div class="stamp__head"><i class="ph ph-stack" style="color:var(--accent)"></i> bare-repo &rarr; CLAUDE.md + guardrails</div>
+    <div class="stamp__body">
+      <div class="press"></div>
+      <div class="stamp__line"><i class="ph ph-file-text"></i> tailored CLAUDE.md</div>
+      <div class="stamp__line"><i class="ph ph-shield-check"></i> TDD guard, pre-commit gate</div>
+      <div class="stamp__line"><i class="ph ph-arrows-left-right"></i> symmetric-surface audit</div>
+      <div class="stamp__line"><i class="ph ph-plugs-connected"></i> capability sync</div>
+      <div class="stamp__line"><i class="ph ph-notebook"></i> TODO.md and WORKLOG.md</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE PROBLEM ===== -->
+<section id="problem" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">Every repo relearns the same rules.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[62ch] mx-auto leading-relaxed">
+      A fresh checkout has no CLAUDE.md, no test gate, no convention to point at. So the model guesses your commands and your house style. workflow-forge detects the stack instead of pasting a template, and wires the disciplines in once.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Pick a stack. Forge the workflow.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[62ch] leading-relaxed">
+      The detector reports the host OS and toolchain. workflow-forge fills the CLAUDE.md from the real commands it finds, then clicks each guardrail into place. Switch the stack or OS and the output adapts.
+    </p>
+  </div>
+
+  <!-- controls -->
+  <div class="mt-9 reveal grid gap-4 sm:grid-cols-[auto_1fr] sm:items-center sm:gap-x-7 gap-y-4">
+    <span class="chiplabel">Stack</span>
+    <div id="stackChips" class="flex flex-wrap gap-2.5" role="group" aria-label="Choose a stack"></div>
+    <span class="chiplabel">Host OS</span>
+    <div id="osChips" class="flex flex-wrap gap-2.5" role="group" aria-label="Choose a host OS"></div>
+  </div>
+
+  <div class="mt-7 reveal grid grid-cols-1 lg:grid-cols-[1.08fr_0.92fr] gap-4 items-stretch">
+    <!-- generated CLAUDE.md -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-file-text"></i> <span id="cmTitle">CLAUDE.md</span><span id="osTag" class="ml-auto text-[color:var(--text-faint)]" style="font-size:11px"></span></div>
+      <div id="claudeMd" class="pane__body" style="min-height:300px"></div>
+    </div>
+    <!-- the guardrail rail -->
+    <div class="pane">
+      <div class="pane__bar"><i class="ph ph-shield-check"></i> guardrails <span id="railState" class="ml-auto" style="font-size:11px;color:var(--text-faint)">idle</span></div>
+      <div id="rail" class="rail"></div>
+    </div>
+  </div>
+
+  <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+    <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+    <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--accent)"></span> Stamped from detection</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> Created if missing</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Existing file, never overwritten</span>
+    <span class="ml-auto font-mono text-[11px] text-[color:var(--text-faint)]">Illustrative output. Example commands.</span>
+  </div>
+</section>
+
+<!-- ===== INSTALL / INVOKE ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Bootstrap any repo.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        It does not ship a fixed CLAUDE.md. It generates one into the repo it runs in, adapting to the detected stack and host OS, and never overwrites an existing CLAUDE.md without your go-ahead.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-magnifying-glass accent mt-0.5"></i> Detects JS/TS, .NET, Rust, Go, and Python, plus the host OS.</li>
+        <li class="flex gap-3"><i class="ph ph-shield-check accent mt-0.5"></i> Wires in the TDD guard, pre-commit gate, and symmetric audit.</li>
+        <li class="flex gap-3"><i class="ph ph-notebook accent mt-0.5"></i> Seeds TODO.md and WORKLOG.md and keeps them honest.</li>
+      </ul>
+      <p class="mt-7 font-mono text-[12px] text-[color:var(--text-faint)] leading-relaxed">
+        2 skills: bootstrap, sync-capabilities.<br />
+        2 agents: iterative-reviewer, symmetric-auditor.
+      </p>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and bootstrap</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add the marketplace once</div>
+        <div><span class="accent">/plugin marketplace add</span> LlamaopNV/Claude_Code_Empowerments-</div>
+        <div style="color:var(--text-dim)">&gt; then <span class="accent">/plugin</span>, install <span style="color:#fff">workflow-forge</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># inside a project, stamp the workflow in</div>
+        <div><span class="accent">/workflow-forge:bootstrap</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># confirm the companion plugins are present</div>
+        <div><span class="accent">/workflow-forge:sync-capabilities</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># or just ask</div>
+        <div style="color:var(--text-dim)">"set up the workflow for this repo"</div>
+        <div style="color:var(--text-dim)">"bootstrap a CLAUDE.md here"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#9d8cf5',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The problem', href: '#problem' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'workflow-forge · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ----- hero stamp: sweep the press once when it scrolls into view -----
+  (function heroStamp() {
+    const el = document.getElementById('heroStamp');
+    if (reduce) { el.classList.add('go'); return; }
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { el.classList.add('go'); io.unobserve(el); }
+    }), { threshold: 0.4 });
+    io.observe(el);
+  })();
+
+  // ----- stacks: real detector fields (os, package_manager, framework, test_runner, linter) -----
+  // CLAUDE.md lines mirror the bootstrap template: Commands, Development Workflow, Symmetric Surfaces.
+  // state: ctx neutral, add = created/stamped, intent = pre-existing, kept.
+  const STACKS = {
+    node: {
+      chip: 'Node · Vite', title: 'CLAUDE.md', detect: 'pnpm · vite · vitest · eslint',
+      cmd: { install: 'pnpm install', dev: 'pnpm dev', test: 'pnpm test', lint: 'pnpm lint', types: 'pnpm check-types' },
+      tdd: 'Write the failing vitest spec first. The guard reminds when source lands with no test.',
+      sib: 'create plus edit plus view, a schema plus its callers and forms.',
+    },
+    dotnet: {
+      chip: '.NET · ASP.NET', title: 'CLAUDE.md', detect: 'dotnet · aspnet-core · xunit · dotnet-format',
+      cmd: { install: 'dotnet restore', dev: 'dotnet run', test: 'dotnet test', lint: 'dotnet format', build: 'dotnet build' },
+      tdd: 'Write the failing xUnit test first in the Foo.Tests project. Red, green, refactor.',
+      sib: 'a command plus its query, the validator, and the DTO mappers.',
+    },
+    python: {
+      chip: 'Python · pytest', title: 'CLAUDE.md', detect: 'python · pyproject.toml · pytest · ruff',
+      cmd: { install: 'uv sync', dev: 'uv run app', test: 'pytest', lint: 'ruff check', types: 'mypy .' },
+      tdd: 'Write the failing pytest case first. The pre-commit gate runs pytest before every commit.',
+      sib: 'a route plus its handler, the schema, and the serializer.',
+    },
+  };
+
+  // host OS shapes one shell idiom in the generated guidance (true to the skill's OS step)
+  const OSES = {
+    windows: { chip: 'Windows', tag: 'os: windows', note: 'run shell snippets under Git Bash on Windows.' },
+    macos:   { chip: 'macOS',   tag: 'os: macos',   note: 'macOS or Linux shell; commands are POSIX.' },
+    linux:   { chip: 'Linux',   tag: 'os: linux',   note: 'macOS or Linux shell; commands are POSIX.' },
+  };
+
+  // the five real hooks / disciplines workflow-forge wires in
+  const GUARDS = [
+    { ico: 'ph-magnifying-glass', name: 'session-start nudge', hook: 'SessionStart', desc: 'Suggests bootstrap when no CLAUDE.md exists yet.', state: 'active' },
+    { ico: 'ph-git-commit',       name: 'pre-commit gate',     hook: 'PreToolUse(Bash)', desc: 'Runs lint and tests before a commit, blocks on failure.', state: 'blocking' },
+    { ico: 'ph-shield-check',     name: 'TDD guard',           hook: 'PreToolUse(Write|Edit)', desc: 'Reminds, or blocks, when source lands with no matching test.', state: 'warn' },
+    { ico: 'ph-arrows-left-right',name: 'symmetric audit',     hook: 'PostToolUse(Write|Edit)', desc: 'Flags sibling surfaces on schema, router, route, and form edits.', state: 'active' },
+    { ico: 'ph-notebook',         name: 'worklog reminder',    hook: 'Stop', desc: 'Nudges when WORKLOG.md falls behind the work.', state: 'active' },
+  ];
+
+  let curStack = 'node';
+  let curOs = 'windows';
+
+  const cmEl = document.getElementById('claudeMd');
+  const cmTitle = document.getElementById('cmTitle');
+  const osTag = document.getElementById('osTag');
+  const railEl = document.getElementById('rail');
+  const railState = document.getElementById('railState');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // build the CLAUDE.md line model for a stack + os.
+  function modelFor(stackKey, osKey) {
+    const s = STACKS[stackKey];
+    const c = s.cmd;
+    const cmds = [];
+    cmds.push(['add', '+', c.install + '        # restore deps']);
+    if (c.build) cmds.push(['add', '+', c.build + '          # build']);
+    cmds.push(['add', '+', c.dev + '            # start dev']);
+    cmds.push(['add', '+', c.lint + '          # lint and format']);
+    if (c.types) cmds.push(['add', '+', c.types + '     # type check']);
+    cmds.push(['add', '+', c.test + '           # run tests']);
+
+    return [
+      ['ctx', '', '# CLAUDE.md'],
+      ['intent', '~', '# existing project conventions win over defaults'],
+      ['ctx', '', ''],
+      ['ctx', '', '## Commands'],
+      ['ctx', '', '```bash'],
+      ...cmds,
+      ['ctx', '', '```'],
+      ['ctx', '', ''],
+      ['ctx', '', '## Development Workflow'],
+      ['add', '+', '- TDD. ' + s.tdd],
+      ['add', '+', '- PR target is staging, not the default branch.'],
+      ['add', '+', '- Pre-commit gate. Lint and tests gate every commit.'],
+      ['ctx', '', ''],
+      ['ctx', '', '## Symmetric Surfaces'],
+      ['add', '+', '- Families here: ' + s.sib],
+      ['add', '+', '- At review, run @agent-workflow-forge:symmetric-auditor.'],
+      ['ctx', '', ''],
+      ['ctx', '', '## Tracking Files'],
+      ['add', '+', '- WORKLOG.md is append-only, one line per action.'],
+      ['add', '+', '- TODO.md pins: thank Chris, Olivier and Sandeep.'],
+      ['ctx', '', ''],
+      ['ctx', '', '# note: ' + OSES[osKey].note],
+    ];
+  }
+
+  function renderMd(lines, animate) {
+    cmEl.innerHTML = lines.map(([m, gut, text]) =>
+      `<div class="row ${m} ${animate ? 'row-anim' : ''}"><span class="gut">${gut || '&nbsp;'}</span><span>${escapeHtml(text)}</span></div>`
+    ).join('');
+  }
+
+  function renderRail(litCount) {
+    railEl.innerHTML = GUARDS.map((g, i) =>
+      `<div class="guard ${i < litCount ? 'lit' : ''}">` +
+        `<div class="guard__ico"><i class="ph ${g.ico}" aria-hidden="true"></i></div>` +
+        `<div><div class="guard__name">${g.name}</div>` +
+        `<div class="guard__hook">${g.hook}</div>` +
+        `<div class="guard__desc">${escapeHtml(g.desc)}</div></div>` +
+        `<div class="guard__state">${i < litCount ? g.state : 'off'}</div>` +
+      `</div>`
+    ).join('');
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  function play() {
+    clearTimers();
+    const s = STACKS[curStack];
+    const o = OSES[curOs];
+    cmTitle.textContent = s.title;
+    osTag.textContent = o.tag;
+    const lines = modelFor(curStack, curOs);
+
+    if (reduce) {
+      renderMd(lines, false);
+      renderRail(GUARDS.length);
+      railState.textContent = 'wired';
+      setAudit('forged for ' + s.detect + ', ' + o.tag + '. ' + GUARDS.length + ' guardrails live.', false);
+      return;
+    }
+
+    cmEl.innerHTML = '';
+    renderRail(0);
+    railState.textContent = 'detecting';
+    setAudit('detecting stack and host OS', true);
+
+    after(700, () => setAudit('detected: ' + s.detect + ', ' + o.tag, true));
+    after(1400, () => { renderMd(lines, true); railState.textContent = 'stamping'; setAudit('filling CLAUDE.md from the real commands', true); });
+
+    // click each guardrail into place, one by one
+    after(2600, () => { renderRail(1); setAudit('wiring guardrails: session-start nudge', true); });
+    after(2950, () => { renderRail(2); setAudit('wiring guardrails: pre-commit gate', true); });
+    after(3300, () => { renderRail(3); setAudit('wiring guardrails: TDD guard', true); });
+    after(3650, () => { renderRail(4); setAudit('wiring guardrails: symmetric audit', true); });
+    after(4000, () => { renderRail(5); railState.textContent = 'wired'; setAudit('wiring guardrails: worklog reminder', true); });
+    after(4600, () => setAudit('forged. CLAUDE.md, TODO.md, WORKLOG.md written. ' + GUARDS.length + ' guardrails live.', false));
+  }
+
+  // build chips
+  function buildChips(el, dict, getCur, setCur) {
+    Object.entries(dict).forEach(([key, v], i) => {
+      const b = document.createElement('button');
+      b.className = 'chip';
+      b.textContent = v.chip;
+      b.setAttribute('aria-pressed', key === getCur() ? 'true' : 'false');
+      b.addEventListener('click', () => {
+        [...el.children].forEach((c) => c.setAttribute('aria-pressed', 'false'));
+        b.setAttribute('aria-pressed', 'true');
+        setCur(key);
+        play();
+      });
+      el.appendChild(b);
+    });
+  }
+  buildChips(document.getElementById('stackChips'), STACKS, () => curStack, (k) => curStack = k);
+  buildChips(document.getElementById('osChips'), OSES, () => curOs, (k) => curOs = k);
+  replayBtn.addEventListener('click', play);
+
+  // static first paint until the demo scrolls into view
+  (function initStatic() {
+    const s = STACKS[curStack];
+    cmTitle.textContent = s.title;
+    osTag.textContent = OSES[curOs].tag;
+    renderMd(modelFor(curStack, curOs).map(([, , t]) => ['ctx', '', t]), false);
+    renderRail(0);
+    setAudit('pick a stack to forge the workflow', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>

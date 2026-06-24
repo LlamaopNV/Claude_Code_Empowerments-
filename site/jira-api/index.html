@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>jira-api · query out, issues back</title>
+<meta name="description" content="jira-api gives a skill the Jira REST API as prebuilt scripts: search with JQL, read and write issues, move workflow states, comment in ADF, and work the sprint board. A showcase of a real request to response readout." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* jira-api specific: the request to response wire, demo chrome, issue rows */
+
+  /* hero wire: a JQL request leaving on the left, structured rows arriving on the right */
+  .wire { position: relative; }
+  .wire svg { display: block; width: 100%; height: 100%; }
+  .wire path {
+    fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round;
+    stroke-dasharray: 240; stroke-dashoffset: 240;
+    filter: drop-shadow(0 0 5px color-mix(in srgb, var(--accent) 45%, transparent));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wire path { animation: flow 1.5s cubic-bezier(.7,0,.3,1) .4s forwards; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wire path { stroke-dashoffset: 0; } }
+  @keyframes flow { to { stroke-dashoffset: 0; } }
+  .wire__pulse {
+    fill: var(--accent); r: 3.5;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--accent) 70%, transparent));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wire__pulse { animation: travel 1.9s linear .4s infinite; }
+  }
+  @media (prefers-reduced-motion: reduce) { .wire__pulse { display: none; } }
+
+  /* demo controls */
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #0b1016; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+  .chip i { font-size: 14px; }
+
+  .method {
+    font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .04em;
+    padding: 2px 8px; border-radius: 5px; color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 34%, transparent);
+  }
+
+  .auditline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* issue rows in the response pane */
+  .issue { display: grid; grid-template-columns: 78px 1fr auto; gap: 12px; align-items: center; padding: 9px 14px; border-top: 1px solid var(--border); font-family: var(--font-mono); font-size: 12.5px; }
+  .issue:first-of-type { border-top: 0; }
+  .issue__key { color: var(--accent); }
+  .issue__sum { color: #cfcfd6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .badge { font-size: 11px; padding: 1px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid var(--border-2); color: var(--text-dim); }
+  .badge--done { color: var(--add); background: rgba(92,191,142,0.12); border-color: rgba(92,191,142,0.3); }
+  .badge--prog { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); border-color: color-mix(in srgb, var(--accent) 30%, transparent); }
+  .num { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.02fr_0.98fr] gap-12 lg:gap-10 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      One JQL line out.<br class="hidden md:block" /> Structured issues back.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[38ch] leading-relaxed">
+      jira-api hands a skill the Jira REST API as ready scripts: search, read, write, transition, comment, and work the board. No auth boilerplate.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-[1fr_44px_1fr] items-stretch gap-0" aria-hidden="true">
+    <div class="pane self-center">
+      <div class="pane__bar"><i class="ph ph-magnifying-glass" style="color:var(--accent)"></i> jira-search.sh</div>
+      <div class="pane__body">
+        <div class="row ctx"><span class="gut">$</span><span>jira-search.sh \</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>  'project = ABC</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>   AND status</span></div>
+        <div class="row ctx"><span class="gut">&nbsp;</span><span>   = "In Progress"'</span></div>
+      </div>
+    </div>
+    <div class="wire relative self-stretch">
+      <svg viewBox="0 0 44 200" preserveAspectRatio="none">
+        <path d="M2 40 C 26 40, 18 100, 42 100 C 18 100, 26 160, 2 160" />
+        <circle class="wire__pulse" cx="2" cy="100">
+          <animateMotion dur="1.9s" begin="0.4s" repeatCount="indefinite" path="M0 -60 C 24 -60, 16 0, 40 0 C 16 0, 24 60, 0 60" />
+        </circle>
+      </svg>
+    </div>
+    <div class="pane self-center">
+      <div class="pane__bar"><i class="ph ph-rows" style="color:var(--accent)"></i> results, TSV</div>
+      <div class="pane__body" style="padding-top:6px;padding-bottom:6px">
+        <div class="issue"><span class="issue__key">ABC-128</span><span class="issue__sum">Rate-limit the API</span><span class="badge badge--prog">In Progress</span></div>
+        <div class="issue"><span class="issue__key">ABC-131</span><span class="issue__sum">Fix board sync</span><span class="badge badge--prog">In Progress</span></div>
+        <div class="issue"><span class="issue__key">ABC-140</span><span class="issue__sum">ADF for comments</span><span class="badge badge--prog">In Progress</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE FRICTION ===== -->
+<section id="friction" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">The API is the easy part. The plumbing isn't.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[62ch] mx-auto leading-relaxed">
+      Basic-auth headers, the right base URL, the moved search endpoint, transition IDs you have to look up, and
+      comments that must arrive as ADF. jira-api absorbs all of it so a skill just asks for the issue.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Pick an operation. Watch the round trip.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[60ch] leading-relaxed">
+      Each is a real script from the skill. The left pane shows the call it makes and the REST endpoint behind it.
+      The right pane fills with the response. Issue data shown is example data.
+    </p>
+  </div>
+
+  <div id="chips" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Choose an operation"></div>
+
+  <div class="mt-7 reveal">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+      <div id="paneReq" class="pane"></div>
+      <div id="paneRes" class="pane"></div>
+    </div>
+
+    <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+      <div class="auditline flex items-center"><span id="auditText"></span><span id="caret" class="blink"></span></div>
+      <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+    </div>
+
+    <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+      <span class="flex items-center gap-2"><span class="dot" style="background:var(--accent)"></span> Request the skill sends</span>
+      <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> Returned by Jira</span>
+      <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Auth, handled for you</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INSTALL / RUN ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.92fr_1.08fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Wire it once, then just ask.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        It is a reference plus scripts skill, so it loads when another skill needs Jira. Set five env values in your
+        project, and the scripts handle auth, URLs, and error checking on every call.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-key accent mt-0.5"></i> Auth from JIRA_BASE_URL, JIRA_API_TOKEN, JIRA_EMAIL.</li>
+        <li class="flex gap-3"><i class="ph ph-list-magnifying-glass accent mt-0.5"></i> Search, CRUD, transitions, comments, sprints, and epics.</li>
+        <li class="flex gap-3"><i class="ph ph-text-aa accent mt-0.5"></i> Plain text wraps into ADF for you on every comment.</li>
+      </ul>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> set up and call</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># set per project in .claude/settings.json env</div>
+        <div><span class="accent">JIRA_BASE_URL</span>=https://your-org.atlassian.net</div>
+        <div><span class="accent">JIRA_API_TOKEN</span>=<span style="color:var(--text-dim)">your-token</span></div>
+        <div><span class="accent">JIRA_PROJECT</span>=ABC<span style="color:var(--text-faint)">   JIRA_BOARD=42</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># the scripts live in the skill dir</div>
+        <div><span class="accent">${CLAUDE_SKILL_DIR}/scripts/jira-search.sh</span></div>
+        <div style="margin-top:16px;color:var(--text-faint)"># or just ask, the skill loads itself</div>
+        <div style="color:var(--text-dim)">"what is in the active sprint?"</div>
+        <div style="color:var(--text-dim)">"move ABC-42 to In Progress and comment"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#5b8def',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The friction', href: '#friction' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'jira-api · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Each op is a real script from SKILL.md, with the actual endpoint and example data.
+  const OPS = [
+    {
+      id: 'search', chip: 'Search by JQL', icon: 'ph-magnifying-glass',
+      reqTitle: 'jira-search.sh', method: 'GET', endpoint: '/rest/api/3/search/jql',
+      req: [
+        ['intent','~','auth + base url from _lib.sh'],
+        ['ctx','$','jira-search.sh \\'],
+        ['ctx','','  \'project = ABC AND \\'],
+        ['ctx','','   status = "In Progress"\''],
+      ],
+      resTitle: 'results, TSV', resKind: 'issues',
+      issues: [
+        ['ABC-128','Rate-limit the public API','prog','In Progress'],
+        ['ABC-131','Fix board sync on transition','prog','In Progress'],
+        ['ABC-140','Wrap comments as ADF','prog','In Progress'],
+      ],
+      steps: [
+        'sending GET /rest/api/3/search/jql',
+        'matched 3 issues, returning key, summary, status, assignee',
+      ],
+      done: '3 rows back as TSV, ready to pipe.',
+    },
+    {
+      id: 'transition', chip: 'Transition a workflow state', icon: 'ph-arrows-left-right',
+      reqTitle: 'jira-transition.sh', method: 'POST', endpoint: '/rest/api/3/issue/ABC-42/transitions',
+      req: [
+        ['intent','~','looks up the transition id for you'],
+        ['ctx','$','jira-transition.sh \\'],
+        ['ctx','','  ABC-42 "In Progress"'],
+      ],
+      resTitle: 'response', resKind: 'lines',
+      lines: [
+        ['ctx','','GET .../transitions'],
+        ['ctx','','  "In Progress" -> id 21'],
+        ['add','+','POST .../transitions {21}'],
+        ['add','=','ABC-42 now In Progress'],
+      ],
+      steps: [
+        'reading available transitions for ABC-42',
+        'matched "In Progress" to id 21, posting it',
+      ],
+      done: 'state changed, no manual id lookup.',
+    },
+    {
+      id: 'comment', chip: 'Comment in ADF', icon: 'ph-chat-text',
+      reqTitle: 'jira-comment.sh', method: 'POST', endpoint: '/rest/api/3/issue/ABC-42/comment',
+      req: [
+        ['intent','~','plain text wraps into ADF'],
+        ['ctx','$','jira-comment.sh ABC-42 \\'],
+        ['ctx','','  "deploy is green"'],
+      ],
+      resTitle: 'sent body, ADF', resKind: 'lines',
+      lines: [
+        ['ctx','','{ "type": "doc",'],
+        ['ctx','','  "version": 1,'],
+        ['add','+','  "content": [ paragraph'],
+        ['add','+','    text: "deploy is green" ]'],
+        ['ctx','','}'],
+      ],
+      steps: [
+        'wrapping text in an ADF paragraph doc',
+        'posting the comment to ABC-42',
+      ],
+      done: 'comment posted in valid ADF.',
+    },
+    {
+      id: 'create', chip: 'Create an issue', icon: 'ph-plus-circle',
+      reqTitle: 'jira-create-issue.sh', method: 'POST', endpoint: '/rest/api/3/issue',
+      req: [
+        ['intent','~','project key + Story type injected'],
+        ['ctx','$','jira-create-issue.sh \\'],
+        ['ctx','','  \'{"summary":"Add retries"}\''],
+      ],
+      resTitle: 'created', resKind: 'lines',
+      lines: [
+        ['ctx','','project: ABC, type: Story'],
+        ['add','+','ABC-141 created'],
+        ['add','=','https://your-org.atlassian'],
+        ['ctx','','  .net/browse/ABC-141'],
+      ],
+      steps: [
+        'injecting project key ABC and issuetype Story',
+        'posting the new issue',
+      ],
+      done: 'ABC-141 created, browse url returned.',
+    },
+  ];
+
+  const chipsEl = document.getElementById('chips');
+  const paneReq = document.getElementById('paneReq');
+  const paneRes = document.getElementById('paneRes');
+  const auditText = document.getElementById('auditText');
+  const caret = document.getElementById('caret');
+  const replayBtn = document.getElementById('replay');
+
+  let timers = [];
+  let current = OPS[0];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const at = (ms, fn) => timers.push(setTimeout(fn, ms));
+
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function renderReq(op, animate) {
+    const rows = op.req.map(([m, gut, text]) =>
+      `<div class="row ${m} ${animate ? 'row-anim' : ''}"><span class="gut">${gut || '&nbsp;'}</span><span>${esc(text)}</span></div>`
+    ).join('');
+    paneReq.innerHTML =
+      `<div class="pane__bar"><i class="ph ${op.icon}" style="color:var(--accent)"></i> ${op.reqTitle}` +
+      `<span style="margin-left:auto;display:flex;align-items:center;gap:8px">` +
+      `<span class="method">${op.method}</span><span style="color:var(--text-faint);font-size:11.5px">${esc(op.endpoint)}</span></span></div>` +
+      `<div class="pane__body">${rows}</div>`;
+  }
+
+  function emptyRes(op) {
+    paneRes.innerHTML =
+      `<div class="pane__bar"><i class="ph ph-rows" style="color:var(--text-faint)"></i> ${op.resTitle}</div>` +
+      `<div class="pane__body" style="min-height:118px;display:flex;align-items:center;justify-content:center;color:var(--text-faint)">awaiting response</div>`;
+  }
+
+  function renderRes(op, animate) {
+    let inner;
+    if (op.resKind === 'issues') {
+      inner = op.issues.map(([key, sum, cls, label], i) =>
+        `<div class="issue ${animate ? 'row-anim' : ''}" style="${animate ? 'animation-delay:' + (i * 110) + 'ms' : ''}">` +
+        `<span class="issue__key">${key}</span><span class="issue__sum">${esc(sum)}</span>` +
+        `<span class="badge badge--${cls}">${label}</span></div>`
+      ).join('');
+      paneRes.innerHTML =
+        `<div class="pane__bar"><i class="ph ph-rows" style="color:var(--add)"></i> ${op.resTitle}</div>` +
+        `<div class="pane__body" style="padding-top:4px;padding-bottom:4px">${inner}</div>`;
+    } else {
+      inner = op.lines.map(([m, gut, text], i) =>
+        `<div class="row ${m} ${animate ? 'row-anim' : ''}" style="${animate ? 'animation-delay:' + (i * 100) + 'ms' : ''}">` +
+        `<span class="gut">${gut || '&nbsp;'}</span><span>${esc(text)}</span></div>`
+      ).join('');
+      paneRes.innerHTML =
+        `<div class="pane__bar"><i class="ph ph-brackets-curly" style="color:var(--add)"></i> ${op.resTitle}</div>` +
+        `<div class="pane__body">${inner}</div>`;
+    }
+  }
+
+  function setAudit(text, showCaret) {
+    auditText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  function play(op) {
+    clearTimers();
+    current = op;
+    renderReq(op, !reduce);
+    emptyRes(op);
+
+    if (reduce) {
+      renderReq(op, false);
+      renderRes(op, false);
+      setAudit(op.done, false);
+      return;
+    }
+
+    setAudit('', true);
+    at(450, () => setAudit(op.steps[0], true));
+    at(1500, () => setAudit(op.steps[1], true));
+    at(2500, () => { renderRes(op, true); setAudit(op.done, false); });
+  }
+
+  OPS.forEach((op, i) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.innerHTML = `<i class="ph ${op.icon}" aria-hidden="true"></i>${op.chip}`;
+    b.setAttribute('aria-pressed', i === 0 ? 'true' : 'false');
+    b.addEventListener('click', () => {
+      [...chipsEl.children].forEach(c => c.setAttribute('aria-pressed', 'false'));
+      b.setAttribute('aria-pressed', 'true');
+      play(op);
+    });
+    chipsEl.appendChild(b);
+  });
+  replayBtn.addEventListener('click', () => play(current));
+
+  (function initStatic() {
+    const op = OPS[0];
+    renderReq(op, false);
+    emptyRes(op);
+    setAudit('select an operation to send the request', false);
+  })();
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { play(OPS[0]); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>

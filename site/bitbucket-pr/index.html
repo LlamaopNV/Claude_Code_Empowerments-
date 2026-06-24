@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>bitbucket-pr · drive the pull request</title>
+<meta name="description" content="Drive the Bitbucket pull request lifecycle from the chat. bitbucket-pr creates, reviews, comments on, approves and merges PRs through the real Bitbucket Cloud API. A showcase of one card moving from open to merged, with the exact API call behind every transition." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: {
+      fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+      colors: { accent: 'var(--accent)' },
+      maxWidth: { content: '1180px' },
+    } },
+  };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  /* bitbucket-pr specific: the PR card, the lifecycle rail, demo chrome */
+
+  /* the PR card that travels the lifecycle */
+  .prcard {
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; transition: border-color .5s ease, box-shadow .5s ease;
+  }
+  .prcard__top { display: flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); }
+  .prcard__title { margin-top: 8px; font-weight: 600; font-size: 15px; line-height: 1.3; color: var(--text); }
+  .prcard__branch { margin-top: 9px; font-family: var(--font-mono); font-size: 12px; color: var(--text-dim); display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .prcard__branch code { color: var(--text); }
+  .prcard__foot { margin-top: 14px; display: flex; align-items: center; gap: 8px; }
+
+  /* the state badge inside the card. semantic state colours live ONLY here and in the rail */
+  .statebadge {
+    display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono);
+    font-size: 11.5px; padding: 3px 10px; border-radius: 999px; font-weight: 500;
+    border: 1px solid; transition: all .45s ease;
+  }
+  .statebadge[data-s="open"]      { color: var(--intent); border-color: color-mix(in srgb, var(--intent) 45%, transparent); background: rgba(139,139,149,0.10); }
+  .statebadge[data-s="changes"]   { color: var(--miss);   border-color: color-mix(in srgb, var(--miss) 45%, transparent);   background: rgba(215,112,104,0.10); }
+  .statebadge[data-s="approved"]  { color: var(--add);    border-color: color-mix(in srgb, var(--add) 45%, transparent);    background: rgba(92,191,142,0.10); }
+  .statebadge[data-s="merged"]    { color: var(--add);    border-color: color-mix(in srgb, var(--add) 55%, transparent);    background: rgba(92,191,142,0.16); }
+  .statebadge[data-s="declined"]  { color: var(--miss);   border-color: color-mix(in srgb, var(--miss) 55%, transparent);   background: rgba(215,112,104,0.16); }
+
+  .prcard[data-s="approved"] { border-color: color-mix(in srgb, var(--add) 40%, var(--border)); }
+  .prcard[data-s="merged"]   { border-color: color-mix(in srgb, var(--add) 55%, var(--border)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--add) 30%, transparent); }
+  .prcard[data-s="changes"]  { border-color: color-mix(in srgb, var(--miss) 40%, var(--border)); }
+  .prcard[data-s="declined"] { border-color: color-mix(in srgb, var(--miss) 55%, var(--border)); box-shadow: 0 0 0 1px color-mix(in srgb, var(--miss) 30%, transparent); }
+  @media (prefers-reduced-motion: reduce) { .prcard, .statebadge { transition: none; } }
+
+  /* the lifecycle rail: states the PR steps through */
+  .rail { display: flex; align-items: center; gap: 0; font-family: var(--font-mono); font-size: 11.5px; }
+  .rail__node { display: flex; align-items: center; gap: 7px; color: var(--text-faint); transition: color .4s ease; white-space: nowrap; }
+  .rail__node .pip { width: 8px; height: 8px; border-radius: 999px; background: var(--border-2); transition: background .4s ease, box-shadow .4s ease; flex: 0 0 8px; }
+  .rail__node.is-on { color: var(--text); }
+  .rail__node.is-on .pip { background: var(--accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent); }
+  .rail__node.is-done { color: var(--text-dim); }
+  .rail__node.is-done .pip { background: var(--accent); }
+  .rail__seg { flex: 1; height: 1px; min-width: 16px; background: var(--border-2); margin: 0 10px; transition: background .4s ease; }
+  .rail__seg.is-done { background: color-mix(in srgb, var(--accent) 60%, transparent); }
+  @media (prefers-reduced-motion: reduce) { .rail__node, .rail__node .pip, .rail__seg { transition: none; } }
+
+  /* chips */
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; padding: 8px 13px; border-radius: 999px;
+    border: 1px solid var(--border-2); color: var(--text-dim); background: transparent;
+    cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .chip:hover { color: var(--text); border-color: #50505a; }
+  .chip:active { transform: translateY(1px); }
+  .chip[aria-pressed="true"] { color: #04121f; background: var(--accent); border-color: var(--accent); font-weight: 500; }
+  .chip:disabled { opacity: .4; cursor: not-allowed; }
+
+  .callerline { font-family: var(--font-mono); font-size: 12.5px; min-height: 20px; color: var(--text-dim); }
+  .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* the HTTP verb tag inside a pane bar */
+  .verb { font-weight: 600; letter-spacing: .04em; }
+  .verb-post { color: var(--accent); }
+  .verb-get  { color: var(--text-dim); }
+</style>
+</head>
+
+<body class="font-sans">
+
+<main id="top">
+
+<!-- ===== HERO ===== -->
+<section class="max-w-content mx-auto px-5 pt-16 md:pt-20 pb-20 min-h-[calc(100dvh-4rem)] grid lg:grid-cols-[1.04fr_0.96fr] gap-12 lg:gap-10 items-center">
+  <div>
+    <h1 class="font-semibold tracking-tighter leading-[1.04] text-[2.6rem] md:text-6xl">
+      Move the pull request,<br class="hidden md:block" /> not your hands.
+    </h1>
+    <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[38ch] leading-relaxed">
+      bitbucket-pr drives a Bitbucket pull request through its whole life from the chat: open, review, approve, merge. Each step is a real API call.
+    </p>
+    <div class="mt-9 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it run</a>
+      <a href="#run" class="btn-ghost">Read the skill</a>
+    </div>
+  </div>
+
+  <!-- hero visual: the PR card sitting at OPEN, with the lifecycle rail beneath -->
+  <div aria-hidden="true">
+    <div class="prcard" data-s="open">
+      <div class="prcard__top"><i class="ph ph-git-pull-request" style="color:var(--accent)"></i> pull request #128</div>
+      <div class="prcard__title">Add rate limiting to the auth gateway</div>
+      <div class="prcard__branch">
+        <code>feat/rate-limit</code>
+        <i class="ph ph-arrow-right" style="font-size:12px"></i>
+        <code>main</code>
+      </div>
+      <div class="prcard__foot">
+        <span class="statebadge" data-s="open"><i class="ph ph-circle-dashed"></i> OPEN</span>
+        <span class="prcard__branch" style="margin:0;color:var(--text-faint)">0 approvals</span>
+      </div>
+    </div>
+
+    <div class="mt-6 rail">
+      <div class="rail__node is-on"><span class="pip"></span> open</div>
+      <div class="rail__seg"></div>
+      <div class="rail__node"><span class="pip"></span> reviewed</div>
+      <div class="rail__seg"></div>
+      <div class="rail__node"><span class="pip"></span> merged</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE FRICTION ===== -->
+<section id="friction" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 text-center reveal">
+    <h2 class="font-semibold tracking-tight text-3xl md:text-[2.6rem] leading-tight">The work is done. The clicking has just begun.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] max-w-[60ch] mx-auto leading-relaxed">
+      Open the browser, fill the create form, chase reviewers, drop the inline comment, come back to approve, pick a merge strategy. bitbucket-pr does all of it through the Bitbucket Cloud API without you leaving the conversation.
+    </p>
+  </div>
+</section>
+
+<!-- ===== INTERACTIVE DEMO ===== -->
+<section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Interactive</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Step the PR through its life.</h2>
+    <p class="mt-4 text-[color:var(--text-dim)] max-w-[60ch] leading-relaxed">
+      Run the lifecycle one action at a time, or pick a path. The card on the left changes state. The pane on the right shows the exact Bitbucket API call the skill fires for that step: method, endpoint, and body.
+    </p>
+  </div>
+
+  <div id="actions" class="mt-9 flex flex-wrap gap-2.5 reveal" role="group" aria-label="Pull request actions"></div>
+
+  <div class="mt-7 grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-6 lg:gap-7 items-start reveal">
+    <!-- LEFT: the live PR card + lifecycle rail -->
+    <div>
+      <div id="card" class="prcard" data-s="open">
+        <div class="prcard__top"><i class="ph ph-git-pull-request" style="color:var(--accent)"></i> pull request <span id="cardId">#128</span></div>
+        <div class="prcard__title" id="cardTitle">Add rate limiting to the auth gateway</div>
+        <div class="prcard__branch">
+          <code id="cardSrc">feat/rate-limit</code>
+          <i class="ph ph-arrow-right" style="font-size:12px"></i>
+          <code id="cardDest">main</code>
+        </div>
+        <div class="prcard__foot">
+          <span class="statebadge" id="cardBadge" data-s="open"><i class="ph ph-circle-dashed"></i> OPEN</span>
+          <span id="cardMeta" class="prcard__branch" style="margin:0;color:var(--text-faint)">0 approvals</span>
+        </div>
+      </div>
+
+      <div class="mt-6 rail" id="rail">
+        <div class="rail__node" data-n="open"><span class="pip"></span> open</div>
+        <div class="rail__seg" data-seg="0"></div>
+        <div class="rail__node" data-n="reviewed"><span class="pip"></span> reviewed</div>
+        <div class="rail__seg" data-seg="1"></div>
+        <div class="rail__node" data-n="closed"><span class="pip"></span> closed</div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between gap-4 flex-wrap">
+        <div class="callerline flex items-center"><span id="callerText"></span><span id="caret" class="blink"></span></div>
+        <button id="replay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Reset</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: the actual API call for the current step -->
+    <div id="callPane" class="pane">
+      <div class="pane__bar" id="callBar"><i class="ph ph-globe-simple"></i> <span class="verb verb-post">POST</span> <span id="callPath" style="color:var(--text-dim)">/pullrequests</span></div>
+      <div class="pane__body" id="callBody"></div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)] reveal">
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Open / pending</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> Approved or merged</span>
+    <span class="flex items-center gap-2"><span class="dot" style="background:var(--miss)"></span> Changes requested or declined</span>
+  </div>
+</section>
+
+<!-- ===== WHAT IT DRIVES (asymmetric grid, not 3 equal cards) ===== -->
+<section id="ops" class="max-w-content mx-auto px-5 pb-8 md:pb-16">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 reveal">
+    <div class="pane md:col-span-2" style="padding:0">
+      <div class="pane__bar"><i class="ph ph-list-checks" style="color:var(--accent)"></i> the eleven operations</div>
+      <div class="pane__body" style="padding:18px 20px;line-height:1.8">
+        <div class="grid grid-cols-2 gap-x-8 gap-y-1" style="color:var(--text-dim)">
+          <span><span class="accent">list</span> open, merged, declined PRs</span>
+          <span><span class="accent">view</span> a single PR</span>
+          <span><span class="accent">diff</span> the change set</span>
+          <span><span class="accent">comments</span> read the thread</span>
+          <span><span class="accent">create</span> from a branch</span>
+          <span><span class="accent">update</span> title, reviewers, target</span>
+          <span><span class="accent">comment</span> general or inline</span>
+          <span><span class="accent">comment-delete</span> remove one</span>
+          <span><span class="accent">approve</span> sign off</span>
+          <span><span class="accent">request-changes</span> block it</span>
+          <span><span class="accent">merge</span> commit, squash, fast-forward</span>
+        </div>
+      </div>
+    </div>
+    <div class="pane" style="padding:0">
+      <div class="pane__bar"><i class="ph ph-shield-check" style="color:var(--accent)"></i> guarded by design</div>
+      <div class="pane__body" style="padding:18px 20px;line-height:1.7;color:var(--text-dim)">
+        <p>Every write step (create, comment, approve, request-changes, merge) confirms with you before it touches the API.</p>
+        <p class="mt-3" style="color:var(--text-faint)">Auth is a Bitbucket Cloud App Password in <code style="color:var(--text-dim)">BB_USER</code> / <code style="color:var(--text-dim)">BB_TOKEN</code>, with workspace and repo defaulting from the git remote.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== INSTALL / RUN ===== -->
+<section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
+    <div class="reveal">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Run it without a tab switch.</h2>
+      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+        Set your App Password once, then drive the whole pull request from the chat. It is one of the Atlassian integration skills, so it pairs with jira-api on the same workflow.
+      </p>
+      <ul class="mt-7 space-y-3 text-[color:var(--text-dim)]">
+        <li class="flex gap-3"><i class="ph ph-git-pull-request accent mt-0.5"></i> Open, review, approve and merge through the Bitbucket Cloud API.</li>
+        <li class="flex gap-3"><i class="ph ph-chat-text accent mt-0.5"></i> Drop inline review comments anchored to a file and line.</li>
+        <li class="flex gap-3"><i class="ph ph-git-merge accent mt-0.5"></i> Merge with commit, squash, or fast-forward strategy.</li>
+      </ul>
+    </div>
+
+    <div class="reveal pane">
+      <div class="pane__bar"><i class="ph ph-terminal-window"></i> install and drive</div>
+      <div class="pane__body" style="padding:20px;font-size:13px;line-height:1.9">
+        <div style="color:var(--text-faint)"># add it from the catalog</div>
+        <div><span class="accent">/skill-installer</span></div>
+        <div style="color:var(--text-dim)">&gt; pick <span style="color:#fff">bitbucket-pr</span>, target project or global</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># set auth once (App Password)</div>
+        <div style="color:var(--text-dim)">export BB_USER=you  BB_TOKEN=app-password</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># then just ask</div>
+        <div style="color:var(--text-dim)">"open a PR from feat/rate-limit into main"</div>
+        <div style="color:var(--text-dim)">"approve and squash-merge PR 128"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase',
+    brandIcon: 'ph-stack',
+    accent: '#4aa8f0',
+    homeUrl: '../',
+    repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The friction', href: '#friction' },
+      { label: 'See it run', href: '#demo' },
+      { label: 'Install', href: '#run' },
+    ],
+    cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
+    footNote: 'bitbucket-pr · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+(() => {
+  'use strict';
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // ---- the PR we drive (example data, clearly fictional ids) ----
+  const PR = { id: 128, title: 'Add rate limiting to the auth gateway', src: 'feat/rate-limit', dest: 'main' };
+  const PATH = '/repositories/acme/gateway/pullrequests';
+
+  // Each step is a real bitbucket-pr operation: HTTP verb, endpoint, body, the
+  // resulting PR state, and the rail position it lands on.
+  // States: open -> reviewed (changes/approved) -> closed (merged/declined).
+  const STEPS = {
+    create: {
+      label: 'create', verb: 'POST', endpoint: PATH,
+      bar: 'pr-create.sh',
+      body: [
+        ['ctx','POST '+PATH],
+        ['ctx','{'],
+        ['ctx','  "title": "Add rate limiting to the auth gateway",'],
+        ['add','  "source": { "branch": { "name": "feat/rate-limit" } },'],
+        ['ctx','  "destination": { "branch": { "name": "main" } },'],
+        ['ctx','  "close_source_branch": true'],
+        ['ctx','}'],
+      ],
+      caller: 'created PR #128, state OPEN',
+      state: 'open', badge: ['open','OPEN','ph-circle-dashed'], meta: '0 approvals', rail: 'open',
+    },
+    comment: {
+      label: 'comment (inline)', verb: 'POST', endpoint: PATH+'/128/comments',
+      bar: 'pr-comment.sh',
+      body: [
+        ['ctx','POST '+PATH+'/128/comments'],
+        ['ctx','{'],
+        ['ctx','  "content": { "raw": "cap the window at 60s, not 60m" },'],
+        ['add','  "inline": { "path": "gateway/limiter.ts", "to": 42 }'],
+        ['ctx','}'],
+      ],
+      caller: 'inline comment added on gateway/limiter.ts:42',
+      state: 'open', badge: ['open','OPEN','ph-circle-dashed'], meta: '1 comment', rail: 'open',
+    },
+    changes: {
+      label: 'request-changes', verb: 'POST', endpoint: PATH+'/128/request-changes',
+      bar: 'pr-request-changes.sh',
+      body: [
+        ['ctx','POST '+PATH+'/128/request-changes'],
+        ['intent','# empty body. the reviewer status is the payload'],
+        ['miss','-> status: "changes_requested"'],
+      ],
+      caller: 'changes requested. author pushes a fix',
+      state: 'changes', badge: ['changes','CHANGES REQUESTED','ph-warning-circle'], meta: '1 reviewer blocking', rail: 'reviewed',
+    },
+    approve: {
+      label: 'approve', verb: 'POST', endpoint: PATH+'/128/approve',
+      bar: 'pr-approve.sh',
+      body: [
+        ['ctx','POST '+PATH+'/128/approve'],
+        ['intent','# empty body. POST registers your approval'],
+        ['add','-> "approved": true'],
+      ],
+      caller: 'approved PR #128',
+      state: 'approved', badge: ['approved','APPROVED','ph-check-circle'], meta: '1 approval', rail: 'reviewed',
+    },
+    merge: {
+      label: 'merge (squash)', verb: 'POST', endpoint: PATH+'/128/merge',
+      bar: 'pr-merge.sh',
+      body: [
+        ['ctx','POST '+PATH+'/128/merge'],
+        ['ctx','{'],
+        ['add','  "type": "squash",'],
+        ['ctx','  "close_source_branch": true'],
+        ['ctx','}'],
+      ],
+      caller: 'merged PR #128, source branch deleted',
+      state: 'merged', badge: ['merged','MERGED','ph-git-merge'], meta: 'squashed into main', rail: 'closed',
+    },
+  };
+
+  // ---- element refs ----
+  const actionsEl = document.getElementById('actions');
+  const card = document.getElementById('card');
+  const cardBadge = document.getElementById('cardBadge');
+  const cardMeta = document.getElementById('cardMeta');
+  const callBar = document.getElementById('callBar');
+  const callBody = document.getElementById('callBody');
+  const callerText = document.getElementById('callerText');
+  const caret = document.getElementById('caret');
+  const replayBtn = document.getElementById('replay');
+  const railEl = document.getElementById('rail');
+
+  let timers = [];
+  const clearTimers = () => { timers.forEach(clearTimeout); timers = []; };
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // chips: a guided sequence plus a fork at the review step
+  const SEQUENCE = ['create','comment','changes','approve','merge'];
+  let idx = -1; // index into SEQUENCE that has been applied
+
+  function renderCall(step, animate) {
+    const verbClass = step.verb === 'GET' ? 'verb-get' : 'verb-post';
+    callBar.innerHTML = `<i class="ph ph-globe-simple"></i> <span class="verb ${verbClass}">${step.verb}</span> <span style="color:var(--text-dim)">${escapeHtml(step.endpoint)}</span>`;
+    const rows = step.body.map(([m, text]) =>
+      `<div class="row ${m} ${animate ? 'row-anim' : ''}"><span class="gut">&nbsp;</span><span>${escapeHtml(text)}</span></div>`
+    ).join('');
+    callBody.innerHTML = rows;
+  }
+
+  function applyState(step) {
+    card.setAttribute('data-s', step.state);
+    const [s, label, icon] = step.badge;
+    cardBadge.setAttribute('data-s', s);
+    cardBadge.innerHTML = `<i class="ph ${icon}"></i> ${label}`;
+    cardMeta.textContent = step.meta;
+    // rail
+    const order = { open: 0, reviewed: 1, closed: 2 };
+    const pos = order[step.rail];
+    railEl.querySelectorAll('.rail__node').forEach((n) => {
+      const np = order[n.getAttribute('data-n')];
+      n.classList.toggle('is-on', np === pos);
+      n.classList.toggle('is-done', np < pos);
+    });
+    railEl.querySelectorAll('.rail__seg').forEach((seg) => {
+      const si = Number(seg.getAttribute('data-seg'));
+      seg.classList.toggle('is-done', si < pos);
+    });
+  }
+
+  function setCaller(text, showCaret) {
+    callerText.textContent = text;
+    caret.style.display = showCaret ? 'inline-block' : 'none';
+  }
+
+  // apply one named step (no narration timing); used by reduced motion + direct clicks
+  function apply(name, animate) {
+    const step = STEPS[name];
+    renderCall(step, animate);
+    applyState(step);
+    setCaller(step.caller, false);
+    syncChips(name);
+  }
+
+  // animated apply: show "calling", then land the result
+  function run(name) {
+    clearTimers();
+    const step = STEPS[name];
+    if (reduce) { apply(name, false); return; }
+    renderCall(step, true);
+    setCaller(step.verb + ' ' + step.endpoint.replace('/repositories/acme/gateway','') + ' ...', true);
+    after(750, () => { applyState(step); setCaller(step.caller, false); });
+    syncChips(name);
+  }
+
+  // chip state: which actions are reachable next
+  const FORK = ['changes','approve']; // either path is valid from open
+  function syncChips(applied) {
+    [...actionsEl.children].forEach((c) => {
+      const n = c.getAttribute('data-step');
+      c.setAttribute('aria-pressed', n === applied ? 'true' : 'false');
+    });
+  }
+
+  // build chips
+  const CHIP_DEFS = [
+    { step: 'create',   text: 'create' },
+    { step: 'comment',  text: 'comment' },
+    { step: 'changes',  text: 'request changes' },
+    { step: 'approve',  text: 'approve' },
+    { step: 'merge',    text: 'merge' },
+  ];
+  CHIP_DEFS.forEach((d) => {
+    const b = document.createElement('button');
+    b.className = 'chip';
+    b.textContent = d.text;
+    b.setAttribute('data-step', d.step);
+    b.addEventListener('click', () => run(d.step));
+    actionsEl.appendChild(b);
+  });
+
+  function reset() {
+    clearTimers();
+    apply('create', false);
+    setCaller('pick an action, or step create then approve then merge', false);
+  }
+  replayBtn.addEventListener('click', reset);
+
+  // initial static state (open, before any animation)
+  (function initStatic() {
+    apply('create', false);
+    setCaller('pick an action, or step create then approve then merge', false);
+  })();
+
+  // autoplay a happy path once when scrolled into view
+  function autoplay() {
+    if (reduce) { apply('merge', false); setCaller('merged PR #128, source branch deleted', false); return; }
+    clearTimers();
+    const path = ['create','comment','approve','merge'];
+    let i = 0;
+    const tick = () => {
+      run(path[i]);
+      i++;
+      if (i < path.length) after(1850, tick);
+    };
+    after(450, tick);
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        if (e.target.id === 'demo') { autoplay(); io.unobserve(e.target); }
+      }
+    });
+  }, { threshold: 0.18 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+  io.observe(document.getElementById('demo'));
+})();
+</script>
+</body>
+</html>
