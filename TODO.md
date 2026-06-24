@@ -9,32 +9,29 @@ Each page is self-contained HTML on the shared shell (`site/shared/site.css` +
 `site/shared/shell.js`), with one central metaphor, its own locked accent, and the taste
 rules in `docs/superpowers/2026-06-23-anvil-page-handoff.md`. Links stay relative.
 
-### Pages done
+### Showcase pages (one per owned skill)
+The grid is two horizontal feature cards framing a uniform middle row, each card with an
+accent icon. Owned skills only:
 - [x] Landing hub (`site/index.html`)
-- [x] symmetric-audit (`site/symmetric-audit/index.html`)
-- [x] anvil (`site/anvil/index.html`)
-- [x] tdd-heartbeat (external, linked from the grid)
+- [x] anvil (feature) `#6ea8e6`
+- [x] symmetric-audit `#e8a33d`
+- [x] workflow-forge `#9d8cf5`
+- [x] bake-to-completion `#ee6f9e`
+- [x] design-taste-frontend `#cd7cf0`
+- [x] skill-installer (feature) `#3fc9b0`
+- [x] tdd-heartbeat `#e5675f` (external, linked from the grid)
 
-### Build pages for the rest of the skills
-All built on the shared shell, each with a locked distinct accent, a central interactive
-metaphor, and a grid tile. Strongest interactive-metaphor candidates were done first:
-- [x] workflow-forge (forge stamps disciplines into a repo) `#9d8cf5`
-- [x] bake-to-completion (doneness probe climbs as the idea is sharpened) `#ee6f9e`
-- [x] design-taste-frontend (slop-vs-passed toggle of the same layout) `#cd7cf0`
-- [x] skill-installer (catalog shelf you pick from and install) `#3fc9b0`
-- [x] new-aspire-project (blueprint assembles in clean-architecture layers) `#a87cf0`
-- [x] md-with-mermaid-to-pdf (real mermaid render onto a paged sheet) `#2fc7d6`
-- [x] jira-api (JQL request out, issue rows back) `#5b8def`
-- [x] bitbucket-pr (PR advances through its lifecycle) `#4aa8f0`
-- [x] bitbucket-pipeline (CI stages stream pass/fail) `#3bb6e8`
-- [x] bitbucket-repo (browse the tree at any ref) `#7d90f5`
+### Removed 2026-06-24 (not the user's; pulled from repo + marketplace + site)
+new-aspire-project, md-with-mermaid-to-pdf, jira-api, bitbucket-pr, bitbucket-pipeline,
+bitbucket-repo. Their plugin dirs, `site/<slug>/`, and `marketplace.json` entries were deleted.
 
-The last four (jira-api + the three bitbucket pages) share a cool-blue accent family on
-purpose: they read as one Atlassian integration suite in the grid.
+### Ideas
+- [ ] Branch the per-skill pages into more depth (the skill-installer page is the front
+      door; each showcase can go deeper on real usage).
 
-For each new page: drop it at `site/<slug>/index.html`, pick a distinct accent, and add a
-tile to the grid in `site/index.html` with that accent. Reuse `.pane` / `.row` / `.btn-*` /
-`.reveal`. Keep the em-dash ban, one accent per page, motivated motion, and Phosphor icons.
+For each page: `site/<slug>/index.html` on the shared shell, a distinct locked accent, a tile
+in the grid. Reuse `.pane` / `.row` / `.btn-*` / `.reveal`. Keep the em-dash ban, one accent
+per page, motivated motion, Phosphor icons.
 
 ### Follow-ups
 - [ ] Maintainer-gated pre-commit sync skill: regenerate the landing grid from

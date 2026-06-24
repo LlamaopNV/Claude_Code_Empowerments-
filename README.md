@@ -27,13 +27,10 @@ The plugins appear under the **Discover** tab. Select one, press Enter to view i
 
 | Plugin | Category | What it does |
 | --- | --- | --- |
-| `bitbucket-repo` | development | Browse Bitbucket repositories: list repos, branches, commits, and read files at any ref. |
-| `bitbucket-pipeline` | development | Manage Bitbucket CI/CD pipelines: list, inspect, trigger, and stop pipeline runs. |
-| `bitbucket-pr` | development | Manage Bitbucket pull requests: list, view, create, update, review, merge, and comment. |
-| `jira-api` | productivity | Jira REST API reference plus prebuilt scripts for auth, search, issue CRUD, transitions, comments, sprints, and ADF. |
-| `md-with-mermaid-to-pdf` | productivity | Convert a Markdown file with Mermaid diagrams to PDF (renders each diagram to SVG, then to PDF). |
-| `new-aspire-project` | development | Bootstrap a new .NET Aspire project from a clean-architecture / CQRS template. ⚠️ See note below. |
 | `bake-to-completion` | development | Interviews you about a half-baked software/product idea, stress-tests every aspect, and hands off a strengthened brief for planning. |
+| `design-taste-frontend` | development | Anti-slop frontend skill: reads the brief, infers a design direction, and runs a strict pre-flight against AI-design tells. |
+| `workflow-forge` | development | Bootstraps a project-tailored CLAUDE.md plus TDD, a pre-commit gate, symmetric-surface audits, and capability sync into any repo. |
+| `skill-installer` | development | Browse a bundled catalog of team skills and selectively install them into your user-global or current-project skills directory. |
 | `anvil` | development | Native effectiveness evals & improvement loop for Claude Code skills, subagents & plugins — generate balanced test data, run in-session A/B trials on your subscription, score activation / quality-delta / cost, and propose improvements. **See the [Anvil](#anvil--effectiveness-evals-for-claude-code-artifacts) section below.** |
 
 ## Anvil — effectiveness evals for Claude Code artifacts
@@ -124,46 +121,6 @@ measured runs): **https://llamaopnv.github.io/Claude_Code_Empowerments-/**
 > (`node packages/server/dist/bin/anvil-server.js serve --ui-dir packages/ui/dist`), open
 > `http://127.0.0.1:4319`, and screenshot the leaderboard + a scorecard into `docs/images/` (then link them
 > here).
-
-## Configuration
-
-Several plugins call external APIs and read their credentials/targets from environment
-variables (set them in your shell, or in a project's `.claude/settings.json` `env` block).
-Nothing is hardcoded to any organization.
-
-### Bitbucket plugins (`bitbucket-repo`, `bitbucket-pipeline`, `bitbucket-pr`)
-
-| Variable | Required | Notes |
-| --- | --- | --- |
-| `BB_USER` | yes | Your Bitbucket username. |
-| `BB_TOKEN` | yes | A Bitbucket **App Password** (Personal settings → App passwords). Grant Repositories / Pull requests / Pipelines read+write. |
-| `BB_WORKSPACE` | auto | Workspace slug. Auto-detected from the repo's `origin` git remote if unset. |
-| `BB_REPO` | auto | Repository slug. Auto-detected from the `origin` git remote if unset. |
-
-`BB_USER`/`BB_TOKEN` can also live in a `~/.bitbucket` file (`KEY=value` per line).
-
-### Jira plugin (`jira-api`)
-
-| Variable | Required | Notes |
-| --- | --- | --- |
-| `JIRA_BASE_URL` | yes | Your Jira Cloud site, e.g. `https://your-org.atlassian.net`. |
-| `JIRA_API_TOKEN` | yes | Create at <https://id.atlassian.com/manage-profile/security/api-tokens>. |
-| `JIRA_EMAIL` | no | Atlassian account email. Defaults to `git config user.email`. |
-| `JIRA_PROJECT` | yes | Project key, e.g. `ABC`. |
-| `JIRA_BOARD` | yes | Agile board ID, e.g. `42`. |
-
-### `md-with-mermaid-to-pdf`
-
-Needs `mmdc` (mermaid-cli) and `npx`. The skill calls `npx --yes md-to-pdf` automatically.
-
-### `new-aspire-project`
-
-> ⚠️ **Template body not included.** This plugin's bundled `AspireApp1/` template currently
-> contains only the solution file, `Directory.Packages.props`, and documentation — **not the
-> actual source projects** (`Source/`, `Orchestration/`, `Tests/`, `*.csproj`, `*.cs`). As shipped
-> it will not produce a buildable project. Drop your real Aspire clean/CQRS template into
-> `plugins/new-aspire-project/skills/new-aspire-project/AspireApp1/` to make it functional.
-> Requires the .NET 10 SDK and `dotnet-ef`.
 
 ## Repository layout
 

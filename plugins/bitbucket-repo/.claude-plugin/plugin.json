@@ -1,8 +1,0 @@
-{
-    "name": "bitbucket-repo",
-    "description": "Browse Bitbucket repositories — list repos, branches, commits, and read files at any ref.",
-    "version": "1.0.0",
-    "author": {
-        "name": "LlamaopNV"
-    }
-}

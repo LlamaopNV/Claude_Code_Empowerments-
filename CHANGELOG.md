@@ -2,6 +2,19 @@
 
 All notable changes to this marketplace are documented here.
 
+## [Unreleased]
+
+### Removed
+- Dropped six plugins that were not authored in this marketplace: `bitbucket-repo`,
+  `bitbucket-pipeline`, `bitbucket-pr`, `jira-api`, `md-with-mermaid-to-pdf`, and
+  `new-aspire-project`. Their plugin directories, `marketplace.json` entries, README
+  documentation, and skill-showcase pages were removed.
+
+### Changed
+- Rebuilt the skill-showcase landing grid (`site/index.html`) around the remaining owned
+  skills (anvil, symmetric-audit, workflow-forge, bake-to-completion, design-taste-frontend,
+  skill-installer, tdd-heartbeat), with content-sized cards, accent icons, and two feature tiles.
+
 ## [0.3.0] - 2026-06-21
 
 ### Added — Anvil MVP

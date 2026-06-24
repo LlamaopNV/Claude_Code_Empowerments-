@@ -22,26 +22,40 @@
 
 <style>
   .card {
-    position: relative; display: flex; flex-direction: column; justify-content: space-between;
-    gap: 20px; padding: 24px; min-height: 230px;
+    position: relative; display: flex; flex-direction: column; gap: 13px;
+    padding: 22px 22px 20px;
     border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2);
     overflow: hidden; transition: transform .2s cubic-bezier(.16,1,.3,1), border-color .2s ease;
   }
   .card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--c) 55%, var(--border)); }
+  .card:hover::after { opacity: 1; }
   .card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 2px; background: var(--c); opacity: .85; }
   .card::after {
-    content: ""; position: absolute; right: -28%; top: -42%; width: 58%; height: 82%;
-    background: radial-gradient(circle, color-mix(in srgb, var(--c) 17%, transparent), transparent 70%);
-    pointer-events: none;
+    content: ""; position: absolute; right: -30%; top: -50%; width: 60%; height: 92%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--c) 15%, transparent), transparent 70%);
+    pointer-events: none; opacity: .7; transition: opacity .2s ease;
   }
-  .card__tag { font-family: var(--font-mono); font-size: 12px; color: var(--c); }
-  .card__name { font-family: var(--font-mono); font-size: 22px; font-weight: 500; letter-spacing: -0.01em; margin-top: 10px; }
-  .card__desc { color: var(--text-dim); line-height: 1.55; max-width: 52ch; margin-top: 10px; }
-  .card__view { display: inline-flex; align-items: center; gap: 7px; color: var(--c); font-size: 14px; font-weight: 500; }
+  .card__icon {
+    width: 42px; height: 42px; border-radius: 10px; flex: 0 0 42px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--c);
+    background: color-mix(in srgb, var(--c) 13%, var(--bg-3));
+    border: 1px solid color-mix(in srgb, var(--c) 26%, var(--border));
+  }
+  .card__tag { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .03em; color: var(--c); }
+  .card__name { font-family: var(--font-mono); font-size: 19px; font-weight: 500; letter-spacing: -0.01em; margin-top: 7px; }
+  .card__desc { color: var(--text-dim); line-height: 1.55; font-size: 14px; margin-top: 9px; }
+  .card__view { margin-top: auto; padding-top: 6px; display: inline-flex; align-items: center; gap: 7px; color: var(--c); font-size: 13.5px; font-weight: 500; }
   .card__view i { transition: transform .2s ease; }
   .card:hover .card__view i { transform: translateX(3px); }
-  .card--wide { min-height: 170px; }
-  .card--wide .top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+  /* horizontal feature card: icon rail on the left fills the wider tile */
+  @media (min-width: 768px) {
+    .card--feature { flex-direction: row; align-items: stretch; gap: 20px; }
+    .card--feature .card__icon { width: 52px; height: 52px; flex: 0 0 52px; font-size: 27px; border-radius: 12px; }
+    .card--feature .card__main { display: flex; flex-direction: column; flex: 1; }
+    .card--feature .card__name { font-size: 22px; }
+    .card--feature .card__desc { max-width: 60ch; }
+  }
 </style>
 </head>
 
@@ -67,135 +81,70 @@
 <section id="grid" class="max-w-content mx-auto px-5 pb-24 pt-6">
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-    <!-- featured -->
-    <a class="card md:col-span-2 reveal" href="./symmetric-audit/" style="--c:#e8a33d">
-      <div>
-        <span class="card__tag">create / edit / view</span>
-        <div class="card__name">symmetric-audit</div>
-        <p class="card__desc">Change one surface, prove every related one is in sync. It walks the family of files a change touches and catches the asymmetric bug your diff hides.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- anvil -->
-    <a class="card reveal" href="./anvil/" style="--c:#6ea8e6">
-      <div>
+    <!-- anvil, feature -->
+    <a class="card card--feature md:col-span-2 reveal" href="./anvil/" style="--c:#6ea8e6">
+      <div class="card__icon"><i class="ph ph-gauge" aria-hidden="true"></i></div>
+      <div class="card__main">
         <span class="card__tag">evals / scorecards</span>
         <div class="card__name">anvil</div>
-        <p class="card__desc">Native effectiveness evals for your skills, agents, and plugins. Measure the before and after.</p>
+        <p class="card__desc">Native effectiveness evals for your skills, agents, and plugins. Run a change with it and without it, let a judge score the pair, and read the before and after delta.</p>
+        <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
       </div>
+    </a>
+
+    <!-- symmetric-audit -->
+    <a class="card reveal" href="./symmetric-audit/" style="--c:#e8a33d">
+      <div class="card__icon"><i class="ph ph-columns" aria-hidden="true"></i></div>
+      <span class="card__tag">create / edit / view</span>
+      <div class="card__name">symmetric-audit</div>
+      <p class="card__desc">Change one surface, prove every related one is in sync. It catches the asymmetric bug your diff hides.</p>
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
-    <!-- workflow-forge, featured -->
-    <a class="card md:col-span-2 reveal" href="./workflow-forge/" style="--c:#9d8cf5">
-      <div>
-        <span class="card__tag">bootstrap / guardrails</span>
-        <div class="card__name">workflow-forge</div>
-        <p class="card__desc">Stamp a project-tailored CLAUDE.md plus TDD, a pre-commit gate, symmetric audits, and capability sync into any repo. It detects your stack and adapts the output.</p>
-      </div>
+    <!-- workflow-forge -->
+    <a class="card reveal" href="./workflow-forge/" style="--c:#9d8cf5">
+      <div class="card__icon"><i class="ph ph-shield-check" aria-hidden="true"></i></div>
+      <span class="card__tag">bootstrap / guardrails</span>
+      <div class="card__name">workflow-forge</div>
+      <p class="card__desc">Stamp a project-tailored CLAUDE.md plus TDD, a pre-commit gate, and symmetric audits into any repo. It detects your stack and adapts.</p>
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
     <!-- bake-to-completion -->
     <a class="card reveal" href="./bake-to-completion/" style="--c:#ee6f9e">
-      <div>
-        <span class="card__tag">interview / sharpen</span>
-        <div class="card__name">bake-to-completion</div>
-        <p class="card__desc">Hand it a half-baked idea. It interviews you, stress-tests the weak spots, and bakes the concept until it is ready to build.</p>
-      </div>
+      <div class="card__icon"><i class="ph ph-cooking-pot" aria-hidden="true"></i></div>
+      <span class="card__tag">interview / sharpen</span>
+      <div class="card__name">bake-to-completion</div>
+      <p class="card__desc">Hand it a half-baked idea. It interviews you, stress-tests the weak spots, and bakes the concept until it is ready to build.</p>
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
     <!-- design-taste-frontend -->
     <a class="card reveal" href="./design-taste-frontend/" style="--c:#cd7cf0">
-      <div>
-        <span class="card__tag">anti-slop preflight</span>
-        <div class="card__name">design-taste-frontend</div>
-        <p class="card__desc">The taste gate this whole showcase was built to. It catches the AI design tells before your frontend ships.</p>
-      </div>
+      <div class="card__icon"><i class="ph ph-eye" aria-hidden="true"></i></div>
+      <span class="card__tag">anti-slop preflight</span>
+      <div class="card__name">design-taste-frontend</div>
+      <p class="card__desc">The taste gate this whole showcase was built to. It catches the AI design tells before your frontend ships.</p>
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
-    <!-- skill-installer -->
-    <a class="card reveal" href="./skill-installer/" style="--c:#3fc9b0">
-      <div>
+    <!-- skill-installer, feature -->
+    <a class="card card--feature md:col-span-2 reveal" href="./skill-installer/" style="--c:#3fc9b0">
+      <div class="card__icon"><i class="ph ph-package" aria-hidden="true"></i></div>
+      <div class="card__main">
         <span class="card__tag">browse / install</span>
         <div class="card__name">skill-installer</div>
-        <p class="card__desc">Skills off the shelf, not the whole crate. Browse the catalog, pick what you need, and install it into a project or globally.</p>
+        <p class="card__desc">Skills off the shelf, not the whole crate. Browse the catalog, pick what you need, and install it into a project or globally. The front door to everything here.</p>
+        <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
       </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
-    <!-- new-aspire-project -->
-    <a class="card reveal" href="./new-aspire-project/" style="--c:#a87cf0">
-      <div>
-        <span class="card__tag">clean architecture</span>
-        <div class="card__name">new-aspire-project</div>
-        <p class="card__desc">Scaffold a layered .NET Aspire solution with CQRS, mappers, a DB migrator, and service defaults. A production-shaped starting point.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- tdd-heartbeat, full width -->
-    <a class="card card--wide md:col-span-3 reveal" href="https://llamaopnv.github.io/tdd-heartbeat/" style="--c:#e5675f">
-      <div class="top">
-        <div>
-          <span class="card__tag">red / green / refactor</span>
-          <div class="card__name">tdd-heartbeat</div>
-        </div>
-        <p class="card__desc">Your tests have a heartbeat. An EKG of a coding session that scores whether you really practiced TDD.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- md-with-mermaid-to-pdf, featured -->
-    <a class="card md:col-span-2 reveal" href="./md-with-mermaid-to-pdf/" style="--c:#2fc7d6">
-      <div>
-        <span class="card__tag">render / paginate</span>
-        <div class="card__name">md-with-mermaid-to-pdf</div>
-        <p class="card__desc">Markdown with Mermaid code blocks becomes rendered diagrams on a paged PDF. Text in, document out.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- jira-api -->
-    <a class="card reveal" href="./jira-api/" style="--c:#5b8def">
-      <div>
-        <span class="card__tag">jira rest</span>
-        <div class="card__name">jira-api</div>
-        <p class="card__desc">Search with JQL, transition issues, comment, and create, straight from the Jira REST API with ready-made scripts.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- bitbucket-pr -->
-    <a class="card reveal" href="./bitbucket-pr/" style="--c:#4aa8f0">
-      <div>
-        <span class="card__tag">pull requests</span>
-        <div class="card__name">bitbucket-pr</div>
-        <p class="card__desc">Drive the Bitbucket pull request lifecycle: open, review, approve, and merge, without leaving the terminal.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- bitbucket-pipeline -->
-    <a class="card reveal" href="./bitbucket-pipeline/" style="--c:#3bb6e8">
-      <div>
-        <span class="card__tag">ci / cd</span>
-        <div class="card__name">bitbucket-pipeline</div>
-        <p class="card__desc">Trigger Bitbucket Pipelines, stream step status as it runs, and read the logs when a run goes red.</p>
-      </div>
-      <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
-    </a>
-
-    <!-- bitbucket-repo -->
-    <a class="card reveal" href="./bitbucket-repo/" style="--c:#7d90f5">
-      <div>
-        <span class="card__tag">browse any ref</span>
-        <div class="card__name">bitbucket-repo</div>
-        <p class="card__desc">Read a repo's file tree and contents at any branch, tag, or commit. Time-travel without cloning.</p>
-      </div>
+    <!-- tdd-heartbeat, external -->
+    <a class="card reveal" href="https://llamaopnv.github.io/tdd-heartbeat/" style="--c:#e5675f">
+      <div class="card__icon"><i class="ph ph-heartbeat" aria-hidden="true"></i></div>
+      <span class="card__tag">red / green / refactor</span>
+      <div class="card__name">tdd-heartbeat</div>
+      <p class="card__desc">Your tests have a heartbeat. An EKG of a coding session that scores whether you really practiced TDD.</p>
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 

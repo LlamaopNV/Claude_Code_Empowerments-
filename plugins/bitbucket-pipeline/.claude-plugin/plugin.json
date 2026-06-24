@@ -1,8 +1,0 @@
-{
-    "name": "bitbucket-pipeline",
-    "description": "Manage Bitbucket CI/CD pipelines — list, inspect, trigger, and stop pipeline runs.",
-    "version": "1.0.0",
-    "author": {
-        "name": "LlamaopNV"
-    }
-}
