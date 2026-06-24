@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Symmetric Audit · the sibling you forgot</title>
-<meta name="description" content="Change one surface, prove every related one is in sync. A showcase of the symmetric-audit skill: it walks the family of files a change touches and catches the asymmetric bug your diff hides." />
+<meta name="description" content="Change one surface, prove every related one is in sync. A showcase of the symmetric-audit skill: it walks the family of files a change touches, greps the CRUD lifecycle, and writes a verdict for every sibling so the asymmetric bug your diff hides cannot ship green." />
 
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -62,6 +62,61 @@
   .blink { display: inline-block; width: 7px; height: 14px; background: var(--accent); margin-left: 3px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
   @media (prefers-reduced-motion: reduce) { .blink { animation: none; } }
+
+  /* the family lifecycle: sibling surfaces light up across a change */
+  .fam { display: grid; gap: 10px; }
+  .famrow {
+    display: grid; grid-template-columns: 132px 1fr; gap: 14px; align-items: center;
+    font-family: var(--font-mono); font-size: 12.5px;
+  }
+  .famrow__stage { color: var(--text-faint); text-align: right; }
+  .famrow__cell {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg-2); padding: 10px 14px; color: var(--text-dim);
+    display: flex; align-items: center; gap: 9px;
+    opacity: .32; transform: translateX(-6px);
+    transition: opacity .5s ease, transform .5s ease, border-color .5s ease, color .5s ease, background .5s ease;
+  }
+  .famrow__cell i { font-size: 15px; color: var(--text-faint); transition: color .5s ease; }
+  .famrow__cell .tail { margin-left: auto; font-size: 11px; color: var(--text-faint); }
+  .fam.lit .famrow__cell {
+    opacity: 1; transform: none; color: var(--text);
+    border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+    background: color-mix(in srgb, var(--accent) 7%, var(--bg-2));
+  }
+  .fam.lit .famrow__cell i { color: var(--accent); }
+  .fam .famrow:nth-child(1) .famrow__cell { transition-delay: 0ms; }
+  .fam .famrow:nth-child(2) .famrow__cell { transition-delay: 110ms; }
+  .fam .famrow:nth-child(3) .famrow__cell { transition-delay: 220ms; }
+  .fam .famrow:nth-child(4) .famrow__cell { transition-delay: 330ms; }
+  .fam .famrow:nth-child(5) .famrow__cell { transition-delay: 440ms; }
+  .fam .famrow.seed .famrow__cell {
+    border-color: color-mix(in srgb, var(--accent) 60%, var(--border));
+    background: color-mix(in srgb, var(--accent) 13%, var(--bg-2));
+    color: var(--text); opacity: 1; transform: none;
+  }
+  .fam .famrow.seed .famrow__cell i { color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) {
+    .famrow__cell { opacity: 1; transform: none; transition: none; }
+    .fam.lit .famrow__cell { color: var(--text); }
+  }
+
+  /* bucket cards for the methodology grep */
+  .bucket {
+    border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2);
+    padding: 16px 17px; display: flex; flex-direction: column; gap: 7px;
+  }
+  .bucket__tag {
+    width: 26px; height: 26px; border-radius: 7px; flex: 0 0 26px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+    color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  /* divergence-class catalog: caption sits under each pane */
+  .cls__cap { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+  .cls__name { color: var(--text); font-weight: 500; }
 </style>
 </head>
 
@@ -124,6 +179,134 @@
   </div>
 </section>
 
+<!-- ===== THE FAMILY (teach the concept) ===== -->
+<section id="family" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="grid lg:grid-cols-[0.92fr_1.08fr] gap-12 lg:gap-14 items-center">
+    <div class="reveal">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">The idea</p>
+      <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">Every change belongs to a family.</h2>
+      <p class="mt-5 text-lg text-[color:var(--text-dim)] leading-relaxed max-w-[48ch]">
+        Most domain processes are not a single file. They are a family of surfaces:
+        create plus edit plus view, list plus detail plus mutation, insert plus update,
+        loader plus action plus form. A change to one member is rarely complete in isolation.
+      </p>
+      <p class="mt-4 text-[color:var(--text-dim)] leading-relaxed max-w-[48ch]">
+        Touch one cell below and the rest of the family is implicated. The question is never
+        "did this file change correctly", it is "did its siblings change too, or did one fall silent".
+      </p>
+    </div>
+
+    <div class="reveal">
+      <div class="pane">
+        <div class="pane__bar"><i class="ph ph-tree-structure"></i> family of <span class="accent">order</span> across its lifecycle</div>
+        <div class="pane__body" style="padding:16px 16px 18px">
+          <div id="fam" class="fam">
+            <div class="famrow seed">
+              <div class="famrow__stage">write</div>
+              <div class="famrow__cell"><i class="ph ph-pencil-simple-line"></i> order.write <span class="tail">you changed this</span></div>
+            </div>
+            <div class="famrow">
+              <div class="famrow__stage">schema</div>
+              <div class="famrow__cell"><i class="ph ph-table"></i> order.schema <span class="tail">declares the shape</span></div>
+            </div>
+            <div class="famrow">
+              <div class="famrow__stage">read</div>
+              <div class="famrow__cell"><i class="ph ph-magnifying-glass"></i> orders.list.query <span class="tail">projects the row</span></div>
+            </div>
+            <div class="famrow">
+              <div class="famrow__stage">view</div>
+              <div class="famrow__cell"><i class="ph ph-eye"></i> order-detail.view <span class="tail">renders it</span></div>
+            </div>
+            <div class="famrow">
+              <div class="famrow__stage">edit</div>
+              <div class="famrow__cell"><i class="ph ph-textbox"></i> order-edit.form <span class="tail">writes it back</span></div>
+            </div>
+          </div>
+          <p class="mt-4 pt-3 border-t hairline text-[11px] text-[color:var(--text-faint)]" style="font-family:var(--font-sans)">
+            One write touches the whole family. The audit makes that family explicit.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT FINDS THE SIBLINGS (methodology) ===== -->
+<section id="method" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-28">
+    <div class="reveal max-w-[60ch]">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">How it finds the siblings.</h2>
+      <p class="mt-5 text-lg text-[color:var(--text-dim)] leading-relaxed">
+        No memory, no guessing. It pulls the entity name out of the change set, then greps that
+        entity's full CRUD lifecycle across the repo. Five buckets, run for each entity, then unioned.
+      </p>
+    </div>
+
+    <div class="mt-12 grid lg:grid-cols-[1.05fr_0.95fr] gap-6 lg:gap-8 items-start">
+      <!-- the grep readout -->
+      <div class="reveal pane">
+        <div class="pane__bar"><i class="ph ph-magnifying-glass"></i> entity-driven CRUD grep <span class="ml-auto" style="font-size:11px;color:var(--text-faint)">entity: order</span></div>
+        <div class="pane__body" style="padding:10px 4px 12px">
+          <div class="row ctx"><span class="gut">$</span><span>grep -rn "order" src/ | grep -i \\</span></div>
+          <div class="row ctx"><span class="gut">&nbsp;</span><span>  "find\|query\|select\|get\|read"</span></div>
+          <div class="row add"><span class="gut">A</span><span>  orders.list.query        read</span></div>
+          <div class="row add"><span class="gut">A</span><span>  order.detail.query       read</span></div>
+          <div class="row ctx"><span class="gut">&nbsp;</span><span> </span></div>
+          <div class="row ctx"><span class="gut">$</span><span>grep -rn "order" src/ | grep -i \\</span></div>
+          <div class="row ctx"><span class="gut">&nbsp;</span><span>  "create\|insert\|update\|save"</span></div>
+          <div class="row add"><span class="gut">B</span><span>  order.write              write</span></div>
+          <div class="row ctx"><span class="gut">&nbsp;</span><span> </span></div>
+          <div class="row ctx"><span class="gut">$</span><span>find src/ -iname "*order*"</span></div>
+          <div class="row add"><span class="gut">E</span><span>  order-edit.form          component</span></div>
+          <div class="row add"><span class="gut">E</span><span>  order-detail.view        component</span></div>
+          <div class="row intent"><span class="gut">~</span><span>  order-export.csv         B + E intersection</span></div>
+        </div>
+      </div>
+
+      <!-- the five buckets -->
+      <div class="reveal grid sm:grid-cols-2 gap-4">
+        <div class="bucket">
+          <div class="flex items-center gap-3"><span class="bucket__tag">A</span><span class="font-medium">Database reads</span></div>
+          <p class="text-sm text-[color:var(--text-dim)] leading-relaxed">Every query, find, select, get, or fetch of the entity. The read side that must surface a new field.</p>
+        </div>
+        <div class="bucket">
+          <div class="flex items-center gap-3"><span class="bucket__tag">B</span><span class="font-medium">Database writes</span></div>
+          <p class="text-sm text-[color:var(--text-dim)] leading-relaxed">Every create, insert, update, upsert, save, or remove. The write twins that should accept the same input.</p>
+        </div>
+        <div class="bucket">
+          <div class="flex items-center gap-3"><span class="bucket__tag">C</span><span class="font-medium">API and RPC calls</span></div>
+          <p class="text-sm text-[color:var(--text-dim)] leading-relaxed">Every place the frontend calls this entity's endpoints: routers, procedures, mutations, queries.</p>
+        </div>
+        <div class="bucket">
+          <div class="flex items-center gap-3"><span class="bucket__tag">D</span><span class="font-medium">Route and page files</span></div>
+          <p class="text-sm text-[color:var(--text-dim)] leading-relaxed">The route or page directory for the entity: the surfaces a user actually lands on.</p>
+        </div>
+        <div class="bucket sm:col-span-2">
+          <div class="flex items-center gap-3"><span class="bucket__tag">E</span><span class="font-medium">Components named after the entity</span></div>
+          <p class="text-sm text-[color:var(--text-dim)] leading-relaxed">Forms, lists, badges, detail views: anything carrying the entity name. Drop tests and build output, and the union is your sibling set.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-10 grid sm:grid-cols-2 gap-4 reveal">
+      <div class="flex gap-3 p-4 rounded-[length:var(--radius)] border hairline" style="background:color-mix(in srgb, var(--accent) 6%, var(--bg-2))">
+        <i class="ph ph-target accent text-xl mt-0.5" aria-hidden="true"></i>
+        <p class="text-[color:var(--text-dim)] leading-relaxed text-[15px]">
+          A sibling flagged by <span class="accent">multiple buckets</span> is a high-priority intersection.
+          Those files are the most likely to hide the asymmetric bug. Audit them first.
+        </p>
+      </div>
+      <div class="flex gap-3 p-4 rounded-[length:var(--radius)] border hairline" style="background:color-mix(in srgb, var(--accent) 6%, var(--bg-2))">
+        <i class="ph ph-scissors accent text-xl mt-0.5" aria-hidden="true"></i>
+        <p class="text-[color:var(--text-dim)] leading-relaxed text-[15px]">
+          More than about <span class="accent">30 siblings</span> means the change set is too broad for one audit.
+          That is the signal to split the work into smaller pull requests.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== INTERACTIVE DEMO ===== -->
 <section id="demo" class="max-w-content mx-auto px-5 py-20 md:py-28">
   <div class="reveal">
@@ -163,7 +346,160 @@
   </div>
 </section>
 
-<!-- ===== PRE-COMMIT GATE ===== -->
+<!-- ===== THE DIVERGENCE CLASSES IT CATCHES ===== -->
+<section id="catches" class="border-y hairline bg-[color:var(--bg-2)]">
+  <div class="max-w-content mx-auto px-5 py-20 md:py-28">
+    <div class="reveal max-w-[62ch]">
+      <h2 class="font-semibold tracking-tight text-3xl md:text-5xl leading-tight">The divergence classes it catches.</h2>
+      <p class="mt-5 text-lg text-[color:var(--text-dim)] leading-relaxed">
+        The gate to a "diverged" verdict is strict. The audit reads each sibling and compares it
+        against the change, looking for one of these specific gaps. The last one is not a bug at all.
+      </p>
+    </div>
+
+    <div class="mt-12 grid lg:grid-cols-6 gap-5 reveal">
+
+      <!-- featured: forgotten edit form (wide) -->
+      <div class="lg:col-span-4">
+        <div class="pane h-full">
+          <div class="pane__bar"><i class="ph ph-textbox"></i> forgotten edit form</div>
+          <div class="pane__body">
+            <div class="row ctx"><span class="gut">&nbsp;</span><span>// create accepts the new field</span></div>
+            <div class="row add"><span class="gut">+</span><span>create.form: { name, email, phoneNumber }</span></div>
+            <div class="row miss"><span class="gut">!</span><span>edit.form:   { name, email }   // phoneNumber lost</span></div>
+          </div>
+        </div>
+        <p class="cls__cap mt-3"><span class="cls__name">Forgotten edit form.</span> A field added to create never reached the edit twin. Users can set it once, then never change it.</p>
+      </div>
+
+      <!-- unguarded sibling route -->
+      <div class="lg:col-span-2">
+        <div class="pane h-full">
+          <div class="pane__bar"><i class="ph ph-shield-warning"></i> unguarded route</div>
+          <div class="pane__body">
+            <div class="row add"><span class="gut">+</span><span>/reports  guard: admin</span></div>
+            <div class="row miss"><span class="gut">!</span><span>/reports/export  public</span></div>
+          </div>
+        </div>
+        <p class="cls__cap mt-3"><span class="cls__name">Unguarded sibling route.</span> A guard landed on one route. Its sibling in the same family is still public.</p>
+      </div>
+
+      <!-- half-handled enum -->
+      <div class="lg:col-span-2">
+        <div class="pane h-full">
+          <div class="pane__bar"><i class="ph ph-list-checks"></i> half-handled enum</div>
+          <div class="pane__body">
+            <div class="row add"><span class="gut">+</span><span>badge: case REFUNDED</span></div>
+            <div class="row miss"><span class="gut">!</span><span>filter: no REFUNDED, throws</span></div>
+          </div>
+        </div>
+        <p class="cls__cap mt-3"><span class="cls__name">Half-handled enum.</span> A new status is handled in one switch and crashes another that never learned the value.</p>
+      </div>
+
+      <!-- projection gap (wide) -->
+      <div class="lg:col-span-4">
+        <div class="pane h-full">
+          <div class="pane__bar"><i class="ph ph-funnel"></i> projection gap</div>
+          <div class="pane__body">
+            <div class="row add"><span class="gut">+</span><span>write("orders", { ..., archivedAt })   // persisted</span></div>
+            <div class="row miss"><span class="gut">!</span><span>read.select: [id, total, status]       // archivedAt absent</span></div>
+          </div>
+        </div>
+        <p class="cls__cap mt-3"><span class="cls__name">Projection gap.</span> The field is written to the row but missing from the read projection, so the UI can never see it.</p>
+      </div>
+
+      <!-- mutation contract drift (wide) -->
+      <div class="lg:col-span-4">
+        <div class="pane h-full">
+          <div class="pane__bar"><i class="ph ph-plugs"></i> mutation contract drift</div>
+          <div class="pane__body">
+            <div class="row add"><span class="gut">+</span><span>updateOrder(id, patch, reason)   // reason now required</span></div>
+            <div class="row miss"><span class="gut">!</span><span>caller: updateOrder(id, patch)   // missing reason</span></div>
+          </div>
+        </div>
+        <p class="cls__cap mt-3"><span class="cls__name">Mutation contract drift.</span> A mutation gained a required argument. A caller in the family still passes the old shape.</p>
+      </div>
+
+      <!-- counter-example: deliberate omission -->
+      <div class="lg:col-span-2">
+        <div class="pane h-full" style="border-color:color-mix(in srgb, var(--intent) 45%, var(--border))">
+          <div class="pane__bar"><i class="ph ph-lock-key"></i> deliberate omission</div>
+          <div class="pane__body">
+            <div class="row add"><span class="gut">+</span><span>create.input: { email, password }</span></div>
+            <div class="row intent"><span class="gut">~</span><span>edit.input: no password, by design</span></div>
+          </div>
+        </div>
+        <p class="cls__cap mt-3"><span class="cls__name">Deliberate omission.</span> Genuinely asymmetric, not a bug. The audit writes down the reason so the next reader can tell intent from oversight.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE AUDIT (before / after climax) ===== -->
+<section id="audit" class="max-w-content mx-auto px-5 py-20 md:py-28">
+  <div class="reveal max-w-[64ch]">
+    <p class="font-mono text-[11px] uppercase tracking-[0.2em] accent">Worked example</p>
+    <h2 class="mt-3 font-semibold tracking-tight text-3xl md:text-5xl leading-tight">The summary is the work product.</h2>
+    <p class="mt-5 text-lg text-[color:var(--text-dim)] leading-relaxed">
+      One real change: a developer adds <span class="accent font-mono text-[0.92em]">archivedAt</span> to orders,
+      editing only the write path and the create form. Two files in the diff. Then the audit walks the whole
+      <span class="font-mono text-[0.92em]">order</span> family and writes a verdict for every sibling, because
+      silence on a sibling is how the gap slips through.
+    </p>
+  </div>
+
+  <!-- before / after framing -->
+  <div class="mt-12 grid md:grid-cols-[1fr_44px_1fr] gap-4 md:gap-0 items-center reveal">
+    <div class="rounded-[length:var(--radius)] border hairline p-6" style="background:var(--bg-2)">
+      <div class="flex items-center gap-2 text-[color:var(--text-faint)] font-mono text-[11px] uppercase tracking-[0.16em]">
+        <i class="ph ph-git-commit" aria-hidden="true"></i> Before the audit
+      </div>
+      <p class="mt-3 text-2xl font-semibold tracking-tight">2 files changed</p>
+      <p class="mt-2 text-[color:var(--text-dim)] leading-relaxed">
+        3 siblings silently diverged. It compiles, review passes, it ships green. The gap is invisible until production reads a column that was never written to the projection.
+      </p>
+    </div>
+    <div class="hidden md:flex items-center justify-center text-[color:var(--text-faint)]">
+      <i class="ph-bold ph-arrow-right text-2xl accent" aria-hidden="true"></i>
+    </div>
+    <div class="md:hidden flex items-center justify-center py-1 text-[color:var(--text-faint)]">
+      <i class="ph-bold ph-arrow-down text-xl accent" aria-hidden="true"></i>
+    </div>
+    <div class="rounded-[length:var(--radius)] border p-6" style="background:color-mix(in srgb, var(--accent) 7%, var(--bg-2));border-color:color-mix(in srgb, var(--accent) 38%, var(--border))">
+      <div class="flex items-center gap-2 accent font-mono text-[11px] uppercase tracking-[0.16em]">
+        <i class="ph ph-check-circle" aria-hidden="true"></i> After the audit
+      </div>
+      <p class="mt-3 text-2xl font-semibold tracking-tight">7 siblings considered</p>
+      <p class="mt-2 text-[color:var(--text-dim)] leading-relaxed">
+        Every sibling carries a written verdict. The 3 diverged are fixed in this same pass, the 1 intentional asymmetry is documented, and the in-sync ones are named so nothing is assumed.
+      </p>
+    </div>
+  </div>
+
+  <!-- the rendered audit summary -->
+  <div class="mt-10 reveal">
+    <div class="pane">
+      <div class="pane__bar">
+        <i class="ph ph-clipboard-text"></i> audit summary
+        <span id="auditState" class="ml-auto" style="font-size:11px;color:var(--text-faint)">walking the family</span>
+      </div>
+      <div id="auditBody" class="pane__body" style="padding:16px 16px 18px;min-height:360px"></div>
+    </div>
+
+    <div class="mt-5 flex items-center justify-between gap-4 flex-wrap">
+      <div class="flex flex-wrap gap-x-7 gap-y-2 text-sm text-[color:var(--text-dim)]">
+        <span class="flex items-center gap-2"><span class="dot" style="background:var(--add)"></span> In sync</span>
+        <span class="flex items-center gap-2"><span class="dot" style="background:var(--miss)"></span> Diverged, fixed in this audit</span>
+        <span class="flex items-center gap-2"><span class="dot" style="background:var(--intent)"></span> Intentionally asymmetric</span>
+      </div>
+      <button id="auditReplay" class="btn-ghost btn-sm"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay the audit</button>
+    </div>
+    <p class="mt-4 font-mono text-[11px] text-[color:var(--text-faint)]">Illustrative audit. Example file names.</p>
+  </div>
+</section>
+
+<!-- ===== INSTALL / RUN ===== -->
 <section id="run" class="border-t hairline bg-[color:var(--bg-2)]">
   <div class="max-w-content mx-auto px-5 py-20 md:py-24 grid lg:grid-cols-[0.9fr_1.1fr] gap-12 items-center">
     <div class="reveal">
@@ -177,6 +513,17 @@
         <li class="flex gap-3"><i class="ph ph-check-circle accent mt-0.5"></i> Writes a verdict for every sibling, including the in-sync ones.</li>
         <li class="flex gap-3"><i class="ph ph-wrench accent mt-0.5"></i> Step one of the iterative-review-fix loop.</li>
       </ul>
+
+      <div class="mt-8 grid sm:grid-cols-2 gap-4">
+        <div class="rounded-[length:var(--radius)] border hairline p-4" style="background:var(--bg-3)">
+          <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-[color:var(--text-faint)] flex items-center gap-2"><i class="ph ph-thumbs-up accent" aria-hidden="true"></i> Reach for it</p>
+          <p class="mt-2 text-sm text-[color:var(--text-dim)] leading-relaxed">At a coherent stopping point, before commit, after touching a schema, a shared validator, or a shared form section.</p>
+        </div>
+        <div class="rounded-[length:var(--radius)] border hairline p-4" style="background:var(--bg-3)">
+          <p class="font-mono text-[11px] uppercase tracking-[0.14em] text-[color:var(--text-faint)] flex items-center gap-2"><i class="ph ph-hand-palm" aria-hidden="true"></i> Skip it</p>
+          <p class="mt-2 text-sm text-[color:var(--text-dim)] leading-relaxed">Mid-implementation while work is incoherent, on a one-file typo fix, or when the user explicitly scoped the change to one surface.</p>
+        </div>
+      </div>
     </div>
 
     <div class="reveal pane">
@@ -187,9 +534,12 @@
         <div style="color:var(--text-dim)">&gt; pick <span style="color:#fff">symmetric-audit</span>, target project or global</div>
         <div style="margin-top:16px;color:var(--text-faint)"># then run it before every commit</div>
         <div><span class="accent">/symmetric-audit</span></div>
-        <div style="margin-top:16px;color:var(--text-faint)"># or just ask</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># or just ask, in plain language</div>
         <div style="color:var(--text-dim)">"did I miss the edit form?"</div>
         <div style="color:var(--text-dim)">"check the siblings of this change"</div>
+        <div style="color:var(--text-dim)">"what else does this touch?"</div>
+        <div style="margin-top:16px;color:var(--text-faint)"># it is also Step 1 of the full loop</div>
+        <div><span class="accent">/iterative-review-fix</span></div>
       </div>
     </div>
   </div>
@@ -205,9 +555,11 @@
     homeUrl: '../',
     repoUrl: 'https://github.com/llamaopnv',
     navLinks: [
-      { label: 'The gap', href: '#cost' },
+      { label: 'The family', href: '#family' },
       { label: 'See it run', href: '#demo' },
-      { label: 'Pre-commit', href: '#run' },
+      { label: 'What it catches', href: '#catches' },
+      { label: 'The audit', href: '#audit' },
+      { label: 'Install', href: '#run' },
     ],
     cta: { label: 'Get the skill', href: '#run', icon: 'ph-download-simple' },
     footNote: 'symmetric-audit · part of the skill showcase',
@@ -432,6 +784,104 @@
   }, { threshold: 0.18 });
   document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
   io.observe(document.getElementById('demo'));
+
+  // ---- the family lifecycle: light up the siblings when scrolled into view ----
+  const famEl = document.getElementById('fam');
+  if (famEl) {
+    if (reduce) {
+      famEl.classList.add('lit');
+    } else {
+      const famIo = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('lit'); famIo.unobserve(e.target); } });
+      }, { threshold: 0.4 });
+      famIo.observe(famEl);
+    }
+  }
+
+  // ---- the audit climax: scripted reveal of the worked-example summary ----
+  const auditBody = document.getElementById('auditBody');
+  const auditState = document.getElementById('auditState');
+  const auditReplay = document.getElementById('auditReplay');
+
+  // grounded in the SKILL three-verdict output for the archivedAt change on orders
+  const WORKED = {
+    entity: 'order', change: 'archivedAt', changedFiles: 2, considered: 7,
+    sync: [
+      ['order.schema', 'field declared on the model'],
+      ['order-detail.view', 'spreads all fields, so it flows through'],
+    ],
+    diverged: [
+      ['orders.list.query', 'projection now selects archivedAt'],
+      ['order-edit.form', 'control added to the edit layout'],
+      ['order-export.csv', 'column added to the export'],
+    ],
+    intentional: [
+      ['order-status.badge', 'ignores archive state by design'],
+    ],
+  };
+
+  let auditTimers = [];
+  const clearAuditTimers = () => { auditTimers.forEach(clearTimeout); auditTimers = []; };
+  const auditAfter = (ms, fn) => auditTimers.push(setTimeout(fn, ms));
+
+  function sumLine(state, file, note) {
+    const dot = state === 'sync' ? 'var(--add)' : state === 'diverged' ? 'var(--miss)' : 'var(--intent)';
+    return `<div class="flex gap-2.5 pl-1 py-0.5"><span class="dot mt-1.5" style="background:${dot}"></span>` +
+      `<span><span style="color:#fff">${file}</span><span style="color:var(--text-faint)">  ${note}</span></span></div>`;
+  }
+  function sumGroup(title, state, items, suffix) {
+    const rows = items.map(([f, n]) => sumLine(state, f, n)).join('');
+    return `<div class="mt-4 first:mt-0"><div style="color:var(--text-dim)">${title} (${items.length})${suffix || ''}</div>${rows}</div>`;
+  }
+
+  function renderAudit(phase) {
+    // phase: 'header' | 'sync' | 'diverged' | 'intentional' | 'full'
+    const head = `<div style="color:var(--text-faint)">Symmetric audit  ·  ${WORKED.changedFiles} changed files  ·  ${WORKED.considered} siblings considered  ·  entity: ${WORKED.entity}</div>`;
+    let body = '';
+    if (phase === 'header') {
+      body = `<div class="mt-4" style="color:var(--text-dim)">walking the family of "${WORKED.entity}" ...</div>`;
+    } else {
+      if (phase === 'sync' || phase === 'diverged' || phase === 'intentional' || phase === 'full') {
+        body += sumGroup('In sync', 'sync', WORKED.sync);
+      }
+      if (phase === 'diverged' || phase === 'intentional' || phase === 'full') {
+        body += sumGroup('Diverged', 'diverged', WORKED.diverged, ', fixed in this audit');
+      }
+      if (phase === 'intentional' || phase === 'full') {
+        body += sumGroup('Intentionally asymmetric', 'intentional', WORKED.intentional);
+      }
+    }
+    auditBody.style.fontFamily = 'var(--font-mono)';
+    auditBody.style.fontSize = '12.5px';
+    auditBody.style.lineHeight = '1.7';
+    auditBody.innerHTML = head + body;
+  }
+
+  function playAudit() {
+    clearAuditTimers();
+    if (reduce) {
+      auditState.textContent = 'complete';
+      renderAudit('full');
+      return;
+    }
+    auditState.textContent = 'walking the family';
+    renderAudit('header');
+    auditAfter(900,  () => { auditState.textContent = 'in sync: 2'; renderAudit('sync'); });
+    auditAfter(2100, () => { auditState.textContent = 'diverged: 3, fixing'; renderAudit('diverged'); });
+    auditAfter(3400, () => { auditState.textContent = 'intentional: 1, noted'; renderAudit('intentional'); });
+    auditAfter(4400, () => { auditState.textContent = 'complete'; renderAudit('full'); });
+  }
+
+  if (auditBody) {
+    renderAudit(reduce ? 'full' : 'header');
+    if (auditReplay) auditReplay.addEventListener('click', playAudit);
+    if (!reduce) {
+      const auditIo = new IntersectionObserver((entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) { playAudit(); auditIo.unobserve(e.target); } });
+      }, { threshold: 0.35 });
+      auditIo.observe(document.getElementById('audit'));
+    }
+  }
 })();
 </script>
 </body>

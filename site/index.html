@@ -69,7 +69,7 @@
     Claude Code skills, shown not told.
   </h1>
   <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[56ch] leading-relaxed">
-    Interactive showcases for the skills in the catalog. Pick one and watch it work, then install it.
+    Interactive showcases for the plugins and skills in the marketplace. Pick one and watch it work, then install it.
   </p>
   <div class="mt-8 flex flex-wrap items-center gap-3">
     <a href="#grid" class="btn-primary"><i class="ph-bold ph-squares-four" aria-hidden="true"></i> Browse the showcases</a>
@@ -79,6 +79,13 @@
 
 <!-- ===== SKILL GRID ===== -->
 <section id="grid" class="max-w-content mx-auto px-5 pb-24 pt-6">
+
+  <!-- Plugins -->
+  <div class="flex items-baseline justify-between gap-4 flex-wrap border-b hairline pb-3 mb-5 reveal">
+    <h2 class="font-mono text-[15px] font-medium tracking-wide">Plugins</h2>
+    <span class="font-mono text-xs text-[color:var(--text-faint)]">install with <span class="accent">/plugin marketplace</span></span>
+  </div>
+
   <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
     <!-- anvil, feature -->
@@ -92,12 +99,12 @@
       </div>
     </a>
 
-    <!-- symmetric-audit -->
-    <a class="card reveal" href="./symmetric-audit/" style="--c:#e8a33d">
-      <div class="card__icon"><i class="ph ph-columns" aria-hidden="true"></i></div>
-      <span class="card__tag">create / edit / view</span>
-      <div class="card__name">symmetric-audit</div>
-      <p class="card__desc">Change one surface, prove every related one is in sync. It catches the asymmetric bug your diff hides.</p>
+    <!-- skill-installer -->
+    <a class="card reveal" href="./skill-installer/" style="--c:#3fc9b0">
+      <div class="card__icon"><i class="ph ph-package" aria-hidden="true"></i></div>
+      <span class="card__tag">browse / install</span>
+      <div class="card__name">skill-installer</div>
+      <p class="card__desc">Browse the catalog, pick what you need, and install it into a project or globally. The front door to the skills below.</p>
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
@@ -128,13 +135,23 @@
       <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
     </a>
 
-    <!-- skill-installer, feature -->
-    <a class="card card--feature md:col-span-2 reveal" href="./skill-installer/" style="--c:#3fc9b0">
-      <div class="card__icon"><i class="ph ph-package" aria-hidden="true"></i></div>
+  </div>
+
+  <!-- Skills -->
+  <div class="flex items-baseline justify-between gap-4 flex-wrap border-b hairline pb-3 mb-5 mt-16 reveal">
+    <h2 class="font-mono text-[15px] font-medium tracking-wide">Skills</h2>
+    <span class="font-mono text-xs text-[color:var(--text-faint)]">install from the <a href="./skill-installer/" class="accent">skill-installer</a> catalog</span>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+    <!-- symmetric-audit, feature -->
+    <a class="card card--feature md:col-span-2 reveal" href="./symmetric-audit/" style="--c:#e8a33d">
+      <div class="card__icon"><i class="ph ph-columns" aria-hidden="true"></i></div>
       <div class="card__main">
-        <span class="card__tag">browse / install</span>
-        <div class="card__name">skill-installer</div>
-        <p class="card__desc">Skills off the shelf, not the whole crate. Browse the catalog, pick what you need, and install it into a project or globally. The front door to everything here.</p>
+        <span class="card__tag">create / edit / view</span>
+        <div class="card__name">symmetric-audit</div>
+        <p class="card__desc">Change one surface, prove every related one is in sync. It walks the family of files a change touches and catches the asymmetric bug your diff hides.</p>
         <span class="card__view">View showcase <i class="ph-bold ph-arrow-right" aria-hidden="true"></i></span>
       </div>
     </a>
