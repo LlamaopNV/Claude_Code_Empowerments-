@@ -1,0 +1,40 @@
+{
+    "r1Winners":  [
+                      {
+                          "id":  1,
+                          "axis":  "Sharpen core value",
+                          "beat":  "Radical reframe"
+                      },
+                      {
+                          "id":  2,
+                          "axis":  "Maximize differentiation",
+                          "beat":  "Maximize defensibility/durability"
+                      },
+                      {
+                          "id":  3,
+                          "axis":  "Minimize feasibility/cost risk",
+                          "beat":  "Narrow to a wedge"
+                      },
+                      {
+                          "id":  4,
+                          "axis":  "Attack \u0026 repair the core assumption",
+                          "beat":  "Expand opportunity"
+                      }
+                  ],
+    "r2Winners":  [
+                      {
+                          "id":  1,
+                          "axis":  "Sharpen core value",
+                          "beat":  "Attack \u0026 repair the core assumption"
+                      },
+                      {
+                          "id":  3,
+                          "axis":  "Minimize feasibility/cost risk",
+                          "beat":  "Maximize differentiation"
+                      }
+                  ],
+    "champion":  {
+                     "id":  3,
+                     "axis":  "Minimize feasibility/cost risk"
+                 }
+}

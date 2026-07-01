@@ -6,7 +6,7 @@
     "email": "llama.op@gmail.com"
   },
   "description": "A personal marketplace of Claude Code plugins and skills — empowerments for everyday coding.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "metadata": {
     "pluginRoot": "./plugins"
   },
@@ -71,6 +71,45 @@
       },
       "category": "development",
       "keywords": ["skills", "catalog", "install", "scaffold", "workflow"]
+    },
+    {
+      "name": "skill-foundry",
+      "displayName": "Skill Foundry",
+      "source": "./plugins/skill-foundry",
+      "description": "Authors a new skill, subagent, or plugin to this marketplace's house conventions and registers it (plugin.json, marketplace.json, README, CHANGELOG), then hands off to Anvil for evaluation. The seam between a validated idea and a measured, registered skill.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["skill-authoring", "plugin-authoring", "marketplace", "scaffold", "registration"]
+    },
+    {
+      "name": "proofmark",
+      "displayName": "Proofmark",
+      "source": "./plugins/proofmark",
+      "description": "The pre-ship proof for Claude Code artifacts. Static-scan a skill, subagent, command, plugin, or the whole marketplace for trigger quality, progressive disclosure, anti-slop prose, plugin.json and marketplace.json consistency, LF-on-.sh, and claude plugin validate, then render a verdict per finding with judgment. The cheap static gate before Anvil's expensive dynamic eval.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["lint", "audit", "pre-flight", "quality-gate", "marketplace", "anti-slop"]
+    },
+    {
+      "name": "idea-forge",
+      "displayName": "Idea Forge",
+      "source": "./plugins/idea-forge",
+      "description": "Hardens one clarified, high-stakes idea by making eight rival variants of it fight an adversarial king-of-the-hill ladder, grafting each challenger's strongest compatible fix into a running merge, and shipping a result provably no worse than the best original plus a full transcript. The depth-on-one companion to bake-to-completion's clarify pass.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["idea", "adversarial", "tournament", "multi-agent", "stress-test", "hardening"]
     }
   ]
 }

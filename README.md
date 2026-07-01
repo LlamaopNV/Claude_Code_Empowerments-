@@ -31,6 +31,9 @@ The plugins appear under the **Discover** tab. Select one, press Enter to view i
 | `design-taste-frontend` | development | Anti-slop frontend skill: reads the brief, infers a design direction, and runs a strict pre-flight against AI-design tells. |
 | `workflow-forge` | development | Bootstraps a project-tailored CLAUDE.md plus TDD, a pre-commit gate, symmetric-surface audits, and capability sync into any repo. |
 | `skill-installer` | development | Browse a bundled catalog of team skills and selectively install them into your user-global or current-project skills directory. |
+| `skill-foundry` | development | Authors a new skill, subagent, or plugin to this marketplace's conventions and registers it, then hands off to Anvil for evaluation. |
+| `proofmark` | development | The pre-ship static proof for Claude Code artifacts: scans trigger quality, progressive disclosure, anti-slop prose, and manifest drift, then renders a verdict per finding. The cheap gate before Anvil's dynamic eval. |
+| `idea-forge` | development | Hardens one clarified idea by making eight rival variants fight an adversarial king-of-the-hill ladder, grafting every fix that survives re-validation, and shipping a result provably no worse than the best original. The depth-on-one companion to `bake-to-completion`. |
 | `anvil` | development | Native effectiveness evals & improvement loop for Claude Code skills, subagents & plugins — generate balanced test data, run in-session A/B trials on your subscription, score activation / quality-delta / cost, and propose improvements. **See the [Anvil](#anvil--effectiveness-evals-for-claude-code-artifacts) section below.** |
 
 ## Anvil — effectiveness evals for Claude Code artifacts
@@ -139,6 +142,8 @@ measured runs): **https://llamaopnv.github.io/Claude_Code_Empowerments-/**
 ```
 
 ## Add your own plugin
+
+> The steps below are the manual version. If you have the `skill-foundry` plugin installed, ask it to do this for you — it follows this exact ritual and runs the validation for you.
 
 1. Create `plugins/<your-plugin-name>/` with a manifest at
    `plugins/<your-plugin-name>/.claude-plugin/plugin.json`:
