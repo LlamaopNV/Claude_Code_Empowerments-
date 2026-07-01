@@ -4,6 +4,23 @@ All notable changes to this marketplace are documented here.
 
 ## [Unreleased]
 
+### Added
+- **`idea-forge`** plugin (v0.1.0) — hardens ONE clarified, high-stakes idea by making eight
+  rival variants of it fight an adversarial **king-of-the-hill ladder**: a pre-screened best
+  original seeds the champion, each rung grafts the challenger's strongest *compatible* fix into
+  a running merge (re-validated against a graft ledger and the previous champion), and a final
+  audit rung ships the champion only if it **provably beats the frozen best original**. The
+  depth-on-one companion to `bake-to-completion`'s clarify pass. Skill: `idea-forge`, with the
+  `run-tournament.md` executor playbook. Registered in `marketplace.json` (bumped to `0.4.0`),
+  with a showcase page at `site/idea-forge/` (the skill's own self-improvement tournament, its
+  full debate transcript, and the v1-to-v2 diff). Steel-violet accent `#7c6cf0`.
+- **`skill-foundry`** plugin (v0.1.0) — authors a new skill, subagent, or plugin to this
+  marketplace's house conventions (file layout, `plugin.json`, `marketplace.json`
+  registration, README/CHANGELOG updates) and hands off to Anvil for evaluation. Fills the
+  authoring gap `skill-installer`'s own catalog README points at but doesn't fill.
+  - Skills: `skill-foundry`.
+  - Scripts: `check-registration.sh` (verifies a plugin is fully registered before commit).
+
 ### Removed
 - Dropped six plugins that were not authored in this marketplace: `bitbucket-repo`,
   `bitbucket-pipeline`, `bitbucket-pr`, `jira-api`, `md-with-mermaid-to-pdf`, and

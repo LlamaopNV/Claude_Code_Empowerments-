@@ -19,6 +19,8 @@ accent icon. Owned skills only:
 - [x] bake-to-completion `#ee6f9e`
 - [x] design-taste-frontend `#cd7cf0`
 - [x] skill-installer (feature) `#3fc9b0`
+- [x] skill-foundry `#ff7849`
+- [x] idea-forge `#7c6cf0` (self-improvement tournament, with transcript + v1/v2 diff sub-pages)
 - [x] tdd-heartbeat `#e5675f` (external, linked from the grid)
 
 ### Removed 2026-06-24 (not the user's; pulled from repo + marketplace + site)

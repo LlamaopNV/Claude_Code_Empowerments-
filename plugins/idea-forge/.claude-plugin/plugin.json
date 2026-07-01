@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "idea-forge",
+  "displayName": "Idea Forge",
+  "version": "0.1.0",
+  "description": "Hardens ONE clarified, high-stakes idea by making eight rival variants of it fight an adversarial king-of-the-hill ladder, grafting each challenger's strongest compatible fix into a running merge, and shipping a result provably no worse than the best original plus a full transcript. The depth-on-one companion to bake-to-completion's clarify pass.",
+  "author": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["idea", "adversarial", "tournament", "multi-agent", "stress-test", "hardening"]
+}

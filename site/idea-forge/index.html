@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>idea-forge · showcase</title>
+<meta name="description" content="An adversarial multi-agent Claude Code skill that hardens one idea by making rival versions of it fight. It was pointed at its own design and shipped a measurably stronger v2. Here is the before and after." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: {
+    fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+    colors: { accent: 'var(--accent)' },
+    maxWidth: { content: '1180px' },
+  } } };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .kicker  { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .sect-title { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; }
+  .sect-sub { color: var(--text-dim); line-height: 1.6; max-width: 62ch; margin-top: 12px; }
+  .grad { color: var(--accent); }
+
+  /* stats strip */
+  .stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  @media (min-width: 720px){ .stats { grid-template-columns: repeat(4,1fr); } }
+  .stat { background: var(--bg-2); padding: 20px 18px; }
+  .stat .num { font-family: var(--font-mono); font-size: 26px; font-weight: 600; color: var(--accent); letter-spacing: -0.02em; }
+  .stat .lbl { color: var(--text-dim); font-size: 13px; line-height: 1.45; margin-top: 6px; }
+
+  /* pipeline */
+  .pipe { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 860px){ .pipe { grid-template-columns: repeat(4, 1fr); align-items: stretch; } }
+  .node { position: relative; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 18px; }
+  .node.on { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 6%, var(--bg-2)); }
+  .node .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--text-faint); }
+  .node.on .tag { color: var(--accent); }
+  .node h4 { margin: 8px 0 6px; font-size: 15px; font-weight: 600; }
+  .node p  { color: var(--text-dim); font-size: 13.5px; line-height: 1.5; margin: 0; }
+  .node .step { position: absolute; top: -9px; left: 16px; width: 20px; height: 20px; border-radius: 999px; display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px; background: var(--bg-3); border: 1px solid var(--border-2); color: var(--text-dim); }
+  .node.on .step { background: var(--accent); color: #14100a; border-color: var(--accent); }
+
+  /* before / after */
+  .ba { display: grid; gap: 16px; grid-template-columns: 1fr; }
+  @media (min-width: 860px){ .ba { grid-template-columns: 1fr 1fr; } }
+  .ba-col { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-2); }
+  .ba-col header { display: flex; align-items: center; justify-content: space-between; padding: 13px 18px; border-bottom: 1px solid var(--border); font-family: var(--font-mono); font-size: 13px; }
+  .ba-col .v { font-weight: 500; }
+  .ba-col .badge { font-size: 11px; letter-spacing: .06em; padding: 3px 8px; border-radius: 999px; }
+  .ba-col.before .badge { background: rgba(215,112,104,0.14); color: var(--miss); }
+  .ba-col.after  .badge { background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+  .ba-col.after { border-color: color-mix(in srgb, var(--accent) 40%, var(--border)); }
+  .ba-col .body { padding: 16px 18px 20px; }
+  .ba-col h5 { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); margin: 14px 0 8px; }
+  .ba-col h5:first-child { margin-top: 0; }
+  .ba-col ul { margin: 0; padding-left: 18px; display: grid; gap: 7px; }
+  .ba-col li { color: var(--text-dim); font-size: 13.5px; line-height: 1.5; }
+  .ba-col li b { color: var(--text); font-weight: 600; }
+
+  .callout { border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); background: var(--bg-2); padding: 18px 20px; }
+  .callout.warn { border-left-color: var(--miss); }
+  .label-mini { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; }
+  .callout p, .callout blockquote { color: var(--text-dim); line-height: 1.62; margin: 0; font-size: 14.5px; }
+  .callout b { color: var(--text); }
+  blockquote.gauntlet { font-style: italic; }
+
+  /* comparison table */
+  .cmp { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .cmp th, .cmp td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .cmp thead th { font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); font-weight: 500; }
+  .cmp thead th:last-child { color: var(--accent); }
+  .cmp .dim { font-weight: 600; color: var(--text); white-space: nowrap; }
+  .cmp .v1 { color: var(--text-dim); }
+  .cmp .v2 { color: var(--text); }
+  .pill { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .03em; padding: 2px 7px; border-radius: 999px; margin-left: 6px; background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); }
+
+  /* ladder */
+  .ladder { display: grid; gap: 8px; }
+  .rung-label { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .05em; color: var(--text-faint); margin-top: 14px; }
+  .rung-label:first-child { margin-top: 0; }
+  .seeds { display: grid; gap: 8px; grid-template-columns: 1fr; }
+  @media (min-width: 680px){ .seeds { grid-template-columns: 1fr 1fr; } }
+  .seed { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-2); padding: 10px 12px; font-size: 13.5px; }
+  .seed .n { font-family: var(--font-mono); font-size: 11px; width: 20px; height: 20px; flex: 0 0 20px; border-radius: 6px; display: grid; place-items: center; background: var(--bg-3); color: var(--text-dim); border: 1px solid var(--border-2); }
+  .seed.win { border-color: color-mix(in srgb, var(--accent) 35%, var(--border)); }
+  .seed.win .n { background: color-mix(in srgb, var(--accent) 20%, var(--bg-3)); color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--border-2)); }
+  .seed.out { opacity: .5; }
+  .seed.out .txt { text-decoration: line-through; text-decoration-color: var(--text-faint); }
+  .seed.champ { grid-column: 1 / -1; border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--bg-2)); font-weight: 600; }
+  .seed.champ .n { background: var(--accent); color: #14100a; border-color: var(--accent); }
+
+  /* timeline */
+  .timeline { display: grid; gap: 0; border-left: 1px solid var(--border); margin-left: 6px; }
+  .tl { position: relative; padding: 0 0 22px 26px; }
+  .tl::before { content: ""; position: absolute; left: -5px; top: 4px; width: 9px; height: 9px; border-radius: 999px; background: var(--accent); }
+  .tl:last-child { padding-bottom: 0; }
+  .tl h4 { margin: 0 0 5px; font-size: 14.5px; font-weight: 600; }
+  .tl h4 span { font-family: var(--font-mono); color: var(--accent); margin-right: 8px; }
+  .tl p { color: var(--text-dim); font-size: 13.5px; line-height: 1.5; margin: 0 0 7px; }
+  .tl .drv { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-faint); }
+  .tl .drv b { color: var(--text-dim); font-weight: 500; }
+
+  /* scorecard */
+  .score { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 720px){ .score { grid-template-columns: 1fr 1fr 1fr; } }
+  .sc { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 16px 18px; }
+  .sc .ic { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-size: 17px; margin-bottom: 10px; }
+  .sc.good .ic { background: rgba(92,191,142,0.14); color: var(--add); }
+  .sc.warn .ic { background: rgba(215,112,104,0.14); color: var(--miss); }
+  .sc h4 { margin: 0 0 6px; font-size: 14px; font-weight: 600; }
+  .sc p { color: var(--text-dim); font-size: 13px; line-height: 1.5; margin: 0; }
+
+  .install { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 22px; font-family: var(--font-mono); font-size: 13px; }
+  .install .c { color: var(--text-dim); }
+  .install .c b { color: var(--accent); font-weight: 500; }
+</style>
+</head>
+
+<body class="font-sans">
+<main id="top">
+
+  <!-- HERO -->
+  <section class="max-w-content mx-auto px-5 flex flex-col justify-center" style="min-height:calc(100dvh - 64px); padding-top:40px; padding-bottom:40px;">
+    <span class="eyebrow reveal">A skill that hardened itself</span>
+    <h1 class="reveal font-semibold tracking-tighter leading-[1.06] text-[2.5rem] md:text-6xl max-w-[20ch] mt-5">
+      Make rival versions of one idea <span class="grad">fight</span>, ship the survivor.
+    </h1>
+    <p class="reveal sect-sub text-lg mt-6 max-w-[58ch]">
+      idea-forge hardens a single idea by spawning eight rivals, running them up an adversarial ladder, and grafting every fix that survives re-validation. We pointed it at its own design and it shipped a stronger v2.
+    </p>
+    <div class="reveal mt-8 flex flex-wrap items-center gap-3">
+      <a href="#before-after" class="btn-primary"><i class="ph-bold ph-arrow-down" aria-hidden="true"></i> See what changed</a>
+      <a href="transcript.html" class="btn-ghost"><i class="ph ph-scroll" aria-hidden="true"></i> Read the full debate</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="max-w-content mx-auto px-5 pb-20">
+    <div class="stats reveal">
+      <div class="stat"><div class="num">8</div><div class="lbl">Opus contenders, one per improvement axis</div></div>
+      <div class="stat"><div class="num">52</div><div class="lbl">agent calls across the tournament</div></div>
+      <div class="stat"><div class="num">~0.9M</div><div class="lbl">reasoning tokens spent forging</div></div>
+      <div class="stat"><div class="num">9</div><div class="lbl">upgrades, each traced to an objection</div></div>
+    </div>
+  </section>
+
+  <!-- PIPELINE -->
+  <section id="how" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">How this artifact was made</div>
+      <h2 class="sect-title">Four autonomous stages, no human in the loop</h2>
+      <p class="sect-sub">An agent fleshed out the concept, wrote v1 of the skill, then ran the skill on itself. The only human step was granting the access to publish this page.</p>
+    </div>
+    <div class="pipe reveal mt-9">
+      <div class="node">
+        <span class="step">1</span>
+        <span class="tag">bake-to-completion</span>
+        <h4>Bake the concept</h4>
+        <p>An agent self-ran a Socratic interview plus an adversarial stress-test, producing an idea brief.</p>
+      </div>
+      <div class="node on">
+        <span class="step">2</span>
+        <span class="tag">output</span>
+        <h4>idea-forge v1</h4>
+        <p>A single-elimination debate bracket: 8 variants, 7 debates, a judge per pair, carry-forward reinforcement.</p>
+      </div>
+      <div class="node">
+        <span class="step">3</span>
+        <span class="tag">the meta-run</span>
+        <h4>Forge itself</h4>
+        <p>v1's own tournament ran with the seed set to "improve the idea-forge skill."</p>
+      </div>
+      <div class="node on">
+        <span class="step">4</span>
+        <span class="tag">result</span>
+        <h4>idea-forge v2</h4>
+        <p>A king-of-the-hill ladder with an audited merge and a provable floor guarantee. This page.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section id="before-after" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">The headline result</div>
+      <h2 class="sect-title">Where it started, what it became</h2>
+      <p class="sect-sub">The tournament kept idea-forge's adversarial, carry-forward soul but rebuilt the machine around it. The winning direction came from contender #3, "minimize feasibility and cost risk."</p>
+    </div>
+
+    <div class="ba reveal mt-9">
+      <div class="ba-col before">
+        <header><span class="v">idea-forge v1</span><span class="badge">BEFORE</span></header>
+        <div class="body">
+          <h5>Mechanism</h5>
+          <ul>
+            <li><b>Single-elimination bracket</b>, 8 to 4 to 2 to 1, seven debates.</li>
+            <li>Each debate: two exchanges, a judge, a carry-forward edit, about <b>6 calls per pair</b>.</li>
+            <li>The winner absorbs the loser's strongest objection, then advances.</li>
+          </ul>
+          <h5>The cracks it shipped with</h5>
+          <ul>
+            <li>The carry-forward edit was <b>asserted, never audited</b>.</li>
+            <li>The thing it shipped, the accumulated survivor, was <b>never measured against anything</b>.</li>
+            <li>A run of clean wins could still hand you a chimera quietly <b>worse than one of its parents</b>.</li>
+            <li>Cost: <b>about 24 to 30 Opus calls</b> per run.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ba-col after">
+        <header><span class="v">idea-forge v2</span><span class="badge">AFTER</span></header>
+        <div class="body">
+          <h5>Mechanism</h5>
+          <ul>
+            <li><b>King-of-the-hill ladder</b>: a pre-screened best seed holds the hill; a frozen copy goes to <b>reserve</b>.</li>
+            <li>Each rung: <b>one gated Opus call</b> (max three), steelman to scored verdict to salvage to merge to audit.</li>
+            <li>The champion is a <b>running merge</b> that compounds every <em>compatible</em> fix.</li>
+          </ul>
+          <h5>The guarantees it now carries</h5>
+          <ul>
+            <li>A <b>graft ledger</b> re-validates every merge against all prior grafts; conflicts are resolved, not buried.</li>
+            <li>A <b>predecessor audit</b> rolls back any merge that regresses the champion.</li>
+            <li>A final <b>audit rung</b>: ship only if <b>provably no worse than the best original</b>, else ship the original.</li>
+            <li>Cost: <b>about 18 to 24 Opus calls</b> (lite mode about 9 to 12).</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout reveal mt-6">
+      <div class="label-mini">The forge's own summary of the change</div>
+      <p>"v1 calibrated the <b>selector</b> carefully but the carry-forward edit was asserted, never audited, and the one thing it shipped was never measured. v2 keeps the adversarial, divergent, carry-forward soul but audits the <b>synthesizer</b> as hard as the selector: each graft is re-validated against a composable ledger and must match-or-beat the previous champion or roll back, and a mandatory audit rung ships the champion only if it provably clears a calibrated margin over the reserved original. The result is <b>cheaper per round</b> and carries a real guarantee v1 lacked: a champion <b>provably no worse than the best original</b>."</p>
+    </div>
+  </section>
+
+  <!-- COMPARISON TABLE -->
+  <section class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">Side by side</div>
+      <h2 class="sect-title">The same idea, hardened</h2>
+    </div>
+    <div class="reveal mt-8 overflow-x-auto">
+      <table class="cmp">
+        <thead>
+          <tr><th>Dimension</th><th>v1, before</th><th>v2, after</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="dim">Selection structure</td><td class="v1">Single-elimination bracket, 7 debates</td><td class="v2">King-of-the-hill ladder, running merge <span class="pill">re-architected</span></td></tr>
+          <tr><td class="dim">Seeding</td><td class="v1">Spawn order; first mover gets incumbency</td><td class="v2">Cheap pre-screen ranks the 8; the a-priori-best seeds champion-zero <span class="pill">new</span></td></tr>
+          <tr><td class="dim">Reinforcement</td><td class="v1">Winner absorbs one objection, edit asserted</td><td class="v2">Audited graft plus composable graft ledger <span class="pill">audited</span></td></tr>
+          <tr><td class="dim">Synthesizer safety</td><td class="v1">None, merge never re-checked</td><td class="v2">Predecessor audit plus rollback on regression <span class="pill">new</span></td></tr>
+          <tr><td class="dim">Floor guarantee</td><td class="v1">None, can ship worse than a parent</td><td class="v2">Audit rung vs frozen reserve: ship only if provably better <span class="pill">new</span></td></tr>
+          <tr><td class="dim">Judge calibration</td><td class="v1">Quoted lines plus tie-break ladder</td><td class="v2">Noise-floor band plus position-swapped recheck <span class="pill">stronger</span></td></tr>
+          <tr><td class="dim">Cost per run</td><td class="v1">About 24 to 30 Opus calls</td><td class="v2">About 18 to 24 (lite 9 to 12) <span class="pill">cheaper</span></td></tr>
+          <tr><td class="dim">Honesty about limits</td><td class="v1">Claimed carry-forward "is the product"</td><td class="v2">Claims only "no worse than best original"; names residual path-dependence <span class="pill">honest</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- BRACKET -->
+  <section id="tournament" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">The tournament that did it</div>
+      <h2 class="sect-title">Eight rival designs entered. One walked out.</h2>
+      <p class="sect-sub">Each contender attacked v1 from a different angle. They debated in pairs; a judge scored each on five criteria and quoted the deciding line; the winner absorbed the loser's strongest objection before advancing. Contender #3, the one obsessed with cutting cost and feasibility risk, won the final.</p>
+    </div>
+
+    <div class="ladder reveal mt-9">
+      <div class="rung-label">Round 1, eight to four</div>
+      <div class="seeds">
+        <div class="seed win"><span class="n">1</span><span class="txt">Sharpen core value</span></div>
+        <div class="seed out"><span class="n">8</span><span class="txt">Radical reframe</span></div>
+        <div class="seed win"><span class="n">2</span><span class="txt">Maximize differentiation</span></div>
+        <div class="seed out"><span class="n">7</span><span class="txt">Maximize defensibility</span></div>
+        <div class="seed win"><span class="n">3</span><span class="txt">Minimize feasibility and cost risk</span></div>
+        <div class="seed out"><span class="n">6</span><span class="txt">Narrow to a wedge</span></div>
+        <div class="seed win"><span class="n">4</span><span class="txt">Attack and repair assumption</span></div>
+        <div class="seed out"><span class="n">5</span><span class="txt">Expand opportunity</span></div>
+      </div>
+      <div class="rung-label">Round 2, four to two</div>
+      <div class="seeds">
+        <div class="seed win"><span class="n">1</span><span class="txt">Sharpen core value</span></div>
+        <div class="seed out"><span class="n">4</span><span class="txt">Attack and repair assumption</span></div>
+        <div class="seed win"><span class="n">3</span><span class="txt">Minimize feasibility and cost risk</span></div>
+        <div class="seed out"><span class="n">2</span><span class="txt">Maximize differentiation</span></div>
+      </div>
+      <div class="rung-label">Final, two to one</div>
+      <div class="seeds">
+        <div class="seed out"><span class="n">1</span><span class="txt">Sharpen core value</span></div>
+      </div>
+      <div class="seeds">
+        <div class="seed champ"><span class="n">3</span><span class="txt">Champion, minimize feasibility and cost risk</span></div>
+      </div>
+    </div>
+
+    <div class="callout warn reveal mt-9">
+      <div class="label-mini">Final gauntlet, the last attack the champion had to survive</div>
+      <blockquote class="gauntlet">"The apparatus certifies every pairwise verdict to the hilt but <b>never once evaluates the thing it actually ships</b>, the accumulated champion. You can win all rungs by clearing margins and still ship a chimera worse than the best single original, because the load-bearing claim is the one quantity the system never measures."</blockquote>
+      <p style="margin-top:14px">The champion was then amended to answer exactly this: the predecessor audit, the graft ledger, and the final reserve audit rung all exist <em>because</em> this objection landed. That is reinforcement under selection, working on the skill itself.</p>
+    </div>
+  </section>
+
+  <!-- THE 9 UPGRADES -->
+  <section id="changes" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">The nine upgrades</div>
+      <h2 class="sect-title">Every change, traced to the objection that forced it</h2>
+      <p class="sect-sub">This is the actual changelog the synthesis step emitted, not a summary written after the fact.</p>
+    </div>
+    <div class="timeline reveal mt-9">
+      <div class="tl"><h4><span>1</span>Bracket to king-of-the-hill ladder</h4><p>Replaced the single-elimination bracket with a ladder whose advancing artifact is a running merge that compounds every compatible fix; the champion only ever accumulates and is never wholesale-replaced.</p><span class="drv"><b>driven by:</b> the gauntlet's path-dependence and unaudited-synthesizer objection</span></div>
+      <div class="tl"><h4><span>2</span>Pre-screen seeding plus frozen reserve</h4><p>One cheap Opus pass ranks the 8 originals, names the strongest as champion-zero, and freezes a pristine copy in reserve, so incumbency accrues to the a-priori-best, not to spawn order.</p><span class="drv"><b>driven by:</b> open risk, incumbency was handed to a random first mover</span></div>
+      <div class="tl"><h4><span>3</span>One gated call per rung</h4><p>Each round is a single gated call returning steelman, scores with verbatim rubric quotes, winner with margin and self-consistency retry, salvage, merge, and predecessor audit, cutting cost from about 6 calls per debate to 1 to 3 per rung.</p><span class="drv"><b>driven by:</b> the winning contender's cost mandate</span></div>
+      <div class="tl"><h4><span>4</span>The graft ledger plus composable compatibility</h4><p>Every new graft must assert non-contradiction against each live ledger entry; a flagged conflict forces a resolve-edit that keeps the stronger graft and updates the ledger, instead of silently accumulating contradictions.</p><span class="drv"><b>driven by:</b> riskiest-assumption, compatibility may be non-monotonic</span></div>
+      <div class="tl"><h4><span>5</span>Whole-artifact predecessor audit plus rollback</h4><p>Any non-no-op merge is re-judged against the immediately previous champion; a regression is independently confirmed and rolled back, costing the graft but not the recorded verdict. Selection and synthesis are decoupled.</p><span class="drv"><b>driven by:</b> core gauntlet objection, the synthesizer was never audited</span></div>
+      <div class="tl"><h4><span>6</span>Mandatory audit rung against the reserve</h4><p>The accumulated champion ships only if it clears the noise floor over the pristine original, otherwise the original ships. "Better than the best original" becomes a measured gate and a hard floor.</p><span class="drv"><b>driven by:</b> "the system never measures the thing it ships"</span></div>
+      <div class="tl"><h4><span>7</span>Noise-floor calibration</h4><p>Margin of 2 or more auto-certifies; a verdict inside the roughly 1-point band triggers one fresh position-swapped judgment with the prior verdict hidden. Agree certifies, disagree means incumbency holds. Applied to ladder rungs and the audit rung.</p><span class="drv"><b>driven by:</b> judge-reliability risk on near-ties</span></div>
+      <div class="tl"><h4><span>8</span>Cost folded into the rubric</h4><p>Strengthened axis 3 and the feasibility criterion to "feasibility and cost," with explicit verbatim rubric lines the judge must quote for every score.</p><span class="drv"><b>driven by:</b> the winning contender axis</span></div>
+      <div class="tl"><h4><span>9</span>Honest claims, not slogans</h4><p>Updated framing, red flags, cost numbers, lite-mode axes, worked example, and checklists to claim only "no worse than the best original, hardened by every surviving graft," never a global optimum, and to name the residual path-dependence.</p><span class="drv"><b>driven by:</b> residual path-dependence open risk</span></div>
+    </div>
+  </section>
+
+  <!-- SCORECARD -->
+  <section class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">Was it effective?</div>
+      <h2 class="sect-title">The honest scorecard</h2>
+      <p class="sect-sub">Three categorical wins, and three limits the skill names about itself rather than hides.</p>
+    </div>
+    <div class="score reveal mt-9">
+      <div class="sc good"><div class="ic"><i class="ph-bold ph-check"></i></div><h4>A new guarantee appeared</h4><p>v1 could ship something worse than its own inputs. v2 cannot: the reserve audit rung is a provable floor. That is a categorical, not cosmetic, gain.</p></div>
+      <div class="sc good"><div class="ic"><i class="ph-bold ph-check"></i></div><h4>It got cheaper while getting safer</h4><p>About 24 to 30 down to 18 to 24 Opus calls per run, with a 9 to 12 lite mode, even as three new audit mechanisms were added.</p></div>
+      <div class="sc good"><div class="ic"><i class="ph-bold ph-check"></i></div><h4>Every fix traces to an attack</h4><p>All nine changes map to a specific objection raised and survived in the bracket. The mechanism did what it claims to do, on itself.</p></div>
+      <div class="sc warn"><div class="ic"><i class="ph-bold ph-warning"></i></div><h4>Same-model echo chamber</h4><p>All eight contenders and every judge share a model family. The debate's diversity is real but capped. v2 names this and flags mixing model families as future work.</p></div>
+      <div class="sc warn"><div class="ic"><i class="ph-bold ph-warning"></i></div><h4>Order still shapes the outcome</h4><p>A running merge is path-dependent. The reserve caps the downside but a different seeding could compound a different set. v2 claims a floor, not an optimum, deliberately.</p></div>
+      <div class="sc warn"><div class="ic"><i class="ph-bold ph-warning"></i></div><h4>Quality is argued, not benchmarked</h4><p>"Better" here is an LLM-judge verdict, not an external eval. The next honest step is an A/B against a flat generate-8-pick-1 ensemble.</p></div>
+    </div>
+  </section>
+
+  <!-- EXPLORE / INSTALL -->
+  <section id="explore" class="max-w-content mx-auto px-5 pb-28">
+    <div class="reveal">
+      <div class="kicker">Go deeper</div>
+      <h2 class="sect-title">Read the raw evidence, then install it</h2>
+      <p class="sect-sub">Nothing here is paraphrased marketing. These are the actual artifacts the agents produced.</p>
+    </div>
+    <div class="reveal mt-8 flex flex-wrap gap-3">
+      <a class="btn-primary" href="transcript.html"><i class="ph ph-scroll"></i> Full debate transcript</a>
+      <a class="btn-ghost" href="compare.html"><i class="ph ph-git-diff"></i> v1 vs v2 skill diff</a>
+      <a class="btn-ghost" href="data/idea-brief.md"><i class="ph ph-file-text"></i> The original idea brief</a>
+      <a class="btn-ghost" href="data/v2-SKILL.md"><i class="ph ph-file-code"></i> v2 SKILL.md (raw)</a>
+    </div>
+
+    <div class="install reveal mt-8">
+      <div class="c"><span style="color:var(--text-faint)"># add the marketplace, then the plugin</span></div>
+      <div class="c"><b>/plugin marketplace add</b> LlamaopNV/Claude_Code_Empowerments-</div>
+      <div class="c"><b>/plugin install</b> idea-forge</div>
+      <div class="c" style="margin-top:10px"><span style="color:var(--text-faint)"># then, once your idea is clear</span></div>
+      <div class="c">"forge this idea: <span style="color:var(--text)">&lt;one clear sentence&gt;</span>"</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase', brandIcon: 'ph-stack', accent: '#7c6cf0',
+    homeUrl: '../', repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'How', href: '#how' },
+      { label: 'Before / after', href: '#before-after' },
+      { label: 'The tournament', href: '#tournament' },
+      { label: 'Install', href: '#explore' },
+    ],
+    cta: { label: 'Get the skill', href: '#explore', icon: 'ph-download-simple' },
+    footNote: 'idea-forge · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
