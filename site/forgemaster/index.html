@@ -1,345 +1,680 @@
 <!doctype html>
 <html lang="en" class="dark">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>forgemaster · showcase</title>
-<meta name="description" content="forgemaster: drives one rough idea through a seven-stage pipeline and refuses to call it done until six gates hold observed evidence." />
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>forgemaster · showcase</title>
+    <meta
+      name="description"
+      content="forgemaster: drives one rough idea through a seven-stage pipeline and refuses to call it done until six gates hold observed evidence."
+    />
 
-<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = { darkMode: 'class', theme: { extend: {
-    fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
-    colors: { accent: 'var(--accent)' },
-  } } };
-</script>
-<link rel="stylesheet" href="../shared/site.css" />
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+            },
+            colors: { accent: 'var(--accent)' },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../shared/site.css" />
 
-<style>
-  /* forgemaster-specific styles. one accent, one radius system, dark locked. */
-  .pane__body { overflow-x: auto; }
-  .stage-rail { display: flex; flex-direction: column; gap: 2px; font-family: var(--font-mono); font-size: 13px; }
-  .stage-rail li {
-    display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-    border-radius: var(--radius); color: var(--text-dim);
-    transition: color .25s ease, background .25s ease;
-  }
-  .stage-rail li i { font-size: 15px; }
-  .stage-rail li.now { color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, transparent); }
-  .stage-rail li.past { color: var(--text-dim); }
-  .stage-rail li.past .stage-check { visibility: visible; }
-  .stage-check { visibility: hidden; margin-left: auto; color: var(--add); font-size: 13px; }
+    <style>
+      /* forgemaster-specific styles. one accent, one radius system, dark locked. */
+      .pane__body {
+        overflow-x: auto;
+      }
+      .stage-rail {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        font-family: var(--font-mono);
+        font-size: 13px;
+      }
+      .stage-rail li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: var(--radius);
+        color: var(--text-dim);
+        transition:
+          color 0.25s ease,
+          background 0.25s ease;
+      }
+      .stage-rail li i {
+        font-size: 15px;
+      }
+      .stage-rail li.now {
+        color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 9%, transparent);
+      }
+      .stage-rail li.past {
+        color: var(--text-dim);
+      }
+      .stage-rail li.past .stage-check {
+        visibility: visible;
+      }
+      .stage-check {
+        visibility: hidden;
+        margin-left: auto;
+        color: var(--add);
+        font-size: 13px;
+      }
 
-  .gate-val { transition: color .25s ease; color: var(--text-dim); }
-  .gate-val[data-state="pass"] { color: var(--add); }
-  .gate-val[data-state="fail"] { color: var(--miss); }
-  .gate-val[data-state="na"]   { color: var(--intent); font-style: italic; }
-  .gate-val[data-state="done"] { color: var(--accent); }
+      .gate-val {
+        transition: color 0.25s ease;
+        color: var(--text-dim);
+      }
+      .gate-val[data-state='pass'] {
+        color: var(--add);
+      }
+      .gate-val[data-state='fail'] {
+        color: var(--miss);
+      }
+      .gate-val[data-state='na'] {
+        color: var(--intent);
+        font-style: italic;
+      }
+      .gate-val[data-state='done'] {
+        color: var(--accent);
+      }
 
-  .hallmark {
-    display: inline-flex; align-items: center; gap: 8px;
-    color: var(--accent); font-family: var(--font-mono); font-size: 13px;
-    visibility: hidden; opacity: 0; transform: scale(.9); transition: opacity .45s cubic-bezier(.16,1,.3,1), transform .45s cubic-bezier(.16,1,.3,1);
-  }
-  .hallmark.in { visibility: visible; opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) {
-    .hallmark { transition: none; }
-    .stage-rail li { transition: none; }
-    .gate-val { transition: none; }
-  }
+      .hallmark {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--accent);
+        font-family: var(--font-mono);
+        font-size: 13px;
+        visibility: hidden;
+        opacity: 0;
+        transform: scale(0.9);
+        transition:
+          opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+          transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .hallmark.in {
+        visibility: visible;
+        opacity: 1;
+        transform: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .hallmark {
+          transition: none;
+        }
+        .stage-rail li {
+          transition: none;
+        }
+        .gate-val {
+          transition: none;
+        }
+      }
 
-  .owner-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: baseline; padding: 10px 0; }
-  .owner-row .who { font-family: var(--font-mono); font-size: 13px; color: var(--text-dim); text-align: right; }
-  .owner-row .who a { color: var(--accent); }
-  .owner-row .who a:hover { text-decoration: underline; }
+      .owner-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 14px;
+        align-items: baseline;
+        padding: 10px 0;
+      }
+      .owner-row .who {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        color: var(--text-dim);
+        text-align: right;
+      }
+      .owner-row .who a {
+        color: var(--accent);
+      }
+      .owner-row .who a:hover {
+        text-decoration: underline;
+      }
 
-  .aside-forged {
-    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
-    background: color-mix(in srgb, var(--accent) 5%, var(--bg-2));
-    border-radius: var(--radius);
-  }
-</style>
-</head>
+      .aside-forged {
+        border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+        background: color-mix(in srgb, var(--accent) 5%, var(--bg-2));
+        border-radius: var(--radius);
+      }
+    </style>
+  </head>
 
-<body class="font-sans">
-<main id="top">
-
-  <!-- ============ hero ============ -->
-  <section class="wrap grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[calc(100dvh-4rem)] py-16">
-    <div>
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-none">
-        Done is a <span class="accent">measured</span> state, not a feeling.
-      </h1>
-      <p class="mt-6 text-lg text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
-        Forgemaster drives one rough idea through seven stages and refuses to say shipped
-        until six gates hold observed evidence.
-      </p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a class="btn-primary" href="#demo"><i class="ph ph-play" aria-hidden="true"></i>Watch a run</a>
-        <a class="btn-ghost" href="#install"><i class="ph ph-download-simple" aria-hidden="true"></i>Install</a>
-      </div>
-    </div>
-
-    <div class="pane" role="group" aria-label="Example run manifest with one failing gate">
-      <div class="pane__bar"><i class="ph ph-file-text" aria-hidden="true"></i>run.json · the manifest is the state machine</div>
-      <div class="pane__body">
-        <div class="row ctx"><span class="gut"> </span><span>{</span></div>
-        <div class="row ctx"><span class="gut"> </span><span>  "stage": "gates",</span></div>
-        <div class="row ctx"><span class="gut"> </span><span>  "status": "active",</span></div>
-        <div class="row ctx"><span class="gut"> </span><span>  "gates": {</span></div>
-        <div class="row add"><span class="gut">+</span><span>    "tests": "pass", "lint": "pass",</span></div>
-        <div class="row add"><span class="gut">+</span><span>    "types": "na", "spec_review": "pass",</span></div>
-        <div class="row add"><span class="gut">+</span><span>    "code_review": "pass",</span></div>
-        <div class="row miss"><span class="gut">-</span><span>    "self_critique": "fail"</span></div>
-        <div class="row ctx"><span class="gut"> </span><span>  }</span></div>
-        <div class="row ctx"><span class="gut"> </span><span>}</span></div>
-        <div class="row intent"><span class="gut">×</span><span>write status "done": blocked by hook</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ problem ============ -->
-  <section id="problem" class="wrap py-24 md:py-32 grid grid-cols-1 lg:grid-cols-[5fr,7fr] gap-12 items-start">
-    <div>
-      <h2 class="text-3xl md:text-4xl font-bold tracking-tighter">Pipelines drift when the chat is the record.</h2>
-      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
-        An agent left alone rationalizes. The spec lives in scrollback, tests arrive after the
-        code, and done gets declared instead of observed. Forgemaster exists to make those
-        moves impossible: every stage ends in a file, and the run cannot close while any gate
-        is red.
-      </p>
-    </div>
-    <div class="pane reveal" role="group" aria-label="Red flags forgemaster is built to catch">
-      <div class="pane__bar"><i class="ph ph-warning-diamond" aria-hidden="true"></i>SKILL.md · red flags the pipeline refuses</div>
-      <div class="pane__body">
-        <div class="row miss"><span class="gut">-</span><span>"the design record is the conversation"</span></div>
-        <div class="row miss"><span class="gut">-</span><span>"I'll add tests after"</span></div>
-        <div class="row miss"><span class="gut">-</span><span>"tests pass, close enough to done"</span></div>
-        <div class="row add"><span class="gut">+</span><span>every stage leaves an artifact in the run directory</span></div>
-        <div class="row add"><span class="gut">+</span><span>gates flip only on command output written to 06-gates.md</span></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ demo: the run, replayed ============ -->
-  <section id="demo" class="wrap py-24 md:py-32">
-    <div class="max-w-[62ch]">
-      <div class="font-mono text-[11px] uppercase tracking-[0.18em] text-[color:var(--text-dim)]">a run, replayed</div>
-      <h2 class="mt-3 text-3xl md:text-4xl font-bold tracking-tighter">Watch the manifest do its job.</h2>
-      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed">
-        A scripted replay of a real run: stages advance, artifacts land in the run directory,
-        one gate fails, and a premature done gets blocked at the hook.
-      </p>
-    </div>
-
-    <div class="mt-10 grid grid-cols-1 lg:grid-cols-[220px,1fr,1fr] gap-5">
-      <div>
-        <ul id="rail" class="stage-rail" aria-label="Pipeline stages">
-          <li data-stage="intake"><i class="ph ph-chat-teardrop-text" aria-hidden="true"></i>intake<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-          <li data-stage="diverge"><i class="ph ph-arrows-split" aria-hidden="true"></i>diverge<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-          <li data-stage="spec"><i class="ph ph-list-checks" aria-hidden="true"></i>spec<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-          <li data-stage="plan"><i class="ph ph-tree-structure" aria-hidden="true"></i>plan<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-          <li data-stage="build"><i class="ph ph-hammer" aria-hidden="true"></i>build<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-          <li data-stage="gates"><i class="ph ph-shield-check" aria-hidden="true"></i>gates<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-          <li data-stage="deliver"><i class="ph ph-package" aria-hidden="true"></i>deliver<i class="ph ph-check stage-check" aria-hidden="true"></i></li>
-        </ul>
-        <button id="replay" class="btn-ghost btn-sm mt-4 w-full justify-center" type="button">
-          <i class="ph ph-arrow-clockwise" aria-hidden="true"></i>Replay
-        </button>
-        <button id="skipend" class="btn-ghost btn-sm mt-2 w-full justify-center" type="button">
-          <i class="ph ph-skip-forward" aria-hidden="true"></i>Skip to end
-        </button>
-      </div>
-
-      <div class="pane" role="group" aria-label="Run directory filling with artifacts">
-        <div class="pane__bar"><i class="ph ph-folder-open" aria-hidden="true"></i>forgemaster-runs/2026-07-04-forgemaster-showcase/</div>
-        <div class="pane__body" id="tree"></div>
-      </div>
-
-      <div class="pane" role="group" aria-label="Live run manifest">
-        <div class="pane__bar"><i class="ph ph-file-text" aria-hidden="true"></i>run.json</div>
-        <div class="pane__body">
-          <div class="row ctx"><span class="gut"> </span><span>"weight": "light",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>"stage": "<span class="accent" id="rj-stage">intake</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>"status": "<span class="gate-val" id="rj-status">active</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>"gates": {</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>  "tests": "<span class="gate-val" data-gate="tests">pending</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>  "lint": "<span class="gate-val" data-gate="lint">pending</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>  "types": "<span class="gate-val" data-gate="types">pending</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>  "spec_review": "<span class="gate-val" data-gate="spec_review">pending</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>  "code_review": "<span class="gate-val" data-gate="code_review">pending</span>",</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>  "self_critique": "<span class="gate-val" data-gate="self_critique">pending</span>"</span></div>
-          <div class="row ctx"><span class="gut"> </span><span>}</span></div>
-          <div class="row ctx pt-2"><span class="gut"> </span><span><span id="hallmark" class="hallmark"><i class="ph-bold ph-seal-check" aria-hidden="true"></i>no gate red · run closed</span></span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="pane mt-5" role="group" aria-label="Run events">
-      <div class="pane__bar"><i class="ph ph-terminal-window" aria-hidden="true"></i>events</div>
-      <div class="pane__body" id="events" role="log" aria-live="polite"></div>
-    </div>
-  </section>
-
-  <!-- ============ owners ============ -->
-  <section class="wrap py-24 md:py-32 grid grid-cols-1 lg:grid-cols-[6fr,6fr] gap-12 items-start">
-    <div>
-      <h2 class="text-3xl md:text-4xl font-bold tracking-tighter">It writes almost nothing itself.</h2>
-      <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
-        Forgemaster is an orchestrator. Each stage is delegated to the specialist skill that
-        owns it, most of them showcased on this hub, and the run directory keeps what they
-        produced.
-      </p>
-    </div>
-    <div class="reveal">
-      <div class="owner-row"><span>a mushy idea gets clarified</span><span class="who"><a href="../bake-to-completion/">bake-to-completion</a></span></div>
-      <div class="owner-row"><span>the approach survives an adversarial ladder</span><span class="who"><a href="../idea-forge/">idea-forge</a></span></div>
-      <div class="owner-row"><span>spec, plan, and tests-first build</span><span class="who">superpowers</span></div>
-      <div class="owner-row"><span>review loops and sibling-surface audits</span><span class="who"><a href="../workflow-forge/">workflow-forge</a></span></div>
-      <div class="owner-row"><span>for skill and plugin deliverables: a seventh pre-ship check, then an eval after delivery</span><span class="who"><a href="../proofmark/">proofmark</a> + <a href="../anvil/">anvil</a></span></div>
-    </div>
-  </section>
-
-  <!-- ============ install ============ -->
-  <section id="install" class="wrap py-24 md:py-32">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-      <div>
-        <h2 class="text-3xl md:text-4xl font-bold tracking-tighter">Run it on your next idea.</h2>
-        <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
-          One command starts a run. Say "auto" at intake and the pipeline states its chosen
-          approach and keeps moving instead of pausing for your sign-off.
-        </p>
-        <div class="aside-forged mt-8 p-5">
-          <div class="flex items-start gap-3">
-            <i class="ph-bold ph-seal-check accent text-xl mt-0.5" aria-hidden="true"></i>
-            <p class="text-sm leading-relaxed text-[color:var(--text-dim)]">
-              This page shipped through its own pipeline. The intake, spec, plan, build log,
-              and gate evidence for run
-              <span class="font-mono text-[color:var(--text)]">2026-07-04-forgemaster-showcase</span>
-              are
-              <a class="accent" href="https://github.com/llamaopnv/Claude_Code_Empowerments-/tree/main/forgemaster-runs/2026-07-04-forgemaster-showcase">in the repo</a>.
-            </p>
+  <body class="font-sans">
+    <main id="top">
+      <!-- ============ hero ============ -->
+      <section
+        class="wrap grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[calc(100dvh-4rem)] py-16"
+      >
+        <div>
+          <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter leading-none">
+            Done is a <span class="accent">measured</span> state, not a feeling.
+          </h1>
+          <p class="mt-6 text-lg text-[color:var(--text-dim)] leading-relaxed max-w-[46ch]">
+            Forgemaster drives one rough idea through seven stages and refuses to say shipped until
+            six gates hold observed evidence.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a class="btn-primary" href="#demo"
+              ><i class="ph ph-play" aria-hidden="true"></i>Watch a run</a
+            >
+            <a class="btn-ghost" href="#install"
+              ><i class="ph ph-download-simple" aria-hidden="true"></i>Install</a
+            >
           </div>
         </div>
-      </div>
-      <div class="pane" role="group" aria-label="Install and usage commands">
-        <div class="pane__bar"><i class="ph ph-terminal-window" aria-hidden="true"></i>claude</div>
-        <div class="pane__body">
-          <div class="row ctx"><span class="gut">&gt;</span><span>/plugin marketplace add llamaopnv/Claude_Code_Empowerments-</span></div>
-          <div class="row ctx"><span class="gut">&gt;</span><span>/plugin install forgemaster@claude-code-empowerments</span></div>
-          <div class="row add"><span class="gut">&gt;</span><span>/forgemaster a CLI that finds duplicate files by content hash</span></div>
-          <div class="row intent"><span class="gut">#</span><span>later: /forgemaster resume · /forgemaster status</span></div>
+
+        <div class="pane" role="group" aria-label="Example run manifest with one failing gate">
+          <div class="pane__bar">
+            <i class="ph ph-file-text" aria-hidden="true"></i>run.json · the manifest is the state
+            machine
+          </div>
+          <div class="pane__body">
+            <div class="row ctx"><span class="gut"> </span><span>{</span></div>
+            <div class="row ctx"><span class="gut"> </span><span> "stage": "gates",</span></div>
+            <div class="row ctx"><span class="gut"> </span><span> "status": "active",</span></div>
+            <div class="row ctx"><span class="gut"> </span><span> "gates": {</span></div>
+            <div class="row add">
+              <span class="gut">+</span><span> "tests": "pass", "lint": "pass",</span>
+            </div>
+            <div class="row add">
+              <span class="gut">+</span><span> "types": "na", "spec_review": "pass",</span>
+            </div>
+            <div class="row add">
+              <span class="gut">+</span><span> "code_review": "pass",</span>
+            </div>
+            <div class="row miss">
+              <span class="gut">-</span><span> "self_critique": "fail"</span>
+            </div>
+            <div class="row ctx"><span class="gut"> </span><span> }</span></div>
+            <div class="row ctx"><span class="gut"> </span><span>}</span></div>
+            <div class="row intent">
+              <span class="gut">×</span><span>gate.mjs status-set done: refused by the ledger</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </section>
+      </section>
 
-</main>
+      <!-- ============ problem ============ -->
+      <section
+        id="problem"
+        class="wrap py-24 md:py-32 grid grid-cols-1 lg:grid-cols-[5fr,7fr] gap-12 items-start"
+      >
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tighter">
+            Pipelines drift when the chat is the record.
+          </h2>
+          <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
+            An agent left alone rationalizes. The spec lives in scrollback, tests arrive after the
+            code, and done gets declared instead of observed. Forgemaster exists to make those moves
+            impossible: every stage ends in a file, and the run cannot close while any gate is red.
+          </p>
+        </div>
+        <div class="pane reveal" role="group" aria-label="Red flags forgemaster is built to catch">
+          <div class="pane__bar">
+            <i class="ph ph-warning-diamond" aria-hidden="true"></i>SKILL.md · red flags the
+            pipeline refuses
+          </div>
+          <div class="pane__body">
+            <div class="row miss">
+              <span class="gut">-</span><span>"the design record is the conversation"</span>
+            </div>
+            <div class="row miss">
+              <span class="gut">-</span><span>"I'll add tests after"</span>
+            </div>
+            <div class="row miss">
+              <span class="gut">-</span><span>"tests pass, close enough to done"</span>
+            </div>
+            <div class="row add">
+              <span class="gut">+</span
+              ><span>every stage leaves an artifact in the run directory</span>
+            </div>
+            <div class="row add">
+              <span class="gut">+</span
+              ><span>gates flip only via gate.mjs, evidence file on disk</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-<script>
-  window.SKILL_PAGE = {
-    brand: 'skill showcase', brandIcon: 'ph-stack', accent: '#f2c94c',
-    homeUrl: '../', repoUrl: 'https://github.com/llamaopnv',
-    navLinks: [
-      { label: 'The problem', href: '#problem' },
-      { label: 'Watch a run', href: '#demo' },
-      { label: 'Install', href: '#install' }
-    ],
-    cta: { label: 'Install', href: '#install', icon: 'ph-download-simple' },
-    footNote: 'forgemaster · part of the skill showcase',
-  };
-</script>
-<script src="../shared/shell.js" defer></script>
+      <!-- ============ demo: the run, replayed ============ -->
+      <section id="demo" class="wrap py-24 md:py-32">
+        <div class="max-w-[62ch]">
+          <div
+            class="font-mono text-[11px] uppercase tracking-[0.18em] text-[color:var(--text-dim)]"
+          >
+            a run, replayed
+          </div>
+          <h2 class="mt-3 text-3xl md:text-4xl font-bold tracking-tighter">
+            Watch the manifest do its job.
+          </h2>
+          <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed">
+            A scripted replay of a real run: stages advance, artifacts land in the run directory,
+            one gate fails, and a premature done gets refused by the gate ledger.
+          </p>
+        </div>
 
-<script>
-(() => {
-  'use strict';
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        <div class="mt-10 grid grid-cols-1 lg:grid-cols-[220px,1fr,1fr] gap-5">
+          <div>
+            <ul id="rail" class="stage-rail" aria-label="Pipeline stages">
+              <li data-stage="intake">
+                <i class="ph ph-chat-teardrop-text" aria-hidden="true"></i>intake<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+              <li data-stage="diverge">
+                <i class="ph ph-arrows-split" aria-hidden="true"></i>diverge<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+              <li data-stage="spec">
+                <i class="ph ph-list-checks" aria-hidden="true"></i>spec<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+              <li data-stage="plan">
+                <i class="ph ph-tree-structure" aria-hidden="true"></i>plan<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+              <li data-stage="build">
+                <i class="ph ph-hammer" aria-hidden="true"></i>build<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+              <li data-stage="gates">
+                <i class="ph ph-shield-check" aria-hidden="true"></i>gates<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+              <li data-stage="deliver">
+                <i class="ph ph-package" aria-hidden="true"></i>deliver<i
+                  class="ph ph-check stage-check"
+                  aria-hidden="true"
+                ></i>
+              </li>
+            </ul>
+            <button id="replay" class="btn-ghost btn-sm mt-4 w-full justify-center" type="button">
+              <i class="ph ph-arrow-clockwise" aria-hidden="true"></i>Replay
+            </button>
+            <button id="skipend" class="btn-ghost btn-sm mt-2 w-full justify-center" type="button">
+              <i class="ph ph-skip-forward" aria-hidden="true"></i>Skip to end
+            </button>
+          </div>
 
-  /* reveal on scroll */
-  const io = new IntersectionObserver((es) => es.forEach((e) => {
-    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
-  }), { threshold: 0.15 });
-  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
-  if (reduce) document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+          <div class="pane" role="group" aria-label="Run directory filling with artifacts">
+            <div class="pane__bar">
+              <i class="ph ph-folder-open" aria-hidden="true"></i
+              >forgemaster-runs/2026-07-04-forgemaster-showcase/
+            </div>
+            <div class="pane__body" id="tree"></div>
+          </div>
 
-  /* ---- the run, replayed ---- */
-  const rail = document.getElementById('rail');
-  const tree = document.getElementById('tree');
-  const events = document.getElementById('events');
-  const hallmark = document.getElementById('hallmark');
-  const rjStage = document.getElementById('rj-stage');
-  const rjStatus = document.getElementById('rj-status');
+          <div class="pane" role="group" aria-label="Live run manifest">
+            <div class="pane__bar"><i class="ph ph-file-text" aria-hidden="true"></i>run.json</div>
+            <div class="pane__body">
+              <div class="row ctx"><span class="gut"> </span><span>"weight": "light",</span></div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span>"stage": "<span class="accent" id="rj-stage">intake</span>",</span>
+              </div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span>"status": "<span class="gate-val" id="rj-status">active</span>",</span>
+              </div>
+              <div class="row ctx"><span class="gut"> </span><span>"gates": {</span></div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span> "tests": "<span class="gate-val" data-gate="tests">pending</span>",</span>
+              </div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span> "lint": "<span class="gate-val" data-gate="lint">pending</span>",</span>
+              </div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span> "types": "<span class="gate-val" data-gate="types">pending</span>",</span>
+              </div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span>
+                  "spec_review": "<span class="gate-val" data-gate="spec_review">pending</span
+                  >",</span
+                >
+              </div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span>
+                  "code_review": "<span class="gate-val" data-gate="code_review">pending</span
+                  >",</span
+                >
+              </div>
+              <div class="row ctx">
+                <span class="gut"> </span
+                ><span>
+                  "self_critique": "<span class="gate-val" data-gate="self_critique">pending</span
+                  >"</span
+                >
+              </div>
+              <div class="row ctx"><span class="gut"> </span><span>}</span></div>
+              <div class="row ctx pt-2">
+                <span class="gut"> </span
+                ><span
+                  ><span id="hallmark" class="hallmark"
+                    ><i class="ph-bold ph-seal-check" aria-hidden="true"></i>no gate red · run
+                    closed</span
+                  ></span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
 
-  const setStage = (name) => {
-    rjStage.textContent = name;
-    let passed = true;
-    rail.querySelectorAll('li').forEach((li) => {
-      const s = li.dataset.stage;
-      li.classList.toggle('now', s === name);
-      if (s === name) passed = false;
-      li.classList.toggle('past', passed);
-    });
-  };
-  const setGate = (gate, state) => {
-    const el = document.querySelector(`[data-gate="${gate}"]`);
-    el.textContent = state;
-    el.dataset.state = state;
-  };
-  const line = (parent, kind, gut, text) => {
-    const div = document.createElement('div');
-    div.className = `row ${kind}${reduce ? '' : ' row-anim'}`;
-    const g = document.createElement('span'); g.className = 'gut'; g.textContent = gut;
-    const t = document.createElement('span'); t.textContent = text;
-    div.append(g, t); parent.appendChild(div);
-  };
-  const file = (name) => line(tree, 'add', '+', name);
-  const ev = (kind, text) => line(events, kind, kind === 'miss' ? '-' : kind === 'add' ? '+' : ' ', text);
+        <div class="pane mt-5" role="group" aria-label="Run events">
+          <div class="pane__bar">
+            <i class="ph ph-terminal-window" aria-hidden="true"></i>events
+          </div>
+          <div class="pane__body" id="events" role="log" aria-live="polite"></div>
+        </div>
+      </section>
 
-  const BEATS = [
-    () => { setStage('intake');  file('run.json'); file('00-intake.md'); ev('ctx', 'intake: problem framed, weight class light, checkpoint auto'); },
-    () => { setStage('diverge'); file('02-approach.md'); ev('ctx', 'diverge: three approaches evaluated, "the run, replayed" chosen'); },
-    () => { setStage('spec');    file('03-spec.md'); ev('ctx', 'spec: 13 acceptance criteria phrased as testable assertions'); },
-    () => { setStage('plan');    file('04-plan.md'); ev('ctx', 'plan: four sequential tasks, tests first'); },
-    () => { setStage('build');   file('checks.mjs'); ev('miss', 'node checks.mjs: 12 CHECK(S) RED (before any code exists)'); },
-    () => { file('05-build-log.md'); ev('add', 'node checks.mjs: ALL CHECKS GREEN'); },
-    () => { setStage('gates');   file('06-gates.md'); setGate('tests', 'pass'); setGate('lint', 'pass'); setGate('types', 'na'); ev('add', 'gates: tests and lint pass, types na (no typed surface)'); },
-    () => { setGate('spec_review', 'pass'); setGate('code_review', 'pass'); ev('add', 'gates: spec walked criterion by criterion, review loop clean'); },
-    () => { setGate('self_critique', 'fail'); ev('miss', 'self_critique: fresh-eyes subagent found template smell: FAIL'); },
-    () => { ev('miss', 'write run.json status "done": BLOCKED by done-gate hook (self_critique=fail)'); },
-    () => { setGate('self_critique', 'pass'); ev('add', 'fix applied, self_critique re-run: pass'); },
-    () => { setStage('deliver'); file('07-summary.md'); rjStatus.textContent = 'done'; rjStatus.dataset.state = 'done'; hallmark.classList.add('in'); ev('add', 'deliver: status "done" accepted, no gate red'); },
-  ];
+      <!-- ============ owners ============ -->
+      <section
+        class="wrap py-24 md:py-32 grid grid-cols-1 lg:grid-cols-[6fr,6fr] gap-12 items-start"
+      >
+        <div>
+          <h2 class="text-3xl md:text-4xl font-bold tracking-tighter">
+            It writes almost nothing itself.
+          </h2>
+          <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
+            Forgemaster is an orchestrator. Each stage is delegated to the specialist skill that
+            owns it, most of them showcased on this hub, and the run directory keeps what they
+            produced.
+          </p>
+        </div>
+        <div class="reveal">
+          <div class="owner-row">
+            <span>a mushy idea gets clarified</span
+            ><span class="who"><a href="../bake-to-completion/">bake-to-completion</a></span>
+          </div>
+          <div class="owner-row">
+            <span>the approach survives an adversarial ladder</span
+            ><span class="who"><a href="../idea-forge/">idea-forge</a></span>
+          </div>
+          <div class="owner-row">
+            <span>spec, plan, and tests-first build</span><span class="who">superpowers</span>
+          </div>
+          <div class="owner-row">
+            <span>review loops and sibling-surface audits</span
+            ><span class="who"><a href="../workflow-forge/">workflow-forge</a></span>
+          </div>
+          <div class="owner-row">
+            <span
+              >for skill and plugin deliverables: a seventh pre-ship check, then an eval after
+              delivery</span
+            ><span class="who"
+              ><a href="../proofmark/">proofmark</a> + <a href="../anvil/">anvil</a></span
+            >
+          </div>
+        </div>
+      </section>
 
-  let timers = [];
-  const play = (instant) => {
-    timers.forEach(clearTimeout); timers = [];
-    tree.innerHTML = ''; events.innerHTML = '';
-    hallmark.classList.remove('in');
-    rjStatus.textContent = 'active'; delete rjStatus.dataset.state;
-    document.querySelectorAll('[data-gate]').forEach((el) => { el.textContent = 'pending'; delete el.dataset.state; });
-    if (instant) { BEATS.forEach((b) => b()); return; }
-    BEATS.forEach((b, i) => timers.push(setTimeout(b, 900 * (i + 1))));
-  };
+      <!-- ============ install ============ -->
+      <section id="install" class="wrap py-24 md:py-32">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tighter">
+              Run it on your next idea.
+            </h2>
+            <p class="mt-5 text-[color:var(--text-dim)] leading-relaxed max-w-[52ch]">
+              One command starts a run. Say "auto" at intake and the pipeline states its chosen
+              approach and keeps moving instead of pausing for your sign-off.
+            </p>
+            <div class="aside-forged mt-8 p-5">
+              <div class="flex items-start gap-3">
+                <i class="ph-bold ph-seal-check accent text-xl mt-0.5" aria-hidden="true"></i>
+                <p class="text-sm leading-relaxed text-[color:var(--text-dim)]">
+                  This page shipped through its own pipeline. The intake, spec, plan, build log, and
+                  gate evidence for run
+                  <span class="font-mono text-[color:var(--text)]"
+                    >2026-07-04-forgemaster-showcase</span
+                  >
+                  are
+                  <a
+                    class="accent"
+                    href="https://github.com/llamaopnv/Claude_Code_Empowerments-/tree/main/forgemaster-runs/2026-07-04-forgemaster-showcase"
+                    >in the repo</a
+                  >.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="pane" role="group" aria-label="Install and usage commands">
+            <div class="pane__bar">
+              <i class="ph ph-terminal-window" aria-hidden="true"></i>claude
+            </div>
+            <div class="pane__body">
+              <div class="row ctx">
+                <span class="gut">&gt;</span
+                ><span>/plugin marketplace add llamaopnv/Claude_Code_Empowerments-</span>
+              </div>
+              <div class="row ctx">
+                <span class="gut">&gt;</span
+                ><span>/plugin install forgemaster@claude-code-empowerments</span>
+              </div>
+              <div class="row add">
+                <span class="gut">&gt;</span
+                ><span>/forgemaster a CLI that finds duplicate files by content hash</span>
+              </div>
+              <div class="row intent">
+                <span class="gut">#</span
+                ><span>later: /forgemaster resume · /forgemaster status</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
 
-  /* observe the compact rail, not the whole section: a tall mobile section can
+    <script>
+      window.SKILL_PAGE = {
+        brand: 'skill showcase',
+        brandIcon: 'ph-stack',
+        accent: '#f2c94c',
+        homeUrl: '../',
+        repoUrl: 'https://github.com/llamaopnv',
+        navLinks: [
+          { label: 'The problem', href: '#problem' },
+          { label: 'Watch a run', href: '#demo' },
+          { label: 'Install', href: '#install' },
+        ],
+        cta: { label: 'Install', href: '#install', icon: 'ph-download-simple' },
+        footNote: 'forgemaster · part of the skill showcase',
+      };
+    </script>
+    <script src="../shared/shell.js" defer></script>
+
+    <script>
+      (() => {
+        'use strict';
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        /* reveal on scroll */
+        const io = new IntersectionObserver(
+          (es) =>
+            es.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+              }
+            }),
+          { threshold: 0.15 },
+        );
+        document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+        if (reduce) document.querySelectorAll('.reveal').forEach((el) => el.classList.add('in'));
+
+        /* ---- the run, replayed ---- */
+        const rail = document.getElementById('rail');
+        const tree = document.getElementById('tree');
+        const events = document.getElementById('events');
+        const hallmark = document.getElementById('hallmark');
+        const rjStage = document.getElementById('rj-stage');
+        const rjStatus = document.getElementById('rj-status');
+
+        const setStage = (name) => {
+          rjStage.textContent = name;
+          let passed = true;
+          rail.querySelectorAll('li').forEach((li) => {
+            const s = li.dataset.stage;
+            li.classList.toggle('now', s === name);
+            if (s === name) passed = false;
+            li.classList.toggle('past', passed);
+          });
+        };
+        const setGate = (gate, state) => {
+          const el = document.querySelector(`[data-gate="${gate}"]`);
+          el.textContent = state;
+          el.dataset.state = state;
+        };
+        const line = (parent, kind, gut, text) => {
+          const div = document.createElement('div');
+          div.className = `row ${kind}${reduce ? '' : ' row-anim'}`;
+          const g = document.createElement('span');
+          g.className = 'gut';
+          g.textContent = gut;
+          const t = document.createElement('span');
+          t.textContent = text;
+          div.append(g, t);
+          parent.appendChild(div);
+        };
+        const file = (name) => line(tree, 'add', '+', name);
+        const ev = (kind, text) =>
+          line(events, kind, kind === 'miss' ? '-' : kind === 'add' ? '+' : ' ', text);
+
+        const BEATS = [
+          () => {
+            setStage('intake');
+            file('run.json');
+            file('00-intake.md');
+            ev('ctx', 'intake: problem framed, weight class light, checkpoint auto');
+          },
+          () => {
+            setStage('diverge');
+            file('02-approach.md');
+            ev('ctx', 'diverge: three approaches evaluated, "the run, replayed" chosen');
+          },
+          () => {
+            setStage('spec');
+            file('03-spec.md');
+            ev('ctx', 'spec: 13 acceptance criteria phrased as testable assertions');
+          },
+          () => {
+            setStage('plan');
+            file('04-plan.md');
+            ev('ctx', 'plan: four sequential tasks, tests first');
+          },
+          () => {
+            setStage('build');
+            file('checks.mjs');
+            ev('miss', 'node checks.mjs: 12 CHECK(S) RED (before any code exists)');
+          },
+          () => {
+            file('05-build-log.md');
+            ev('add', 'node checks.mjs: ALL CHECKS GREEN');
+          },
+          () => {
+            setStage('gates');
+            file('06-gates.md');
+            setGate('tests', 'pass');
+            setGate('lint', 'pass');
+            setGate('types', 'na');
+            ev('add', 'gates: tests and lint pass, types na (no typed surface)');
+          },
+          () => {
+            setGate('spec_review', 'pass');
+            setGate('code_review', 'pass');
+            ev('add', 'gates: spec walked criterion by criterion, review loop clean');
+          },
+          () => {
+            setGate('self_critique', 'fail');
+            ev('miss', 'self_critique: fresh-eyes subagent found template smell: FAIL');
+          },
+          () => {
+            ev('miss', 'gate.mjs status-set done: REFUSED, gate(s) unmet: self_critique');
+          },
+          () => {
+            setGate('self_critique', 'pass');
+            ev('add', 'fix applied, self_critique re-run: pass');
+          },
+          () => {
+            setStage('deliver');
+            file('07-summary.md');
+            rjStatus.textContent = 'done';
+            rjStatus.dataset.state = 'done';
+            hallmark.classList.add('in');
+            ev('add', 'deliver: status "done" accepted, no gate red');
+          },
+        ];
+
+        let timers = [];
+        const play = (instant) => {
+          timers.forEach(clearTimeout);
+          timers = [];
+          tree.innerHTML = '';
+          events.innerHTML = '';
+          hallmark.classList.remove('in');
+          rjStatus.textContent = 'active';
+          delete rjStatus.dataset.state;
+          document.querySelectorAll('[data-gate]').forEach((el) => {
+            el.textContent = 'pending';
+            delete el.dataset.state;
+          });
+          if (instant) {
+            BEATS.forEach((b) => b());
+            return;
+          }
+          BEATS.forEach((b, i) => timers.push(setTimeout(b, 900 * (i + 1))));
+        };
+
+        /* observe the compact rail, not the whole section: a tall mobile section can
      never reach a high intersection ratio, so the demo would never start.
      Under prefers-reduced-motion the auto-start renders the end state instantly;
      an explicit user request (Replay, or a "Watch a run" link) still steps the
      beats on the timed cadence, with the CSS motion effects staying disabled. */
-  const demoIo = new IntersectionObserver((es) => {
-    if (es.some((e) => e.isIntersecting)) { play(reduce); demoIo.disconnect(); }
-  }, { threshold: 0.4 });
-  demoIo.observe(rail);
+        const demoIo = new IntersectionObserver(
+          (es) => {
+            if (es.some((e) => e.isIntersecting)) {
+              play(reduce);
+              demoIo.disconnect();
+            }
+          },
+          { threshold: 0.4 },
+        );
+        demoIo.observe(rail);
 
-  document.getElementById('replay').addEventListener('click', () => play(false));
-  document.getElementById('skipend').addEventListener('click', () => play(true));
-  /* delegated: the nav is injected by shell.js after this script runs */
-  document.addEventListener('click', (e) => {
-    if (e.target.closest('a[href="#demo"]')) { demoIo.disconnect(); play(false); }
-  });
-})();
-</script>
-</body>
+        document.getElementById('replay').addEventListener('click', () => play(false));
+        document.getElementById('skipend').addEventListener('click', () => play(true));
+        /* delegated: the nav is injected by shell.js after this script runs */
+        document.addEventListener('click', (e) => {
+          if (e.target.closest('a[href="#demo"]')) {
+            demoIo.disconnect();
+            play(false);
+          }
+        });
+      })();
+    </script>
+  </body>
 </html>

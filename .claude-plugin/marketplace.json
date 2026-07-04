@@ -115,27 +115,14 @@
       "name": "forgemaster",
       "displayName": "Forgemaster",
       "source": "./plugins/forgemaster",
-      "description": "The top of the toolchain: hand it one rough idea and it drives the whole development process — intake, adversarial hardening via idea-forge, spec, tests-first build via subagent-driven development, and enforced quality gates — leaving a resumable artifact at every stage and refusing to mark the run done until every gate has observed evidence.",
-      "version": "0.1.0",
+      "description": "The top of the toolchain: hand it one rough idea and it drives the whole development process — intake, adversarial hardening via idea-forge, spec, tests-first build via subagent-driven development, and enforced quality gates — leaving a resumable artifact at every stage. The run manifest is written only by a tested Node gate ledger that demands an evidence file per gate; hooks block hand-edits to run.json, block abandoning a run mid-gates, and surface unfinished runs at session start.",
+      "version": "0.2.0",
       "author": {
         "name": "LlamaopNV",
         "email": "llama.op@gmail.com"
       },
       "category": "development",
       "keywords": ["orchestration", "pipeline", "tdd", "quality-gates", "meta-skill", "anti-slop"]
-    },
-    {
-      "name": "crucible",
-      "displayName": "Crucible",
-      "source": "./plugins/crucible",
-      "description": "One rough idea in, assayed code out. Drives the whole development process through seven resumable stages — intake, adversarial divergence, spec, tests-first, subagent build, and an evidence-ledger assay — with hooks that refuse to let a run finish until every quality gate has proof on disk. Slop is dross; the gates skim it.",
-      "version": "0.1.0",
-      "author": {
-        "name": "LlamaopNV",
-        "email": "llama.op@gmail.com"
-      },
-      "category": "development",
-      "keywords": ["orchestration", "pipeline", "tdd", "quality-gates", "evidence", "anti-slop"]
     }
   ]
 }

@@ -10,8 +10,10 @@ Each page is self-contained HTML on the shared shell (`site/shared/site.css` +
 rules in `docs/superpowers/2026-06-23-anvil-page-handoff.md`. Links stay relative.
 
 ### Showcase pages (one per owned skill)
+
 The grid is two horizontal feature cards framing a uniform middle row, each card with an
 accent icon. Owned skills only:
+
 - [x] Landing hub (`site/index.html`)
 - [x] anvil (feature) `#6ea8e6`
 - [x] symmetric-audit `#e8a33d`
@@ -23,13 +25,14 @@ accent icon. Owned skills only:
 - [x] idea-forge `#7c6cf0` (self-improvement tournament, with transcript + v1/v2 diff sub-pages)
 - [x] forgemaster (feature) `#f2c94c` (run-record replay; page shipped via its own pipeline, run 2026-07-04-forgemaster-showcase)
 - [x] tdd-heartbeat `#e5675f` (external, linked from the grid)
-- [x] crucible `#f0552b` (evidence-ledger assay replay; the gate refusing "done" until proof lands)
 
 ### Removed 2026-06-24 (not the user's; pulled from repo + marketplace + site)
+
 new-aspire-project, md-with-mermaid-to-pdf, jira-api, bitbucket-pr, bitbucket-pipeline,
 bitbucket-repo. Their plugin dirs, `site/<slug>/`, and `marketplace.json` entries were deleted.
 
 ### Ideas
+
 - [ ] Branch the per-skill pages into more depth (the skill-installer page is the front
       door; each showcase can go deeper on real usage).
 
@@ -38,6 +41,7 @@ in the grid. Reuse `.pane` / `.row` / `.btn-*` / `.reveal`. Keep the em-dash ban
 per page, motivated motion, Phosphor icons.
 
 ### Follow-ups
+
 - [ ] Maintainer-gated pre-commit sync skill: regenerate the landing grid from
       `marketplace.json` and warn when a plugin has no showcase page. Gate to
       `user.email == llama.op@gmail.com` so forks and contributors never trigger it.

@@ -11,4 +11,4 @@ Thin entry point: hands off to the **`forgemaster`** skill.
 - `/forgemaster resume [slug]` — re-enter the newest (or named) run under `forgemaster-runs/` at its recorded stage, from its artifacts.
 - `/forgemaster status` — report each run's stage, gate ledger, and next action, without executing anything.
 
-The run is not done until all six gates in `run.json` read pass/na — the plugin's done-gate hook enforces this.
+The run is not done until all six gates in `run.json` read pass/na with an evidence file on disk. The manifest is written only by the plugin's `gate.mjs` ledger: a PreToolUse hook blocks hand-editing `run.json`, a Stop hook blocks abandoning a run mid-gates, and a SessionStart hook surfaces unfinished runs to resume.
