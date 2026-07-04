@@ -5,6 +5,16 @@ All notable changes to this marketplace are documented here.
 ## [Unreleased]
 
 ### Added
+- **`forgemaster`** plugin (v0.1.0) — the top-level orchestrator: takes one rough idea and
+  drives it through intake → diverge (`idea-forge`) → spec → plan → tests-first build
+  (`superpowers:subagent-driven-development` under TDD) → quality gates → delivery, delegating
+  each stage to the specialist skill that owns it. Every stage leaves an artifact in
+  `forgemaster-runs/<slug>/` (resumable at any boundary), and a `PreToolUse` hook blocks
+  flipping the run manifest to `done` while any of the six gates (tests, lint, types,
+  spec-review, code-review, self-critique) lacks a recorded pass.
+  - Skills: `forgemaster`.
+  - Commands: `forgemaster`.
+  - Scripts: `done-gate.sh` (the gate-ledger enforcement hook).
 - **`idea-forge`** plugin (v0.1.0) — hardens ONE clarified, high-stakes idea by making eight
   rival variants of it fight an adversarial **king-of-the-hill ladder**: a pre-screened best
   original seeds the champion, each rung grafts the challenger's strongest *compatible* fix into

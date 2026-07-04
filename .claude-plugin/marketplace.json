@@ -110,6 +110,19 @@
       },
       "category": "development",
       "keywords": ["idea", "adversarial", "tournament", "multi-agent", "stress-test", "hardening"]
+    },
+    {
+      "name": "forgemaster",
+      "displayName": "Forgemaster",
+      "source": "./plugins/forgemaster",
+      "description": "The top of the toolchain: hand it one rough idea and it drives the whole development process — intake, adversarial hardening via idea-forge, spec, tests-first build via subagent-driven development, and enforced quality gates — leaving a resumable artifact at every stage and refusing to mark the run done until every gate has observed evidence.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["orchestration", "pipeline", "tdd", "quality-gates", "meta-skill", "anti-slop"]
     }
   ]
 }
