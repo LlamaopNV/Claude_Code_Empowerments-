@@ -5,6 +5,21 @@ All notable changes to this marketplace are documented here.
 ## [Unreleased]
 
 ### Added
+- **`crucible`** plugin (v0.1.0) — a second-generation take on the idea-to-shipped-code
+  orchestrator (clean-room rebuild alongside `forgemaster`; keep one of the two enabled).
+  Seven resumable stages, each consuming its predecessor's artifact in
+  `crucible-runs/<slug>/`: intake (`bake-to-completion` / `superpowers:brainstorming`) →
+  diverge (`idea-forge`, or a 3-rival light mode; approach checkpoint) → spec
+  (`superpowers:writing-plans`, incl. a per-project gate map) → tests-first
+  (`superpowers:test-driven-development`) → build (`superpowers:subagent-driven-development`)
+  → assay → deliver. The assay is an **evidence ledger**: `scripts/gate.mjs` (plain Node,
+  Windows-safe, TDD'd with `node --test`) is the only writer of run state, `phase done` is
+  rejected until tests/lint/typecheck/review/critique each record a passing exit code plus
+  an evidence file on disk, and a `Stop` hook blocks ending the turn during assay/deliver
+  with unmet gates. A `SessionStart` hook surfaces unfinished runs for resumption.
+  Marketplace bumped to `0.5.0`.
+  - Skills: `crucible`. Commands: `crucible`. Scripts: `gate.mjs` (+ `gate.test.mjs`).
+  - Showcase page at `site/crucible/` (molten-ember accent `#f0552b`).
 - **`forgemaster`** plugin (v0.1.0) — the top-level orchestrator: takes one rough idea and
   drives it through intake → diverge (`idea-forge`) → spec → plan → tests-first build
   (`superpowers:subagent-driven-development` under TDD) → quality gates → delivery, delegating

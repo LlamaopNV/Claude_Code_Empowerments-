@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>crucible · showcase</title>
+    <meta
+      name="description"
+      content="crucible: one rough idea in, assayed code out. Seven resumable stages and a gate ledger that refuses to finish without evidence on disk."
+    />
+
+    <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Geist', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+              mono: ['"Geist Mono"', 'ui-monospace', 'monospace'],
+            },
+            colors: { accent: 'var(--accent)' },
+            maxWidth: { content: '1180px' },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="../shared/site.css" />
+
+    <style>
+      /* crucible-specific: the gate board and the melt underline */
+      .melt {
+        background: linear-gradient(
+          90deg,
+          var(--accent),
+          color-mix(in srgb, var(--accent) 45%, transparent)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .stage-rail {
+        border-left: 1px solid var(--border);
+      }
+      .stage {
+        display: grid;
+        grid-template-columns: 44px 1fr;
+        gap: 14px;
+        padding: 18px 0 18px 22px;
+        position: relative;
+      }
+      .stage + .stage {
+        border-top: 1px solid var(--border);
+      }
+      .stage__num {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-faint);
+        padding-top: 3px;
+      }
+      .stage__skill {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: var(--text-dim);
+      }
+      .stage__art {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        color: color-mix(in srgb, var(--accent) 80%, var(--text));
+      }
+      .gate-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-top: 1px solid var(--border);
+        font-family: var(--font-mono);
+        font-size: 13px;
+      }
+      .gate-row:first-child {
+        border-top: 0;
+      }
+      .gate-row .gate-status {
+        margin-left: auto;
+        color: var(--text-faint);
+        transition: color 0.3s ease;
+      }
+      .gate-row .gate-ev {
+        color: var(--text-faint);
+        font-size: 11px;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      .gate-row.pass .gate-status {
+        color: var(--add);
+      }
+      .gate-row.pass .gate-ev {
+        opacity: 1;
+      }
+      .gate-row .dot {
+        background: var(--text-faint);
+        transition: background 0.3s ease;
+      }
+      .gate-row.pass .dot {
+        background: var(--add);
+      }
+      .term-cursor {
+        display: inline-block;
+        width: 7px;
+        height: 14px;
+        background: var(--accent);
+        vertical-align: -2px;
+        animation: blink 1s steps(1) infinite;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .term-cursor {
+          animation: none;
+        }
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="font-sans">
+    <main id="top">
+      <!-- ===== HERO ===== -->
+      <section
+        class="max-w-content mx-auto px-5 pt-20 md:pt-24 pb-16 min-h-[calc(100dvh-4rem)] grid grid-cols-1 lg:grid-cols-[1.1fr_.9fr] gap-12 items-center"
+      >
+        <div>
+          <h1
+            class="font-semibold tracking-tighter leading-[1.05] text-[2.5rem] md:text-[3.4rem] max-w-[16ch]"
+          >
+            Done is a claim.<br /><span class="melt">The crucible wants evidence.</span>
+          </h1>
+          <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[46ch] leading-relaxed">
+            Seven resumable stages pour one rough idea into tested code. A gate ledger refuses to
+            finish without proof on disk.
+          </p>
+          <div class="mt-8 flex flex-wrap items-center gap-3">
+            <a href="#assay" class="btn-primary"
+              ><i class="ph-bold ph-play" aria-hidden="true"></i> Watch the assay</a
+            >
+            <a href="#install" class="btn-ghost"
+              ><i class="ph ph-download-simple" aria-hidden="true"></i> Get the plugin</a
+            >
+          </div>
+        </div>
+
+        <div class="pane" aria-label="A crucible run directory">
+          <div class="pane__bar">
+            <i class="ph ph-folder-open" aria-hidden="true"></i>
+            crucible-runs/2026-07-04-csv-charts/
+          </div>
+          <div class="pane__body">
+            <div class="row ctx">
+              <span class="gut"> </span><span>00-idea.md the idea, verbatim</span>
+            </div>
+            <div class="row ctx">
+              <span class="gut"> </span><span>10-intake.md problem statement + goal</span>
+            </div>
+            <div class="row ctx">
+              <span class="gut"> </span><span>20-approach.md rivals, winner, your verdict</span>
+            </div>
+            <div class="row ctx">
+              <span class="gut"> </span><span>30-spec.md acceptance criteria + gate map</span>
+            </div>
+            <div class="row ctx">
+              <span class="gut"> </span
+              ><span>40-tests.md failing tests, criterion by criterion</span>
+            </div>
+            <div class="row ctx">
+              <span class="gut"> </span><span>50-build-log.md subagent dispatches</span>
+            </div>
+            <div class="row add">
+              <span class="gut">+</span><span>60-gates/ evidence or it didn't happen</span>
+            </div>
+            <div class="row ctx">
+              <span class="gut"> </span><span>70-delivery.md what shipped, how it was proven</span>
+            </div>
+            <div class="row intent">
+              <span class="gut">i</span><span>state.json written only by gate.mjs</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== THE PROBLEM ===== -->
+      <section id="problem" class="border-t hairline">
+        <div class="max-w-content mx-auto px-5 py-24 reveal">
+          <h2 class="font-semibold tracking-tighter text-3xl md:text-4xl max-w-[24ch]">
+            An agent under pressure will say "done" early.
+          </h2>
+          <div class="mt-8 max-w-[62ch] text-[color:var(--text-dim)] leading-relaxed space-y-4">
+            <p>
+              Long pipelines fail at the seams. The idea was never sharpened, the spec lived in chat
+              scrollback, the tests came after the code, and the final "everything passes" was a
+              sentence, not a result. Each seam leaks a little slop, and the sum ships.
+            </p>
+            <p>
+              Crucible makes every seam a file and every claim a check. A stage cannot start without
+              its predecessor's artifact, and the run cannot end until each gate records a passing
+              exit code plus the output that proves it. The model does not get a vote; the ledger
+              does.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== THE PIPELINE ===== -->
+      <section id="pipeline" class="border-t hairline">
+        <div class="max-w-content mx-auto px-5 py-24">
+          <h2 class="font-semibold tracking-tighter text-3xl md:text-4xl reveal">
+            Seven stages, seven artifacts.
+          </h2>
+          <p class="mt-4 max-w-[56ch] text-[color:var(--text-dim)] leading-relaxed reveal">
+            Each stage consumes the file before it and writes its own, so a run can pause, resume,
+            or restart from any boundary. The specialists it conducts are the other skills in this
+            marketplace.
+          </p>
+
+          <div class="stage-rail mt-12 reveal">
+            <div class="stage">
+              <span class="stage__num">00</span>
+              <div>
+                <div class="font-medium">Intake</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Restate the idea as a crisp problem statement. Vague ideas get the
+                  <span class="stage__skill">bake-to-completion</span> interview; concrete ones get
+                  <span class="stage__skill">brainstorming</span>.
+                </p>
+                <div class="mt-2 stage__art">10-intake.md</div>
+              </div>
+            </div>
+            <div class="stage">
+              <span class="stage__num">10</span>
+              <div>
+                <div class="font-medium">Diverge, then checkpoint</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Rival approaches fight it out in <span class="stage__skill">idea-forge</span>. You
+                  pick the winner at the run's only planned stop, or pass
+                  <span class="stage__skill">--auto</span> and get the rationale on file instead.
+                </p>
+                <div class="mt-2 stage__art">20-approach.md</div>
+              </div>
+            </div>
+            <div class="stage">
+              <span class="stage__num">20</span>
+              <div>
+                <div class="font-medium">Spec</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Scope, acceptance criteria, definition of done, task breakdown via
+                  <span class="stage__skill">writing-plans</span>. Includes the gate map: this
+                  project's real test, lint, and typecheck commands.
+                </p>
+                <div class="mt-2 stage__art">30-spec.md</div>
+              </div>
+            </div>
+            <div class="stage">
+              <span class="stage__num">30</span>
+              <div>
+                <div class="font-medium">Tests first</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Failing tests encode every acceptance criterion before any implementation exists,
+                  per <span class="stage__skill">test-driven-development</span>.
+                </p>
+                <div class="mt-2 stage__art">40-tests.md</div>
+              </div>
+            </div>
+            <div class="stage">
+              <span class="stage__num">40</span>
+              <div>
+                <div class="font-medium">Build</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Per-task subagents drive the tests green via
+                  <span class="stage__skill">subagent-driven-development</span>, in parallel where
+                  tasks allow it, in worktrees where isolation matters.
+                </p>
+                <div class="mt-2 stage__art">50-build-log.md</div>
+              </div>
+            </div>
+            <div class="stage">
+              <span class="stage__num">50</span>
+              <div>
+                <div class="font-medium">Assay</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Five gates: tests, lint, typecheck, a spec review, and a fresh-context slop
+                  critique. Failures go through
+                  <span class="stage__skill">systematic-debugging</span> and re-record until the
+                  ledger says pass.
+                </p>
+                <div class="mt-2 stage__art">60-gates/</div>
+              </div>
+            </div>
+            <div class="stage">
+              <span class="stage__num">60</span>
+              <div>
+                <div class="font-medium">Deliver</div>
+                <p class="mt-1 text-sm text-[color:var(--text-dim)] max-w-[52ch]">
+                  Only after ASSAY PASS can the run flip to done. The summary records what shipped,
+                  the key decisions, and how each gate was proven.
+                </p>
+                <div class="mt-2 stage__art">70-delivery.md</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== THE ASSAY, REPLAYED ===== -->
+      <section id="assay" class="border-t hairline">
+        <div class="max-w-content mx-auto px-5 py-24">
+          <div class="flex items-end justify-between gap-6 flex-wrap reveal">
+            <div>
+              <h2 class="font-semibold tracking-tighter text-3xl md:text-4xl max-w-[22ch]">
+                Watch a run try to finish early.
+              </h2>
+              <p class="mt-4 max-w-[54ch] text-[color:var(--text-dim)] leading-relaxed">
+                A scripted replay of real <span class="font-mono text-sm">gate.mjs</span> output.
+                The run claims done, the ledger refuses, the Stop hook blocks the turn, and the
+                gates only flip as evidence lands.
+              </p>
+            </div>
+            <button id="assay-replay" class="btn-ghost btn-sm" type="button">
+              <i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay
+            </button>
+          </div>
+
+          <div class="mt-10 grid grid-cols-1 lg:grid-cols-[1.25fr_.75fr] gap-4 items-start reveal">
+            <div class="pane">
+              <div class="pane__bar">
+                <i class="ph ph-terminal-window" aria-hidden="true"></i> the assay, verbatim
+              </div>
+              <div
+                class="pane__body"
+                id="assay-term"
+                aria-live="polite"
+                style="min-height: 340px"
+              ></div>
+            </div>
+
+            <div class="pane">
+              <div class="pane__bar">
+                <i class="ph ph-scales" aria-hidden="true"></i> state.json · gates
+              </div>
+              <div id="gate-board">
+                <div class="gate-row" data-gate="tests">
+                  <span class="dot" aria-hidden="true"></span>tests<span class="gate-ev"
+                    >60-gates/tests.txt</span
+                  ><span class="gate-status">pending</span>
+                </div>
+                <div class="gate-row" data-gate="lint">
+                  <span class="dot" aria-hidden="true"></span>lint<span class="gate-ev"
+                    >60-gates/lint.txt</span
+                  ><span class="gate-status">pending</span>
+                </div>
+                <div class="gate-row" data-gate="typecheck">
+                  <span class="dot" aria-hidden="true"></span>typecheck<span class="gate-ev"
+                    >60-gates/typecheck.txt</span
+                  ><span class="gate-status">pending</span>
+                </div>
+                <div class="gate-row" data-gate="review">
+                  <span class="dot" aria-hidden="true"></span>review<span class="gate-ev"
+                    >60-gates/review.md</span
+                  ><span class="gate-status">pending</span>
+                </div>
+                <div class="gate-row" data-gate="critique">
+                  <span class="dot" aria-hidden="true"></span>critique<span class="gate-ev"
+                    >60-gates/critique.md</span
+                  ><span class="gate-status">pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== INSTALL ===== -->
+      <section id="install" class="border-t hairline">
+        <div
+          class="max-w-content mx-auto px-5 py-24 grid grid-cols-1 lg:grid-cols-[.8fr_1.2fr] gap-12 reveal"
+        >
+          <div>
+            <h2 class="font-semibold tracking-tighter text-3xl md:text-4xl">Put an idea in.</h2>
+            <p class="mt-4 text-[color:var(--text-dim)] leading-relaxed max-w-[44ch]">
+              Install from the marketplace, hand it one rough idea, and step in exactly once: when
+              the rival approaches are on the table.
+            </p>
+          </div>
+          <div class="pane">
+            <div class="pane__bar"><i class="ph ph-terminal" aria-hidden="true"></i> claude</div>
+            <div class="pane__body">
+              <div class="row ctx">
+                <span class="gut">$</span
+                ><span>/plugin marketplace add LlamaopNV/Claude_Code_Empowerments-</span>
+              </div>
+              <div class="row ctx">
+                <span class="gut">$</span
+                ><span>/plugin install crucible@claude-code-empowerments</span>
+              </div>
+              <div class="row ctx"><span class="gut"> </span><span> </span></div>
+              <div class="row ctx">
+                <span class="gut">$</span
+                ><span>/crucible a CLI that turns any CSV into a shareable chart link</span>
+              </div>
+              <div class="row intent">
+                <span class="gut">i</span
+                ><span
+                  >intake -> diverge -> your checkpoint -> spec -> tests -> build -> assay ->
+                  done</span
+                >
+              </div>
+              <div class="row ctx">
+                <span class="gut">$</span><span>/crucible resume 2026-07-04-csv-charts</span>
+              </div>
+              <div class="row intent">
+                <span class="gut">i</span
+                ><span>picks the run back up at its recorded phase, artifacts intact</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      window.SKILL_PAGE = {
+        brand: 'skill showcase',
+        brandIcon: 'ph-stack',
+        accent: '#f0552b',
+        homeUrl: '../',
+        repoUrl: 'https://github.com/llamaopnv',
+        navLinks: [
+          { label: 'The problem', href: '#problem' },
+          { label: 'The pipeline', href: '#pipeline' },
+          { label: 'The assay', href: '#assay' },
+        ],
+        cta: { label: 'Get the plugin', href: '#install', icon: 'ph-download-simple' },
+        footNote: 'crucible · part of the skill showcase',
+      };
+    </script>
+    <script src="../shared/shell.js" defer></script>
+
+    <script>
+      const io = new IntersectionObserver(
+        (es) =>
+          es.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.classList.add('in');
+              io.unobserve(e.target);
+            }
+          }),
+        { threshold: 0.15 },
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+
+    <script>
+      /* The assay replay. Every printed line is real gate.mjs output, captured from a run. */
+      (() => {
+        'use strict';
+        const term = document.getElementById('assay-term');
+        const board = document.getElementById('gate-board');
+        const replayBtn = document.getElementById('assay-replay');
+        const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const RUN = '2026-07-04-csv-charts';
+
+        // kind: cmd ($), out (plain), miss (red), add (green), intent (grey italic)
+        const SCRIPT = [
+          { kind: 'cmd', text: 'node gate.mjs phase ' + RUN + ' done' },
+          {
+            kind: 'miss',
+            text: 'cannot mark done: gate(s) unmet: tests, lint, typecheck, review, critique',
+          },
+          {
+            kind: 'intent',
+            text: 'the model tries to end its turn anyway. the Stop hook answers:',
+          },
+          {
+            kind: 'miss',
+            text:
+              '{"decision":"block","reason":"Crucible run \\"' +
+              RUN +
+              '\\" is in the assay phase with unmet gates: ..."}',
+          },
+          { kind: 'intent', text: 'no way out but through. evidence starts landing:' },
+          {
+            kind: 'cmd',
+            text:
+              'npm test > 60-gates/tests.txt; node gate.mjs record ' +
+              RUN +
+              ' tests 0 60-gates/tests.txt',
+          },
+          { kind: 'add', text: 'gate tests: pass (evidence: 60-gates/tests.txt)', gate: 'tests' },
+          {
+            kind: 'cmd',
+            text:
+              'npm run lint > 60-gates/lint.txt; node gate.mjs record ' +
+              RUN +
+              ' lint 0 60-gates/lint.txt',
+          },
+          { kind: 'add', text: 'gate lint: pass (evidence: 60-gates/lint.txt)', gate: 'lint' },
+          {
+            kind: 'cmd',
+            text:
+              'npm run typecheck > 60-gates/typecheck.txt; node gate.mjs record ' +
+              RUN +
+              ' typecheck 0 ...',
+          },
+          {
+            kind: 'add',
+            text: 'gate typecheck: pass (evidence: 60-gates/typecheck.txt)',
+            gate: 'typecheck',
+          },
+          {
+            kind: 'intent',
+            text: 'a reviewer reads the diff against 30-spec.md; a fresh subagent hunts slop:',
+          },
+          { kind: 'add', text: 'gate review: pass (evidence: 60-gates/review.md)', gate: 'review' },
+          {
+            kind: 'add',
+            text: 'gate critique: pass (evidence: 60-gates/critique.md)',
+            gate: 'critique',
+          },
+          { kind: 'cmd', text: 'node gate.mjs check ' + RUN },
+          { kind: 'add', text: 'ASSAY PASS: all gates green with evidence on disk' },
+          { kind: 'cmd', text: 'node gate.mjs phase ' + RUN + ' done' },
+          { kind: 'add', text: 'run "' + RUN + '" -> phase done' },
+        ];
+
+        let timer = null;
+        let started = false;
+
+        function makeRow(step) {
+          const div = document.createElement('div');
+          const cls = step.kind === 'cmd' ? 'ctx' : step.kind === 'out' ? 'ctx' : step.kind;
+          div.className = 'row ' + cls + (reduced ? '' : ' row-anim');
+          const gut = document.createElement('span');
+          gut.className = 'gut';
+          gut.textContent = step.kind === 'cmd' ? '$' : step.kind === 'intent' ? 'i' : ' ';
+          const body = document.createElement('span');
+          body.textContent = step.text;
+          body.style.whiteSpace = 'pre-wrap';
+          div.appendChild(gut);
+          div.appendChild(body);
+          return div;
+        }
+
+        function flipGate(name) {
+          const row = board.querySelector('[data-gate="' + name + '"]');
+          if (!row) return;
+          row.classList.add('pass');
+          row.querySelector('.gate-status').textContent = 'pass';
+        }
+
+        function reset() {
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
+          term.innerHTML = '';
+          board.querySelectorAll('.gate-row').forEach((r) => {
+            r.classList.remove('pass');
+            r.querySelector('.gate-status').textContent = 'pending';
+          });
+        }
+
+        function finishInstantly() {
+          reset();
+          SCRIPT.forEach((step) => {
+            term.appendChild(makeRow(step));
+            if (step.gate) flipGate(step.gate);
+          });
+        }
+
+        function play() {
+          reset();
+          if (reduced) {
+            finishInstantly();
+            return;
+          }
+          let i = 0;
+          const cursor = document.createElement('div');
+          cursor.className = 'row ctx';
+          cursor.innerHTML =
+            '<span class="gut">$</span><span><span class="term-cursor"></span></span>';
+          term.appendChild(cursor);
+          const tick = () => {
+            if (i >= SCRIPT.length) {
+              cursor.remove();
+              return;
+            }
+            const step = SCRIPT[i++];
+            term.insertBefore(makeRow(step), cursor);
+            if (step.gate) flipGate(step.gate);
+            timer = setTimeout(tick, step.kind === 'cmd' ? 950 : 550);
+          };
+          tick();
+        }
+
+        const assayIo = new IntersectionObserver(
+          (es) =>
+            es.forEach((e) => {
+              if (e.isIntersecting && !started) {
+                started = true;
+                play();
+                assayIo.disconnect();
+              }
+            }),
+          { threshold: 0.35 },
+        );
+        assayIo.observe(term);
+
+        replayBtn.addEventListener('click', play);
+      })();
+    </script>
+  </body>
+</html>
