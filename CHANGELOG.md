@@ -15,6 +15,9 @@ All notable changes to this marketplace are documented here.
   - Skills: `forgemaster`.
   - Commands: `forgemaster`.
   - Scripts: `done-gate.sh` (the gate-ledger enforcement hook).
+  - Showcase page at `site/forgemaster/` (an interactive replay of the run record: stage
+    rail, artifact tree, live `run.json`, and the done-gate block; the page itself shipped
+    through run `2026-07-04-forgemaster-showcase`). Forge-spark gold accent `#f2c94c`.
 - **`idea-forge`** plugin (v0.1.0) — hardens ONE clarified, high-stakes idea by making eight
   rival variants of it fight an adversarial **king-of-the-hill ladder**: a pre-screened best
   original seeds the champion, each rung grafts the challenger's strongest *compatible* fix into

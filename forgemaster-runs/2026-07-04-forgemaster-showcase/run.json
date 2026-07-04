@@ -1,0 +1,33 @@
+{
+  "idea": "Showcase page for the forgemaster plugin under site/, on the shared shell, with design-taste-frontend firing during build",
+  "slug": "2026-07-04-forgemaster-showcase",
+  "weight": "light",
+  "stage": "deliver",
+  "status": "done",
+  "checkpoint": "auto",
+  "artifacts": {
+    "intake": "00-intake.md",
+    "diverge": "02-approach.md",
+    "spec": "03-spec.md",
+    "plan": "04-plan.md",
+    "build": "05-build-log.md",
+    "gates": "06-gates.md",
+    "deliver": "07-summary.md"
+  },
+  "skips": [
+    { "stage": "intake", "reason": "bake-to-completion not run: idea already has a concrete user, mechanism, and placement" },
+    { "stage": "diverge", "reason": "idea-forge installed but skipped per light weight class; inline mini-diverge used as the skill prescribes" },
+    { "stage": "spec", "reason": "superpowers:brainstorming scaled out: light weight, design space fixed by the shared shell, written taste rules, and the chosen metaphor" },
+    { "stage": "plan", "reason": "superpowers:writing-plans scaled to a task list inside 04-plan.md, per the skill's light-weight rule" },
+    { "stage": "build", "reason": "subagent-driven-development and git worktree scaled out: light weight, four strictly sequential tasks, additive change executed directly" },
+    { "stage": "deliver", "reason": "finishing-a-development-branch scaled to a recorded handoff in 07-summary.md: this repo gates commits behind the @anvil/core pre-commit build and user-only GPG-signed pushes" }
+  ],
+  "gates": {
+    "tests": "pass",
+    "lint": "pass",
+    "types": "na",
+    "spec_review": "pass",
+    "code_review": "pass",
+    "self_critique": "pass"
+  }
+}
