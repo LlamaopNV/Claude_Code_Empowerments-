@@ -4,7 +4,24 @@ All notable changes to this marketplace are documented here.
 
 ## [Unreleased]
 
+### Changed
+
+- **`forgemaster`** bumped to **0.2.0** — the run manifest gets a spine. Born as a clean-room
+  rebuild ("crucible", built and trigger-tested on this branch, then merged back under the
+  forgemaster name): `run.json` is now written **only** by `scripts/gate.mjs` (plain Node,
+  Windows-safe, TDD'd — 11 tests via `node --test`), which refuses to record a gate without a
+  non-empty evidence file under the run's `gates/` dir, refuses `status done` while any of the
+  six gates (or an extra gate like `proofmark`) is unmet, and supports `na` with the reason as
+  evidence. `done-gate.sh` (bash, grep-based, untested) is gone; three hooks replace it:
+  `PreToolUse` blocks hand-editing any `run.json`, `Stop` blocks ending the turn while an
+  active run sits in gates/deliver with an unmet ledger, and `SessionStart` surfaces
+  unfinished runs for resumption. SKILL.md now drives all manifest changes through the ledger
+  CLI (`init`/`stage`/`artifact`/`skip`/`record`/`check`/`status-set`); the stage policy
+  (weight classes, skips ledger, reviewer roster, checkpoint contract) is unchanged. The
+  showcase page's replay strings were updated to match. Marketplace bumped to `0.5.0`.
+
 ### Added
+
 - **`forgemaster`** plugin (v0.1.0) — the top-level orchestrator: takes one rough idea and
   drives it through intake → diverge (`idea-forge`) → spec → plan → tests-first build
   (`superpowers:subagent-driven-development` under TDD) → quality gates → delivery, delegating
@@ -20,7 +37,7 @@ All notable changes to this marketplace are documented here.
     through run `2026-07-04-forgemaster-showcase`). Forge-spark gold accent `#f2c94c`.
 - **`idea-forge`** plugin (v0.1.0) — hardens ONE clarified, high-stakes idea by making eight
   rival variants of it fight an adversarial **king-of-the-hill ladder**: a pre-screened best
-  original seeds the champion, each rung grafts the challenger's strongest *compatible* fix into
+  original seeds the champion, each rung grafts the challenger's strongest _compatible_ fix into
   a running merge (re-validated against a graft ledger and the previous champion), and a final
   audit rung ships the champion only if it **provably beats the frozen best original**. The
   depth-on-one companion to `bake-to-completion`'s clarify pass. Skill: `idea-forge`, with the
@@ -35,12 +52,14 @@ All notable changes to this marketplace are documented here.
   - Scripts: `check-registration.sh` (verifies a plugin is fully registered before commit).
 
 ### Removed
+
 - Dropped six plugins that were not authored in this marketplace: `bitbucket-repo`,
   `bitbucket-pipeline`, `bitbucket-pr`, `jira-api`, `md-with-mermaid-to-pdf`, and
   `new-aspire-project`. Their plugin directories, `marketplace.json` entries, README
   documentation, and skill-showcase pages were removed.
 
 ### Changed
+
 - Rebuilt the skill-showcase landing grid (`site/index.html`) around the remaining owned
   skills (anvil, symmetric-audit, workflow-forge, bake-to-completion, design-taste-frontend,
   skill-installer, tdd-heartbeat), with content-sized cards, accent icons, and two feature tiles.
@@ -78,12 +97,14 @@ All notable changes to this marketplace are documented here.
   policy).
 
 ### Removed
+
 - `idea-briefs/` is now treated as local skill output (generated in a user's working directory) and
   is git-ignored rather than committed to the marketplace.
 
 ## [0.2.0] - 2026-06-18
 
 ### Added
+
 - `bitbucket-repo`, `bitbucket-pipeline`, `bitbucket-pr` — Bitbucket Cloud plugins
   (auth and workspace/repo resolved from env vars or the git remote).
 - `jira-api` — Jira REST API reference and scripts (instance configurable via `JIRA_BASE_URL`).
@@ -93,9 +114,11 @@ All notable changes to this marketplace are documented here.
 - `.gitattributes` enforcing LF line endings on `*.sh`.
 
 ### Removed
+
 - `example-empowerment` placeholder plugin (superseded by the real plugins above).
 
 ### Changed
+
 - Genericized all imported plugins: removed organization-specific authors, the hardcoded
   Jira instance, and bundled machine/session artifacts (`.claude/settings.local.json`,
   agent memory).
@@ -103,6 +126,7 @@ All notable changes to this marketplace are documented here.
 ## [0.1.0] - 2026-06-18
 
 ### Added
+
 - Initial marketplace skeleton (`.claude-plugin/marketplace.json`).
 - `example-empowerment` template plugin with a sample skill, command, and agent.
 - README with installation and authoring instructions.

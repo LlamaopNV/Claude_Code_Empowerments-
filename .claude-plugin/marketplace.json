@@ -6,7 +6,7 @@
     "email": "llama.op@gmail.com"
   },
   "description": "A personal marketplace of Claude Code plugins and skills — empowerments for everyday coding.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "metadata": {
     "pluginRoot": "./plugins"
   },
@@ -115,8 +115,8 @@
       "name": "forgemaster",
       "displayName": "Forgemaster",
       "source": "./plugins/forgemaster",
-      "description": "The top of the toolchain: hand it one rough idea and it drives the whole development process — intake, adversarial hardening via idea-forge, spec, tests-first build via subagent-driven development, and enforced quality gates — leaving a resumable artifact at every stage and refusing to mark the run done until every gate has observed evidence.",
-      "version": "0.1.0",
+      "description": "The top of the toolchain: hand it one rough idea and it drives the whole development process — intake, adversarial hardening via idea-forge, spec, tests-first build via subagent-driven development, and enforced quality gates — leaving a resumable artifact at every stage. The run manifest is written only by a tested Node gate ledger that demands an evidence file per gate; hooks block hand-edits to run.json, block abandoning a run mid-gates, and surface unfinished runs at session start.",
+      "version": "0.2.0",
       "author": {
         "name": "LlamaopNV",
         "email": "llama.op@gmail.com"
