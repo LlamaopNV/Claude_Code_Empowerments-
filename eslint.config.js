@@ -18,6 +18,9 @@ export default [
       // not workspace TypeScript. Linting it with the Node config flags browser
       // globals (window, document) as undefined.
       'site/**',
+      // Forgemaster run directories hold pipeline artifacts (stage records and
+      // per-run acceptance-check scripts), not workspace code.
+      'forgemaster-runs/**',
     ],
   },
   js.configs.recommended,
