@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "forgemaster",
+  "displayName": "Forgemaster",
+  "version": "0.1.0",
+  "description": "Top-level orchestrator that drives one rough idea through intake, adversarial hardening, spec, tests-first build via subagents, and enforced quality gates to a shipped, verified deliverable, coordinating the marketplace's other skills end to end.",
+  "author": {
+    "name": "LlamaopNV",
+    "email": "llama.op@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["orchestration", "pipeline", "tdd", "quality-gates", "meta-skill"]
+}
