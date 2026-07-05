@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "forgemaster",
   "displayName": "Forgemaster",
-  "version": "0.1.0",
-  "description": "Top-level orchestrator that drives one rough idea through intake, adversarial hardening, spec, tests-first build via subagents, and enforced quality gates to a shipped, verified deliverable, coordinating the marketplace's other skills end to end.",
+  "version": "0.2.0",
+  "description": "Top-level orchestrator that drives one rough idea through intake, adversarial hardening, spec, tests-first build via subagents, and enforced quality gates to a shipped, verified deliverable, coordinating the marketplace's other skills end to end. The run manifest is written only by a tested Node gate ledger that demands an evidence file per gate; hooks block hand-edits to run.json, block abandoning a run mid-gates, and surface unfinished runs at session start.",
   "author": {
     "name": "LlamaopNV",
     "email": "llama.op@gmail.com"
