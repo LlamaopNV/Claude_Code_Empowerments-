@@ -26,8 +26,9 @@ export default [
   js.configs.recommended,
   {
     // Plain Node `.mjs`/`.js` build/maintenance scripts (e.g. the demo-data
-    // validator). No TS checker vouches for their globals, so declare them.
-    files: ['**/scripts/**/*.{mjs,js}'],
+    // validator) and plugin runtime code (e.g. bellows' MCP server). No TS
+    // checker vouches for their globals, so declare them.
+    files: ['**/scripts/**/*.{mjs,js}', 'plugins/**/*.{mjs,js}'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -36,6 +37,8 @@ export default [
         process: 'readonly',
         Buffer: 'readonly',
         URL: 'readonly',
+        fetch: 'readonly',
+        setTimeout: 'readonly',
       },
     },
   },
