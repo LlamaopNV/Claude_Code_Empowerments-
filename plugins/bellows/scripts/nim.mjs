@@ -28,7 +28,7 @@ function cachedListModels() {
 const USAGE = `Usage:
   nim.mjs verify
   nim.mjs models [--json]
-  nim.mjs chat [--model <id>] [--system <text>] <prompt...>   (prompt may be piped on stdin)`;
+  nim.mjs chat [--model <id>] [--system <text>] [--] <prompt...>   (prompt may be piped on stdin)`;
 
 export function parseCliArgs(argv) {
   const [command, ...rest] = argv;

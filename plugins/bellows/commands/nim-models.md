@@ -10,6 +10,8 @@ argument-hint: [--json]
 Run: `node "${CLAUDE_PLUGIN_ROOT}/scripts/nim.mjs" models --json`
 
 If it fails with a missing-key or 401 error, relay the message and point the user at `/nim-setup`; stop.
+Note: this list may come from a 24-hour local cache of the public model ids, so it can lag a very
+recent catalog change; `/nim-setup` (verify) is the key health check, not this command.
 
 ## 2. Present an annotated inventory
 

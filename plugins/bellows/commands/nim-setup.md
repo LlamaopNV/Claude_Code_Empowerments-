@@ -14,7 +14,8 @@ most the `nvapi-` prefix plus the last 4 characters).
 Run: `node "${CLAUDE_PLUGIN_ROOT}/scripts/nim.mjs" verify`
 
 - If it prints `OK: key valid, N models available`: report the healthy state and stop. Setup is done.
-- If it reports a 401: the key exists but is dead. Continue from step 3 to mint a new one.
+- If it reports a 401: the key exists but is dead. Continue from step 2 (the account already
+  exists; just generate a fresh key).
 - If it reports a missing key: continue from step 2.
 
 ## 2. Guide account and key creation
@@ -29,7 +30,13 @@ otherwise print it):
 
 ## 3. Verify the key BEFORE persisting
 
-Have the user set it for this session, or run the verify with it inline (PowerShell):
+Prefer having the user set the key themselves, in their own terminal, then tell you to
+continue: this keeps the key out of the chat transcript entirely. Ask them to run
+(PowerShell): `$env:NVIDIA_API_KEY = '<pasted key>'` and then `node
+"${CLAUDE_PLUGIN_ROOT}/scripts/nim.mjs" verify`, and report back what it printed.
+
+Fallback, if the user prefers to paste the key into chat or have you set it inline: run the
+verify with it inline (PowerShell):
 
 `$env:NVIDIA_API_KEY = '<pasted key>'; node "${CLAUDE_PLUGIN_ROOT}/scripts/nim.mjs" verify`
 
