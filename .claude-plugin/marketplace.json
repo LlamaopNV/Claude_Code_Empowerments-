@@ -6,7 +6,7 @@
     "email": "llama.op@gmail.com"
   },
   "description": "A personal marketplace of Claude Code plugins and skills — empowerments for everyday coding.",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "metadata": {
     "pluginRoot": "./plugins"
   },
@@ -123,6 +123,19 @@
       },
       "category": "development",
       "keywords": ["orchestration", "pipeline", "tdd", "quality-gates", "meta-skill", "anti-slop"]
+    },
+    {
+      "name": "bellows",
+      "displayName": "Bellows",
+      "source": "./plugins/bellows",
+      "description": "Pump free NVIDIA build.nvidia.com inference into your forge: guided API-key setup, live model inventory, delegation of coding grunt-work to NVIDIA-hosted models, and an integration playbook for wiring those models into your own apps.",
+      "version": "0.1.0",
+      "author": {
+        "name": "LlamaopNV",
+        "email": "llama.op@gmail.com"
+      },
+      "category": "development",
+      "keywords": ["nvidia", "nim", "inference", "llm", "delegation", "openai-compatible"]
     }
   ]
 }
