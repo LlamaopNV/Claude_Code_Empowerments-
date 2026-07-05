@@ -23,6 +23,7 @@ accent icon. Owned skills only:
 - [x] idea-forge `#7c6cf0` (self-improvement tournament, with transcript + v1/v2 diff sub-pages)
 - [x] forgemaster (feature) `#f2c94c` (run-record replay; page shipped via its own pipeline, run 2026-07-04-forgemaster-showcase)
 - [x] tdd-heartbeat `#e5675f` (external, linked from the grid)
+- [x] bellows `#76b900`
 
 ### Removed 2026-06-24 (not the user's; pulled from repo + marketplace + site)
 new-aspire-project, md-with-mermaid-to-pdf, jira-api, bitbucket-pr, bitbucket-pipeline,

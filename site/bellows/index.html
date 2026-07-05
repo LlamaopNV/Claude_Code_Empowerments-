@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>bellows · showcase</title>
+<meta name="description" content="bellows: pump free NVIDIA inference into your forge. Guided key setup, an annotated live model inventory, delegation of coding grunt-work, and an integration playbook for your own apps." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: {
+    fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+    colors: { accent: 'var(--accent)' },
+    maxWidth: { content: '1180px' },
+  } } };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .kicker  { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .sect-title { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; }
+  .sect-sub { color: var(--text-dim); line-height: 1.6; max-width: 62ch; margin-top: 12px; }
+  .grad { color: var(--accent); }
+
+  /* hero install chip */
+  .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-dim);
+    border: 1px solid var(--border-2); border-radius: var(--radius);
+    background: var(--bg-2); padding: 10px 16px;
+  }
+  .chip b { color: var(--accent); font-weight: 500; }
+
+  /* ---- the airflow: four stages on one duct ---- */
+  .duct { position: relative; display: grid; gap: 18px; padding-left: 34px; }
+  .duct::before {
+    content: ""; position: absolute; left: 10px; top: 14px; bottom: 14px; width: 2px;
+    background: repeating-linear-gradient(to bottom,
+      color-mix(in srgb, var(--accent) 65%, transparent) 0 7px, transparent 7px 14px);
+    background-size: 100% 28px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .duct.blowing::before { animation: airflow 1.1s linear infinite; }
+    @keyframes airflow { to { background-position-y: 28px; } }
+  }
+  .stage { position: relative; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 18px 20px; }
+  .stage::before {
+    content: ""; position: absolute; left: -30px; top: 22px; width: 14px; height: 14px; border-radius: 999px;
+    background: var(--bg-3); border: 2px solid color-mix(in srgb, var(--accent) 55%, var(--border-2));
+  }
+  .stage .tag { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .stage h3 { margin: 6px 0 6px; font-size: 16.5px; font-weight: 600; letter-spacing: -0.01em; }
+  .stage p { color: var(--text-dim); font-size: 14px; line-height: 1.58; margin: 0; max-width: 70ch; }
+  .stage.hot { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 6%, var(--bg-2)); }
+  .stage.hot::before { background: var(--accent); border-color: var(--accent); }
+  .stage.hot h3 { font-size: 18px; }
+  .uses { display: grid; gap: 8px; grid-template-columns: 1fr; margin-top: 14px; }
+  @media (min-width: 720px){ .uses { grid-template-columns: 1fr 1fr; } }
+  .use { display: flex; gap: 10px; align-items: flex-start; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); padding: 10px 12px; font-size: 13px; color: var(--text-dim); line-height: 1.5; }
+  .use i { color: var(--accent); font-size: 16px; margin-top: 2px; flex: 0 0 auto; }
+  .use b { color: var(--text); font-weight: 600; }
+
+  /* ---- demo terminal ---- */
+  .demo-pane .pane__bar { gap: 10px; }
+  .replay-btn {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+    background: transparent; border: 1px solid var(--border-2); border-radius: 7px;
+    padding: 4px 10px; cursor: pointer; transition: border-color .18s ease, color .18s ease;
+  }
+  .replay-btn:hover { border-color: var(--accent); color: var(--text); }
+  .term-wrap { overflow-x: auto; }
+  .term { padding: 14px 16px 18px; min-height: 380px; min-width: max-content; }
+  .t-row { white-space: pre; line-height: 1.9; }
+  .t-cmd { color: var(--accent); font-weight: 500; }
+  .t-run { color: var(--text-faint); }
+  .t-dim { color: var(--text-faint); font-style: italic; }
+  .t-out { color: #cfcfd6; }
+  .t-usr { color: var(--text); }
+  .t-ok  { color: var(--add); }
+  .t-err { color: var(--miss); }
+  .t-add { color: var(--add); background: rgba(92,191,142,0.08); }
+  .t-gap { line-height: 1.2; }
+  .caret { display: inline-block; width: 8px; height: 15px; vertical-align: -2px; background: var(--accent); }
+  @media (prefers-reduced-motion: no-preference) {
+    .caret { animation: caretBlink 0.9s steps(1) infinite; }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+    .t-row { animation: lineIn .3s ease both; }
+    @keyframes lineIn { from { opacity: 0; } to { opacity: 1; } }
+  }
+
+  /* honesty strip */
+  .callout { border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); background: var(--bg-2); padding: 18px 20px; }
+  .label-mini { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; }
+  .callout p { color: var(--text-dim); line-height: 1.62; margin: 0; font-size: 14.5px; }
+  .callout b { color: var(--text); }
+
+  .install { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 22px; font-family: var(--font-mono); font-size: 13px; overflow-x: auto; }
+  .install .c { color: var(--text-dim); white-space: pre; }
+  .install .c b { color: var(--accent); font-weight: 500; }
+</style>
+</head>
+
+<body class="font-sans">
+<main id="top">
+
+  <!-- HERO -->
+  <section class="max-w-content mx-auto px-5 flex flex-col justify-center" style="min-height:calc(100dvh - 64px); padding-top:40px; padding-bottom:40px;">
+    <span class="eyebrow reveal">bellows</span>
+    <h1 class="reveal font-semibold tracking-tighter leading-[1.06] text-[2.5rem] md:text-6xl max-w-[19ch] mt-5">
+      Pump <span class="grad">free NVIDIA inference</span> into your forge.
+    </h1>
+    <p class="reveal sect-sub text-lg mt-6 max-w-[58ch]">
+      A bellows feeds outside air into a fire to make it burn hotter. This plugin feeds NVIDIA's free hosted models into Claude Code: guided setup, a live inventory, delegation of the grunt-work, and a playbook for your own apps.
+    </p>
+    <div class="reveal mt-7"><span class="chip"><i class="ph ph-terminal-window" aria-hidden="true"></i><span><b>/plugin install</b> bellows</span></span></div>
+    <div class="reveal mt-8 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-play" aria-hidden="true"></i> See it pump</a>
+      <a href="#airflow" class="btn-ghost"><i class="ph ph-wind" aria-hidden="true"></i> How air becomes heat</a>
+    </div>
+  </section>
+
+  <!-- AIRFLOW -->
+  <section id="airflow" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">The four surfaces</div>
+      <h2 class="sect-title">How air becomes heat</h2>
+      <p class="sect-sub">One continuous airflow: open the intake, gauge what is flowing, aim it at the fire, then duct it into your own shop. Every surface rides the same zero-dependency client, and no key material or prompt content ever touches disk.</p>
+    </div>
+
+    <div class="duct reveal mt-10" id="duct">
+      <div class="stage">
+        <span class="tag">/nim-setup · open the intake</span>
+        <h3>Guided key onboarding, verified live</h3>
+        <p>Walks you through a free build.nvidia.com account and an <span class="font-mono">nvapi-</span> key, verifies it against the real endpoint before persisting anything, and doubles as a health check forever after. Idempotent: run it any time to ask "is my air still flowing?"</p>
+      </div>
+      <div class="stage">
+        <span class="tag">/nim-models · gauge the airflow</span>
+        <h3>An annotated live inventory</h3>
+        <p>Pulls the actual model list from <span class="font-mono">/v1/models</span> and annotates it: which id is the coding default, which one reasons deliberately, which handles long context. Only models your account really has are ever shown.</p>
+      </div>
+      <div class="stage hot">
+        <span class="tag">/nim + nim_chat · pump it into the fire</span>
+        <h3>Delegate the grunt-work, keep the judgment</h3>
+        <p>One-shot a prompt from the command line, or let Claude reach for the auto-started MCP tools mid-task. The skill teaches it when offloading actually pays:</p>
+        <div class="uses">
+          <div class="use"><i class="ph ph-arrows-split" aria-hidden="true"></i><span><b>Bulk transforms.</b> Send one exemplar and the rule, apply the pattern locally, verify with tests.</span></div>
+          <div class="use"><i class="ph ph-chats-circle" aria-hidden="true"></i><span><b>Second opinions.</b> Describe the stuck bug to a reasoning model. Disagreement is signal.</span></div>
+          <div class="use"><i class="ph ph-copy" aria-hidden="true"></i><span><b>Parallel drafts.</b> Ask for three candidate implementations while writing the one you believe in.</span></div>
+          <div class="use"><i class="ph ph-file-magnifying-glass" aria-hidden="true"></i><span><b>Big-input summarization.</b> Pipe in the logs too large to read inline, spot-check what you act on.</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <span class="tag">nim-integration-playbook · duct it into your shop</span>
+        <h3>The instructor for your own apps</h3>
+        <p>NVIDIA's endpoints are OpenAI-compatible, so your app uses the standard OpenAI SDK pointed at their base URL. The playbook covers JS/TS, Python, raw HTTP, streaming, model choice, and key hygiene, written native to your existing stack.</p>
+      </div>
+    </div>
+
+    <div class="callout reveal mt-8">
+      <div class="label-mini">The honesty rule the plugin ships with</div>
+      <p>Delegated output is a <b>draft, never an authority</b>. Every answer is attributed to the model that produced it, verified before it is relayed, and the skill refuses tasks that need repo context the remote model cannot see. Prompts go to NVIDIA's cloud, so anything sensitive is asked about first.</p>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section id="demo" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">See it pump</div>
+      <h2 class="sect-title">First breath, then the fire roars</h2>
+      <p class="sect-sub">A replay of the two exchanges that matter: <span class="font-mono">/nim-setup</span> opening the intake, then <span class="font-mono">/nim</span> delegating a mechanical chore. The transcript below is scripted example data; nothing on this page calls the network.</p>
+    </div>
+
+    <div class="pane demo-pane reveal mt-9">
+      <div class="pane__bar">
+        <span class="dot" style="background:var(--accent)"></span>
+        <span>bellows · scripted replay, no live calls</span>
+        <button type="button" id="replay" class="replay-btn"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Replay</button>
+      </div>
+      <div class="term-wrap"><div class="term" id="term" aria-live="polite"></div></div>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install" class="max-w-content mx-auto px-5 pb-28">
+    <div class="reveal">
+      <div class="kicker">Light it up</div>
+      <h2 class="sect-title">Install, open the intake, delegate</h2>
+      <p class="sect-sub">Free tier, no card. The key lives only in the <span class="font-mono">NVIDIA_API_KEY</span> environment variable.</p>
+    </div>
+
+    <div class="install reveal mt-8">
+      <div class="c"><span style="color:var(--text-faint)"># add the marketplace, then the plugin</span></div>
+      <div class="c"><b>/plugin marketplace add</b> LlamaopNV/Claude_Code_Empowerments-</div>
+      <div class="c"><b>/plugin install</b> bellows</div>
+      <div class="c" style="margin-top:10px"><span style="color:var(--text-faint)"># open the intake (free NVIDIA account, key starts with nvapi-)</span></div>
+      <div class="c"><b>/nim-setup</b></div>
+      <div class="c" style="margin-top:10px"><span style="color:var(--text-faint)"># then pump</span></div>
+      <div class="c"><b>/nim</b> "your first delegated chore"</div>
+    </div>
+
+    <div class="reveal mt-8 flex flex-wrap gap-3">
+      <a class="btn-ghost" href="../"><i class="ph ph-squares-four" aria-hidden="true"></i> All showcases</a>
+      <a class="btn-ghost" href="https://github.com/llamaopnv"><i class="ph ph-github-logo" aria-hidden="true"></i> Source</a>
+      <a class="btn-ghost" href="https://build.nvidia.com"><i class="ph ph-cloud" aria-hidden="true"></i> build.nvidia.com</a>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase', brandIcon: 'ph-stack', accent: '#76b900',
+    homeUrl: '../', repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'The airflow', href: '#airflow' },
+      { label: 'See it pump', href: '#demo' },
+      { label: 'Install', href: '#install' },
+    ],
+    cta: { label: 'Get the plugin', href: '#install', icon: 'ph-download-simple' },
+    footNote: 'bellows · part of the skill showcase',
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+
+<script>
+  /* Scripted terminal replay. Pure vanilla, no network. Motion is the story
+     (air being pumped, work being delegated); reduced-motion renders instantly. */
+  (() => {
+    'use strict';
+    const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const term = document.getElementById('term');
+    const replayBtn = document.getElementById('replay');
+    const duct = document.getElementById('duct');
+
+    /* c: cmd (typed), run (subcommand), dim (narration), out, usr, ok, err, add, gap */
+    const SCRIPT = [
+      { c: 'cmd', t: '> /nim-setup' },
+      { c: 'run', t: '  $ node bellows/scripts/nim.mjs verify' },
+      { c: 'err', t: '  NVIDIA_API_KEY is not set' },
+      { c: 'out', t: '  opening https://build.nvidia.com (free account, no card needed)' },
+      { c: 'out', t: '  generate a key on any model page, then paste it here' },
+      { c: 'usr', t: '  you: nvapi-********************k3d1' },
+      { c: 'dim', t: '  verifying before persisting anything' },
+      { c: 'ok',  t: '  OK: key valid, 143 models available' },
+      { c: 'out', t: '  persisted to NVIDIA_API_KEY (new shells pick it up)' },
+      { c: 'ok',  t: '  the intake is open' },
+      { c: 'gap', t: '' },
+      { c: 'cmd', t: '> /nim "add JSDoc to every exported function in src/utils.js"' },
+      { c: 'dim', t: '  delegating to qwen/qwen3-coder-480b-a35b-instruct' },
+      { c: 'run', t: '  $ node bellows/scripts/nim.mjs chat --model qwen/... "add JSDoc..."' },
+      { c: 'out', t: '  draft received; applying locally, then checking' },
+      { c: 'add', t: '  + /** Debounce fn by wait ms; trailing edge, optional leading call. */' },
+      { c: 'add', t: '  + /** Parse "1h30m" duration strings into milliseconds. */' },
+      { c: 'add', t: '  + /** Deep-merge plain objects; arrays are replaced, not merged. */' },
+      { c: 'out', t: '  12 of 12 exports annotated · node --check passed' },
+      { c: 'ok',  t: '  draft from qwen3-coder, verified before it reached you' },
+      { c: 'dim', t: '  your Claude context went to review, not typing' },
+    ];
+
+    let runId = 0;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    function addRow(step) {
+      const d = document.createElement('div');
+      d.className = 't-row t-' + step.c;
+      d.textContent = step.t || ' ';
+      term.appendChild(d);
+      return d;
+    }
+
+    function renderInstant() {
+      term.textContent = '';
+      SCRIPT.forEach(addRow);
+    }
+
+    async function play() {
+      const id = ++runId;
+      term.textContent = '';
+      if (REDUCED) { renderInstant(); return; }
+      for (const step of SCRIPT) {
+        if (id !== runId) return;
+        if (step.c === 'cmd') {
+          const d = addRow({ c: step.c, t: '' });
+          const caret = document.createElement('span');
+          caret.className = 'caret';
+          d.appendChild(caret);
+          for (const ch of step.t) {
+            if (id !== runId) return;
+            caret.insertAdjacentText('beforebegin', ch);
+            await sleep(26);
+          }
+          await sleep(320);
+          caret.remove();
+        } else {
+          addRow(step);
+          await sleep(step.c === 'gap' ? 550 : step.c === 'add' ? 220 : 300);
+        }
+      }
+    }
+
+    let started = false;
+    const demoIo = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting && !started) { started = true; play(); demoIo.disconnect(); }
+    }), { threshold: 0.35 });
+    demoIo.observe(term);
+
+    replayBtn.addEventListener('click', () => { started = true; play(); });
+
+    /* the duct's air only moves while it is on screen */
+    if (duct && !REDUCED) {
+      const ductIo = new IntersectionObserver((es) => es.forEach((e) => {
+        duct.classList.toggle('blowing', e.isIntersecting);
+      }), { threshold: 0.05 });
+      ductIo.observe(duct);
+    }
+  })();
+</script>
+</body>
+</html>
