@@ -67,7 +67,10 @@ rl.on('line', async (line) => {
   } catch {
     return; // ignore garbage rather than crash the transport
   }
-  if (msg.id === undefined) return; // notification; nothing to do
+  // Non-object payloads (e.g. a literal `null` line) parse fine but are not
+  // JSON-RPC messages; ignore them rather than crash the transport. Objects
+  // without an id are notifications; nothing to do for those either.
+  if (msg === null || typeof msg !== 'object' || msg.id === undefined) return;
   try {
     if (msg.method === 'initialize') {
       respond(msg.id, {
