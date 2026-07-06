@@ -24,6 +24,7 @@ export function parseCli(argv) {
       models: { type: 'string' },
       n: { type: 'string' },
       'dry-run': { type: 'boolean', default: false },
+      tasks: { type: 'string' },
     },
   });
   const dryRun = values['dry-run'];
@@ -34,7 +35,8 @@ export function parseCli(argv) {
   }
   const n = dryRun ? 1 : Number(values.n ?? 5);
   if (!Number.isInteger(n) || n < 1) throw new Error('--n must be a positive integer');
-  return { phase, models, dryRun, n };
+  const taskIds = values.tasks ? values.tasks.split(',').map((s) => s.trim()).filter(Boolean) : null;
+  return { phase, models, dryRun, n, taskIds };
 }
 
 const PROBE_HEADER = '| Model | echo | system | longOutput | tools | fence | toggle | status | notes |';
@@ -75,9 +77,9 @@ async function phase0(models) {
   console.log(`configs written to ${CONFIGS_DIR} — review each JSON before phase 1.`);
 }
 
-async function phase1(models, n) {
+async function phase1(models, n, taskIds = null) {
   const records = await runPhase1(
-    { models, tasksDir: TASKS_DIR, configsDir: CONFIGS_DIR, resultsDir: RESULTS_DIR, nRuns: n },
+    { models, tasksDir: TASKS_DIR, configsDir: CONFIGS_DIR, resultsDir: RESULTS_DIR, nRuns: n, taskIds },
     { log: console.log },
   );
   writeReports(records, RESULTS_DIR);
@@ -111,13 +113,13 @@ async function main() {
   const cli = parseCli(process.argv.slice(2));
   if (cli.dryRun) {
     await phase0(cli.models);
-    await phase1(cli.models, cli.n);
+    await phase1(cli.models, cli.n, cli.taskIds);
     phaseReport();
     console.log('dry run complete — inspect results/report.md before the full spend.');
     return;
   }
   if (cli.phase === '0') return phase0(cli.models);
-  if (cli.phase === '1') return phase1(cli.models, cli.n);
+  if (cli.phase === '1') return phase1(cli.models, cli.n, cli.taskIds);
   if (cli.phase === 'report') return phaseReport();
   throw new Error(`unknown --phase ${cli.phase}; use 0 | 1 | report or --dry-run`);
 }

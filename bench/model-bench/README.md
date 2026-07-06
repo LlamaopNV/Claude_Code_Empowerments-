@@ -23,6 +23,10 @@ network-disabled Docker containers.
 - Report: `node bench/model-bench/src/run.mjs --phase report`
 - Dry run (whole pipeline, one cheap model, n=1):
   `node bench/model-bench/src/run.mjs --dry-run`
+- Restrict phase 1 to specific tasks:
+  `node bench/model-bench/src/run.mjs --phase 1 --models <ids> --tasks 02-rate-limiter,06-event-emitter`
+- Validate every task's reference solution in Docker (run before trusting any scores):
+  `node bench/model-bench/src/validate-tasks.mjs [--tasks <ids>]`
 
 Raw request/response logs: `results/raw/<phase>/<model-slug>/<task>/<run>.json`.
 Human review step: eyeball each generated `configs/*.json` and 5 random

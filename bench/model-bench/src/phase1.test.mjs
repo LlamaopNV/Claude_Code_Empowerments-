@@ -189,3 +189,22 @@ test('runPhase1 sends the two-block closing line for blocks:2 tasks, standard li
   assert.match(prompts[1], /last two fenced code blocks in your reply are what get executed/);
   assert.doesNotMatch(prompts[1], /single fenced code block/);
 });
+
+test('runPhase1 taskIds filter runs only the named tasks', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  const second = join(tasksDir, '02-other');
+  mkdirSync(second, { recursive: true });
+  writeFileSync(join(second, 'task.json'), JSON.stringify({
+    id: '02-other', language: 'python', type: 'implement', difficulty: 'easy',
+    image: 'model-bench-python', solutionFile: 'solution.py',
+    testCommand: ['python', '/work/tests/run_tests.py'],
+  }));
+  writeFileSync(join(second, 'prompt.md'), 'Other.');
+  const chatImpl = async () => ({ content: '```python\nx = 1\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: {}, latencyMs: 1, httpStatus: 200 });
+  const gradeImpl = async () => ({ passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' });
+  const records = await runPhase1(
+    { models: ['test/model'], tasksDir, configsDir, resultsDir, nRuns: 1, taskIds: ['02-other'] },
+    { chatImpl, gradeImpl },
+  );
+  assert.deepEqual(records.map((r) => r.task), ['02-other']);
+});

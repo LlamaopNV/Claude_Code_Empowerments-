@@ -35,12 +35,12 @@ function writeRunLog(logFile, record) {
 }
 
 export async function runPhase1(
-  { models, tasksDir, configsDir, resultsDir, nRuns = 5 },
+  { models, tasksDir, configsDir, resultsDir, nRuns = 5, taskIds = null },
   { chatImpl, gradeImpl, log = () => {} } = {},
 ) {
   const chat = chatImpl ?? ((req, opts) => benchChat(req, opts));
   const grade = gradeImpl ?? ((args) => gradeSolution(args));
-  const tasks = loadTasks(tasksDir);
+  const tasks = loadTasks(tasksDir).filter((t) => !taskIds || taskIds.includes(t.id));
   const records = [];
 
   // Preflight: every model must have a usable config before any API call is

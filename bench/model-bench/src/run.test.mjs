@@ -6,13 +6,18 @@ import { join } from 'node:path';
 import { parseCli, upsertProbeRow, phaseReport } from './run.mjs';
 
 test('parseCli parses phases, model lists, n and dry-run', () => {
-  assert.deepEqual(parseCli(['--phase', '0', '--models', 'a/x,b/y']), { phase: '0', models: ['a/x', 'b/y'], dryRun: false, n: 5 });
-  assert.deepEqual(parseCli(['--phase', '1', '--models', 'a/x', '--n', '3']), { phase: '1', models: ['a/x'], dryRun: false, n: 3 });
-  assert.deepEqual(parseCli(['--dry-run']), { phase: null, models: ['meta/llama-3.3-70b-instruct'], dryRun: true, n: 1 });
+  assert.deepEqual(parseCli(['--phase', '0', '--models', 'a/x,b/y']), { phase: '0', models: ['a/x', 'b/y'], dryRun: false, n: 5, taskIds: null });
+  assert.deepEqual(parseCli(['--phase', '1', '--models', 'a/x', '--n', '3']), { phase: '1', models: ['a/x'], dryRun: false, n: 3, taskIds: null });
+  assert.deepEqual(parseCli(['--dry-run']), { phase: null, models: ['meta/llama-3.3-70b-instruct'], dryRun: true, n: 1, taskIds: null });
   assert.throws(() => parseCli(['--phase', '1']), /--models/);
-  assert.deepEqual(parseCli(['--phase', 'report']), { phase: 'report', models: [], dryRun: false, n: 5 });
+  assert.deepEqual(parseCli(['--phase', 'report']), { phase: 'report', models: [], dryRun: false, n: 5, taskIds: null });
   assert.throws(() => parseCli(['--phase', '1', '--models', 'a/x', '--n', 'abc']), /--n/);
   assert.throws(() => parseCli(['--phase', '1', '--models', 'a/x', '--n', '0']), /--n/);
+});
+
+test('parseCli parses --tasks into taskIds', () => {
+  const cli = parseCli(['--phase', '1', '--models', 'a/x', '--tasks', '02-rate-limiter, 06-event-emitter']);
+  assert.deepEqual(cli.taskIds, ['02-rate-limiter', '06-event-emitter']);
 });
 
 test('upsertProbeRow writes a header + separator on a fresh file', () => {
