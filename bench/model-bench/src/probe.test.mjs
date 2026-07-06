@@ -50,6 +50,9 @@ test('probeModel marks a model excluded when the echo probe errors', async () =>
   const { report } = await probeModel('dead/model', { chatImpl: impl });
   assert.equal(report.excluded, true);
   assert.match(report.probes.echo, /^error:/);
+  assert.equal(report.probes.system, 'skip');
+  assert.equal(report.probes.tools, 'skip');
+  assert.equal(report.probes.fence, 'skip');
 });
 
 test('probeModel detects reasoning models and native tools', async () => {
@@ -65,4 +68,22 @@ test('probeModel detects reasoning models and native tools', async () => {
   assert.equal(config.temperature, 0.6);
   assert.equal(config.max_tokens, 32768);
   assert.equal(config.tool_support, 'native');
+});
+
+test('probeModel applies a documented reasoning toggle when it changes reasoning presence', async () => {
+  const { impl, calls } = scriptedChat([
+    { content: 'PROBE_OK' },                                          // echo: no reasoning
+    { content: 'hi BLUE' },                                           // system
+    { content: '```python\nx\n```', finishReason: 'stop' },           // long output
+    { content: 'It is noon.' },                                       // tools -> none
+    { content: '```python\ndef add(a, b):\n    return a + b\n```' },  // fence
+    { content: '<think>hm</think>PROBE_OK' },                         // toggled echo: inline think appears
+  ]);
+  const { config, report } = await probeModel('nvidia/llama-3.3-nemotron-super-49b-v1.5', { chatImpl: impl });
+  assert.equal(report.probes.toggle, 'pass');
+  assert.equal(config.reasoning_toggle, 'detailed thinking on');
+  assert.equal(config.reasoning_field, 'inline_think');
+  assert.equal(config.temperature, 0.6);
+  assert.equal(calls.length, 6);
+  assert.equal(calls[5].messages[0].role, 'system');
 });

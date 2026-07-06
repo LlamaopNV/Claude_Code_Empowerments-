@@ -43,7 +43,7 @@ export function classifyToolSupport(result) {
 export async function probeModel(model, { chatImpl, env, fetchImpl } = {}) {
   const chat = chatImpl ?? ((req) => benchChat(req, { env, fetchImpl }));
   const ask = (messages, extra = {}) => chat({ model, messages, params: { ...PROBE_PARAMS, ...extra.params }, ...(extra.tools ? { tools: extra.tools } : {}) });
-  const probes = { echo: 'fail', system: 'fail', longOutput: 'fail', tools: 'fail', fence: 'fail', toggle: 'skip' };
+  const probes = { echo: 'skip', system: 'skip', longOutput: 'skip', tools: 'skip', fence: 'skip', toggle: 'skip' };
   const notes = [];
   const obs = {};
   let excluded = false;
@@ -119,22 +119,24 @@ export async function probeModel(model, { chatImpl, env, fetchImpl } = {}) {
   // 6. reasoning toggle (documented models only)
   const toggle = REASONING_TOGGLES[model] ?? null;
   let toggleWorks = false;
+  let toggledField = reasoningField;
   if (!excluded && toggle) {
     try {
       const r = await ask([
         { role: 'system', content: toggle },
         { role: 'user', content: 'Reply with exactly: PROBE_OK' },
       ]);
-      const toggled = classifyReasoningField(r);
-      toggleWorks = toggled !== reasoningField;
+      toggledField = classifyReasoningField(r);
+      toggleWorks = (toggledField !== 'none') !== (reasoningField !== 'none');
       probes.toggle = toggleWorks ? 'pass' : 'fail';
     } catch (e) {
       probes.toggle = `error:${e.message}`;
     }
   }
 
-  const config = defaultConfig(model, { reasoning: reasoningField !== 'none' || toggleWorks });
-  config.reasoning_field = toggleWorks && reasoningField === 'none' ? 'inline_think' : reasoningField;
+  const effectiveField = toggleWorks ? toggledField : reasoningField;
+  const config = defaultConfig(model, { reasoning: effectiveField !== 'none' });
+  config.reasoning_field = effectiveField;
   config.tool_support = toolSupport;
   config.reasoning_toggle = toggleWorks ? toggle : null;
   config.probe = { ...obs, probes, notes };
