@@ -82,8 +82,11 @@ export async function probeModel(model, { chatImpl, env, fetchImpl } = {}) {
         [{ role: 'user', content: 'Write one Python file containing 40 small, distinct, well-commented utility functions (about 2000 tokens of code). Output only the code in one fenced block.' }],
         { params: { max_tokens: 4096 } },
       );
-      obs.longOutput = { finishReason: r.finishReason, completionTokens: r.usage?.completion_tokens ?? null };
-      probes.longOutput = r.finishReason === 'stop' && (r.usage?.completion_tokens ?? 0) > 400 ? 'pass' : 'fail';
+      const tokens = r.usage?.completion_tokens ?? null;
+      const longEnough = tokens !== null ? tokens > 400 : (r.content?.length ?? 0) > 1600;
+      obs.longOutput = { finishReason: r.finishReason, completionTokens: tokens };
+      probes.longOutput = r.finishReason === 'stop' && longEnough ? 'pass' : 'fail';
+      if (tokens === null) notes.push('usage unavailable; long-output judged by content length');
       if (probes.longOutput === 'fail') excluded = true;
     } catch (e) {
       probes.longOutput = `error:${e.message}`;

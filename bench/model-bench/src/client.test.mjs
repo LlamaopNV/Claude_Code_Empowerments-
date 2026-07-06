@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync } from 'node:fs';
+import { mkdtempSync, readFileSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseSseText, benchChat } from './client.mjs';
@@ -65,6 +65,7 @@ test('benchChat sends explicit body, logs request+response, returns metrics', as
   assert.equal(logged.request.model, 'test/model');
   assert.equal(logged.response.content, 'hi');
   assert.deepEqual(logged.response.usage, { prompt_tokens: 3, completion_tokens: 1 });
+  assert.equal(logged.httpStatus, 200);
 });
 
 test('benchChat retries once without stream_options on a 400 that names it', async () => {
@@ -102,13 +103,38 @@ test('benchChat backs off 30s once on 429 then succeeds', async () => {
 
 test('benchChat throws on a 200 with an empty stream instead of returning nothing', async () => {
   const fetchImpl = async () => ({ ok: true, status: 200, text: async () => sse([{ choices: [{ delta: {} , finish_reason: 'stop' }] }]) });
+  const dir = mkdtempSync(join(tmpdir(), 'bench-'));
+  const logFile = join(dir, 'run.json');
   await assert.rejects(
     () => benchChat(
       { model: 'm', messages: [{ role: 'user', content: 'x' }], params: { temperature: 0, top_p: 1, max_tokens: 8 } },
-      { env: { NVIDIA_API_KEY: 'k' }, fetchImpl },
+      { env: { NVIDIA_API_KEY: 'k' }, fetchImpl, logFile },
     ),
     /empty stream/,
   );
+  // the raw log must survive the guard throw so the empty response is still inspectable
+  assert.ok(existsSync(logFile));
+  const logged = JSON.parse(readFileSync(logFile, 'utf8'));
+  assert.equal(logged.request.model, 'm');
+  assert.equal(logged.httpStatus, 200);
+});
+
+test('benchChat aborts a stalled request after timeoutMs and does not retry it', async () => {
+  let calls = 0;
+  const fetchImpl = (url, init) => {
+    calls++;
+    return new Promise((_resolve, reject) => {
+      init.signal.addEventListener('abort', () => reject(new Error('aborted by signal')));
+    });
+  };
+  await assert.rejects(
+    () => benchChat(
+      { model: 'm', messages: [{ role: 'user', content: 'x' }], params: { temperature: 0, top_p: 1, max_tokens: 8 } },
+      { env: { NVIDIA_API_KEY: 'k' }, fetchImpl, timeoutMs: 20 },
+    ),
+    /exceeded/,
+  );
+  assert.equal(calls, 1);
 });
 
 test('a stream_options 400 retry does not consume the 429 backoff budget', async () => {

@@ -51,7 +51,7 @@ function requireExplicit(params) {
 
 export async function benchChat(
   { model, messages, params, tools },
-  { env = process.env, fetchImpl = fetch, logFile = null, now = Date.now, sleepImpl } = {},
+  { env = process.env, fetchImpl = fetch, logFile = null, now = Date.now, sleepImpl, timeoutMs = 600_000 } = {},
 ) {
   requireExplicit(params);
   const key = getApiKey(env);
@@ -68,29 +68,44 @@ export async function benchChat(
   let retried429 = false;
   for (;;) {
     const started = now();
-    const res = await fetchImpl(`${BASE_URL}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${key}`,
-        Accept: 'text/event-stream',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    let res;
+    let bodyText;
+    try {
+      res = await fetchImpl(`${BASE_URL}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${key}`,
+          Accept: 'text/event-stream',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      bodyText = await res.text();
+    } catch (e) {
+      if (controller.signal.aborted) {
+        throw new NimError(`Request to "${model}" exceeded ${timeoutMs}ms and was aborted.`);
+      }
+      throw e;
+    } finally {
+      clearTimeout(timer);
+    }
+
     if (res.ok) {
-      const text = await res.text();
-      const parsed = parseSseText(text);
+      const parsed = parseSseText(bodyText);
       const result = { ...parsed, latencyMs: now() - started, httpStatus: res.status };
+      if (logFile) {
+        mkdirSync(dirname(logFile), { recursive: true });
+        writeFileSync(logFile, JSON.stringify({ request: body, response: parsed, latencyMs: result.latencyMs, httpStatus: res.status }, null, 2));
+      }
       if (!parsed.content && !parsed.reasoning && parsed.toolCalls.length === 0) {
         throw new NimError(`Model "${model}" returned an empty stream (0 tokens on all channels).`, { status: res.status });
       }
-      if (logFile) {
-        mkdirSync(dirname(logFile), { recursive: true });
-        writeFileSync(logFile, JSON.stringify({ request: body, response: parsed, latencyMs: result.latencyMs }, null, 2));
-      }
       return result;
     }
-    const errText = await res.text();
+    const errText = bodyText;
     if (res.status === 429 && !retried429) {
       retried429 = true;
       await sleep(RATE_LIMIT_BACKOFF_MS);

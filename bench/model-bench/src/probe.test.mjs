@@ -45,6 +45,21 @@ test('probeModel assembles a config for a plain non-reasoning model', async () =
   assert.equal(calls.length, 5);
 });
 
+test('probeModel: long-output probe falls back to content length when usage is absent', async () => {
+  const longContent = '```python\n' + 'x = 1\n'.repeat(300) + '```'; // > 1600 chars, no usage reported
+  const { impl } = scriptedChat([
+    { content: 'PROBE_OK' },                                     // echo
+    { content: 'hello BLUE' },                                   // system
+    { content: longContent, finishReason: 'stop', usage: null }, // long output, usage unavailable
+    { content: 'It is noon.' },                                  // tools → none
+    { content: '```python\ndef add(a, b):\n    return a + b\n```' }, // fence
+  ]);
+  const { report } = await probeModel('meta/llama-3.3-70b-instruct', { chatImpl: impl });
+  assert.equal(report.probes.longOutput, 'pass');
+  assert.equal(report.excluded, false);
+  assert.ok(report.notes.some((n) => /usage unavailable/.test(n)));
+});
+
 test('probeModel marks a model excluded when the echo probe errors', async () => {
   const { impl } = scriptedChat([new Error('boom 404')]);
   const { report } = await probeModel('dead/model', { chatImpl: impl });

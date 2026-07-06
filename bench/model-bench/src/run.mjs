@@ -1,7 +1,7 @@
 // CLI orchestrator. Thin glue only: parseCli is unit-tested, the pipeline
 // pieces are tested in their own modules, and --dry-run is the end-to-end
 // check (spec deliverable 5).
-import { appendFileSync, mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -37,15 +37,39 @@ export function parseCli(argv) {
   return { phase, models, dryRun, n };
 }
 
+const PROBE_HEADER = '| Model | echo | system | longOutput | tools | fence | toggle | status | notes |';
+const PROBE_SEP = '|---|---|---|---|---|---|---|---|---|';
+
+// Rewrites the report with a real markdown table: header + separator once,
+// one row per model, latest probe wins on rerun.
+export function upsertProbeRow(reportFile, model, row) {
+  let lines = [];
+  try {
+    lines = readFileSync(reportFile, 'utf8').split('\n').filter(Boolean);
+  } catch {
+    // file doesn't exist yet
+  }
+  lines = lines.filter((l) => !l.startsWith(`| ${model} |`));
+  if (lines[0] !== PROBE_HEADER) {
+    lines = [PROBE_HEADER, PROBE_SEP, ...lines];
+  }
+  lines.push(row);
+  writeFileSync(reportFile, lines.join('\n') + '\n');
+}
+
 async function phase0(models) {
   mkdirSync(RESULTS_DIR, { recursive: true });
   const reportFile = join(RESULTS_DIR, 'probe-report.md');
   for (const model of models) {
     console.log(`probing ${model}…`);
     const { config, report } = await probeModel(model);
-    saveConfig(config, CONFIGS_DIR);
+    if (report.excluded) {
+      console.log(`${model}: EXCLUDED (endpoint issues) — no config written`);
+    } else {
+      saveConfig(config, CONFIGS_DIR);
+    }
     const row = `| ${model} | ${['echo', 'system', 'longOutput', 'tools', 'fence', 'toggle'].map((k) => report.probes[k]).join(' | ')} | ${report.excluded ? 'EXCLUDED' : 'ok'} | ${report.notes.join('; ')} |`;
-    appendFileSync(reportFile, row + '\n');
+    upsertProbeRow(reportFile, model, row);
     console.log(row);
   }
   console.log(`configs written to ${CONFIGS_DIR} — review each JSON before phase 1.`);
@@ -60,9 +84,14 @@ async function phase1(models, n) {
   console.log(`wrote ${join(RESULTS_DIR, 'summary.csv')} and report.md (${records.length} runs)`);
 }
 
-function phaseReport() {
-  const records = JSON.parse(readFileSync(join(RESULTS_DIR, 'phase1-records.json'), 'utf8'));
-  writeReports(records, RESULTS_DIR);
+export function phaseReport(resultsDir = RESULTS_DIR) {
+  let records;
+  try {
+    records = JSON.parse(readFileSync(join(resultsDir, 'phase1-records.json'), 'utf8'));
+  } catch {
+    throw new Error('No phase1-records.json under results/ — run --phase 1 (or --dry-run) first.');
+  }
+  writeReports(records, resultsDir);
   console.log(`rebuilt reports from ${records.length} records`);
 }
 

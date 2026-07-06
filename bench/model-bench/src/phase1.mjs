@@ -43,8 +43,21 @@ export async function runPhase1(
   const tasks = loadTasks(tasksDir);
   const records = [];
 
+  // Preflight: every model must have a usable config before any API call is
+  // made. Excluded models (phase 0) get no config and must not enter phase 1.
+  const configs = new Map();
   for (const model of models) {
-    const cfg = loadConfig(model, configsDir);
+    try {
+      configs.set(model, loadConfig(model, configsDir));
+    } catch (e) {
+      throw new Error(
+        `No usable config for "${model}" (${e.message}). Run phase 0 first; excluded models get no config and cannot enter phase 1.`,
+      );
+    }
+  }
+
+  for (const model of models) {
+    const cfg = configs.get(model);
     const plan = samplingPlan(cfg, nRuns);
     const system = cfg.reasoning_toggle ?? cfg.system_prompt;
     for (const task of tasks) {
@@ -86,6 +99,10 @@ export async function runPhase1(
         log(`${model} ${task.id} run ${i}: ${record.failureClass ?? 'PASS'} (passRate=${record.passRate})`);
       }
     }
+    // Flush after each model so a crash mid-sweep loses at most one model's
+    // worth of work; the raw per-run logs cover finer-grained recovery.
+    mkdirSync(resultsDir, { recursive: true });
+    writeFileSync(join(resultsDir, 'phase1-records.json'), JSON.stringify(records, null, 2));
   }
   mkdirSync(resultsDir, { recursive: true });
   writeFileSync(join(resultsDir, 'phase1-records.json'), JSON.stringify(records, null, 2));

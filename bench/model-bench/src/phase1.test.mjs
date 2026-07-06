@@ -72,6 +72,40 @@ test('runPhase1 marks truncation and never grades a truncated sample', async () 
   assert.equal(records[0].passRate, null);
 });
 
+test('runPhase1 throws before any API call when a model has no usable config', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  const chatImpl = async () => {
+    throw new Error('must not be called');
+  };
+  await assert.rejects(
+    () => runPhase1({ models: ['no/such-model'], tasksDir, configsDir, resultsDir, nRuns: 1 }, { chatImpl }),
+    /Run phase 0 first/,
+  );
+});
+
+test('runPhase1 flushes phase1-records.json after each model completes, not just at the end', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  saveConfig(defaultConfig('test/model2', { reasoning: false }), configsDir);
+  const chatImpl = async () => ({ content: '```python\nx = 1\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: { completion_tokens: 1 }, latencyMs: 1, httpStatus: 200 });
+  const gradeImpl = async () => ({ passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' });
+  const recordCountsWhenModel2Starts = [];
+  const log = (msg) => {
+    if (msg.startsWith('test/model2 ')) {
+      const recordsFile = join(resultsDir, 'phase1-records.json');
+      recordCountsWhenModel2Starts.push(JSON.parse(readFileSync(recordsFile, 'utf8')).length);
+    }
+  };
+  const records = await runPhase1(
+    { models: ['test/model', 'test/model2'], tasksDir, configsDir, resultsDir, nRuns: 1 },
+    { chatImpl, gradeImpl, log },
+  );
+  // by the time model 2's first run is logged, model 1's flush must already be on disk
+  assert.deepEqual(recordCountsWhenModel2Starts, [1]);
+  assert.equal(records.length, 2);
+  const finalOnDisk = JSON.parse(readFileSync(join(resultsDir, 'phase1-records.json'), 'utf8'));
+  assert.equal(finalOnDisk.length, 2);
+});
+
 test('runPhase1 records API errors without aborting the sweep', async () => {
   const { tasksDir, configsDir, resultsDir } = makeFixture();
   let n = 0;
