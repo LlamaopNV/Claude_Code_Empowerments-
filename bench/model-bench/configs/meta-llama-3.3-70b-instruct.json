@@ -1,0 +1,28 @@
+{
+  "model": "meta/llama-3.3-70b-instruct",
+  "temperature": 0,
+  "top_p": 1,
+  "max_tokens": 8192,
+  "system_prompt": null,
+  "reasoning_toggle": null,
+  "reasoning_field": "none",
+  "tool_support": "native",
+  "probe": {
+    "reasoning_field": "none",
+    "systemPromptHonored": true,
+    "longOutput": {
+      "finishReason": "stop",
+      "completionTokens": 1376
+    },
+    "fenceDecision": "last_fence",
+    "probes": {
+      "echo": "pass",
+      "system": "pass",
+      "longOutput": "pass",
+      "tools": "pass",
+      "fence": "pass",
+      "toggle": "skip"
+    },
+    "notes": []
+  }
+}

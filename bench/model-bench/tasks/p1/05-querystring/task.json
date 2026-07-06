@@ -1,0 +1,9 @@
+{
+  "id": "05-querystring",
+  "language": "javascript",
+  "type": "implement",
+  "difficulty": "easy",
+  "image": "model-bench-node",
+  "solutionFile": "solution.mjs",
+  "testCommand": ["node", "/work/tests/run_tests.mjs"]
+}
