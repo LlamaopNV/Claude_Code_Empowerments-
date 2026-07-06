@@ -1,0 +1,9 @@
+{
+  "id": "11-go-worker-pool",
+  "language": "go",
+  "type": "implement",
+  "difficulty": "medium",
+  "image": "model-bench-go",
+  "solutionFile": "solution.go",
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}
