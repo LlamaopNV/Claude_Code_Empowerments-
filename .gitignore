@@ -30,3 +30,5 @@ results/*
 
 # Third-party plugins cloned locally for reference — not part of this marketplace
 External plugins/
+
+bench/model-bench/results/
