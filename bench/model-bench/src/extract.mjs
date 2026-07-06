@@ -3,7 +3,7 @@
 // is EXTRACTION_FAIL. Every decision is returned so callers can log it.
 
 const SOURCE_HINT =
-  /(^|\n)\s*(def |class |function\b|const |let |var |import |from |package |fn |#include|SELECT\b|CREATE\b|\/\/|#)/i;
+  /(^|\n)\s*(def |class |function[\s(]|const |let |var |import |from \S+ import |package |fn |#include|SELECT |CREATE )/;
 
 export function stripReasoning(text, reasoningField) {
   if (reasoningField !== 'inline_think') return text;
