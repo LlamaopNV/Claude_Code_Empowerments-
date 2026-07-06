@@ -81,6 +81,9 @@ export async function benchChat(
       const text = await res.text();
       const parsed = parseSseText(text);
       const result = { ...parsed, latencyMs: now() - started, httpStatus: res.status };
+      if (!parsed.content && !parsed.reasoning && parsed.toolCalls.length === 0) {
+        throw new NimError(`Model "${model}" returned an empty stream (0 tokens on all channels).`, { status: res.status });
+      }
       if (logFile) {
         mkdirSync(dirname(logFile), { recursive: true });
         writeFileSync(logFile, JSON.stringify({ request: body, response: parsed, latencyMs: result.latencyMs }, null, 2));

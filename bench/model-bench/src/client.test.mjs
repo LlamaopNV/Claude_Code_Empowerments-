@@ -100,6 +100,17 @@ test('benchChat backs off 30s once on 429 then succeeds', async () => {
   assert.equal(r.content, 'ok');
 });
 
+test('benchChat throws on a 200 with an empty stream instead of returning nothing', async () => {
+  const fetchImpl = async () => ({ ok: true, status: 200, text: async () => sse([{ choices: [{ delta: {} , finish_reason: 'stop' }] }]) });
+  await assert.rejects(
+    () => benchChat(
+      { model: 'm', messages: [{ role: 'user', content: 'x' }], params: { temperature: 0, top_p: 1, max_tokens: 8 } },
+      { env: { NVIDIA_API_KEY: 'k' }, fetchImpl },
+    ),
+    /empty stream/,
+  );
+});
+
 test('a stream_options 400 retry does not consume the 429 backoff budget', async () => {
   let n = 0;
   const slept = [];

@@ -27,9 +27,14 @@ export function parseCli(argv) {
     },
   });
   const dryRun = values['dry-run'];
+  const phase = dryRun ? null : (values.phase ?? null);
   const models = dryRun ? [DRY_RUN_MODEL] : (values.models ?? '').split(',').map((s) => s.trim()).filter(Boolean);
-  if (!dryRun && !models.length) throw new Error('--models a/x,b/y is required unless --dry-run');
-  return { phase: dryRun ? null : (values.phase ?? null), models, dryRun, n: dryRun ? 1 : Number(values.n ?? 5) };
+  if (!dryRun && phase !== 'report' && !models.length) {
+    throw new Error('--models a/x,b/y is required unless --dry-run or --phase report');
+  }
+  const n = dryRun ? 1 : Number(values.n ?? 5);
+  if (!Number.isInteger(n) || n < 1) throw new Error('--n must be a positive integer');
+  return { phase, models, dryRun, n };
 }
 
 async function phase0(models) {

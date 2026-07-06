@@ -7,4 +7,7 @@ test('parseCli parses phases, model lists, n and dry-run', () => {
   assert.deepEqual(parseCli(['--phase', '1', '--models', 'a/x', '--n', '3']), { phase: '1', models: ['a/x'], dryRun: false, n: 3 });
   assert.deepEqual(parseCli(['--dry-run']), { phase: null, models: ['meta/llama-3.3-70b-instruct'], dryRun: true, n: 1 });
   assert.throws(() => parseCli(['--phase', '1']), /--models/);
+  assert.deepEqual(parseCli(['--phase', 'report']), { phase: 'report', models: [], dryRun: false, n: 5 });
+  assert.throws(() => parseCli(['--phase', '1', '--models', 'a/x', '--n', 'abc']), /--n/);
+  assert.throws(() => parseCli(['--phase', '1', '--models', 'a/x', '--n', '0']), /--n/);
 });
