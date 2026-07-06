@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseCaseLines, classifyRun, gradeSolution } from './grade.mjs';
@@ -51,4 +51,27 @@ test('gradeSolution classifies a timeout', async () => {
   const r = await gradeSolution({ code: 'while True: pass', taskDir, task }, { runImpl, workRoot: mkdtempSync(join(tmpdir(), 'work-')) });
   assert.equal(r.failureClass, 'TIMEOUT');
   assert.equal(r.passRate, 0);
+});
+
+test('gradeSolution cleans up its staged workDir', async () => {
+  const taskDir = mkdtempSync(join(tmpdir(), 'task-'));
+  mkdirSync(join(taskDir, 'tests'));
+  writeFileSync(join(taskDir, 'tests', 'run_tests.py'), '');
+  const task = { id: 't1', language: 'python', image: 'model-bench-python', solutionFile: 'solution.py', testCommand: ['python', '/work/tests/run_tests.py'] };
+  const workRoot = mkdtempSync(join(tmpdir(), 'work-'));
+  await gradeSolution({ code: 'x = 1\n', taskDir, task }, { runImpl: async () => ({ output: 'CASE a PASS\n', timedOut: false }), workRoot });
+  assert.deepEqual(readdirSync(workRoot), []);
+});
+
+test('gradeSolution cleans up even when the runner throws, and propagates the error', async () => {
+  const taskDir = mkdtempSync(join(tmpdir(), 'task-'));
+  mkdirSync(join(taskDir, 'tests'));
+  writeFileSync(join(taskDir, 'tests', 'run_tests.py'), '');
+  const task = { id: 't1', language: 'python', image: 'model-bench-python', solutionFile: 'solution.py', testCommand: ['python', '/work/tests/run_tests.py'] };
+  const workRoot = mkdtempSync(join(tmpdir(), 'work-'));
+  await assert.rejects(
+    () => gradeSolution({ code: 'x', taskDir, task }, { runImpl: async () => { throw new Error('docker could not be spawned: ENOENT'); }, workRoot }),
+    /docker could not be spawned/,
+  );
+  assert.deepEqual(readdirSync(workRoot), []);
 });

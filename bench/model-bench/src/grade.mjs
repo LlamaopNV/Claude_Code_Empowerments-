@@ -2,7 +2,7 @@
 // disabled, CPU/memory capped, host-side kill. Grading contract: the task's
 // test command prints `CASE <name> PASS|FAIL` lines; nothing else is trusted.
 import { spawn } from 'node:child_process';
-import { mkdirSync, writeFileSync, cpSync } from 'node:fs';
+import { mkdirSync, writeFileSync, cpSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { randomUUID } from 'node:crypto';
@@ -23,15 +23,20 @@ export function classifyRun({ timedOut, cases }) {
 }
 
 function dockerRun({ args, timeoutMs, name }) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const child = spawn('docker', args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let output = '';
     let timedOut = false;
     const timer = setTimeout(() => {
       timedOut = true;
-      spawn('docker', ['kill', name], { stdio: 'ignore' }); // the CLI dying does not stop the container
+      const killer = spawn('docker', ['kill', name], { stdio: 'ignore' }); // the CLI dying does not stop the container
+      killer.on('error', () => {}); // best effort; --rm reaps the container
       child.kill('SIGKILL');
     }, timeoutMs);
+    child.on('error', (e) => {
+      clearTimeout(timer);
+      reject(new Error(`docker could not be spawned: ${e.message}`));
+    });
     child.stdout.on('data', (d) => (output += d));
     child.stderr.on('data', (d) => (output += d));
     child.on('close', () => {
@@ -55,7 +60,17 @@ export async function gradeSolution({ code, taskDir, task }, { runImpl, timeoutM
     task.image, ...task.testCommand,
   ];
   const run = runImpl ?? (() => dockerRun({ args, timeoutMs, name }));
-  const { output, timedOut } = await run({ args, workDir, timeoutMs, name });
+  let output;
+  let timedOut;
+  try {
+    ({ output, timedOut } = await run({ args, workDir, timeoutMs, name }));
+  } finally {
+    try {
+      rmSync(workDir, { recursive: true, force: true });
+    } catch {
+      // best effort: a dying container can hold the mount briefly on Windows
+    }
+  }
 
   const { cases, passed, total } = parseCaseLines(output);
   const failureClass = classifyRun({ timedOut, cases });
