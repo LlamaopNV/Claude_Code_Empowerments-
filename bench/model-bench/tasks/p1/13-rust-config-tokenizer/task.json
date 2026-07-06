@@ -1,0 +1,9 @@
+{
+  "id": "13-rust-config-tokenizer",
+  "language": "rust",
+  "type": "implement",
+  "difficulty": "medium",
+  "image": "model-bench-rust",
+  "solutionFile": "solution.rs",
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}
