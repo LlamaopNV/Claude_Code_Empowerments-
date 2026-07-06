@@ -120,3 +120,24 @@ test('runPhase1 records API errors without aborting the sweep', async () => {
   assert.match(records[0].error, /502/);
   assert.equal(records[1].failureClass, null);
 });
+
+test('records carry language/type from task.json, unknown when absent', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  // second task without language/type fields (legacy manifest)
+  const bare = join(tasksDir, '02-bare');
+  mkdirSync(bare, { recursive: true });
+  writeFileSync(join(bare, 'task.json'), JSON.stringify({
+    id: '02-bare', difficulty: 'easy', image: 'model-bench-python',
+    solutionFile: 'solution.py', testCommand: ['python', '/work/tests/run_tests.py'],
+  }));
+  writeFileSync(join(bare, 'prompt.md'), 'Write another thing.');
+  const chatImpl = async () => ({ content: '```python\nx = 1\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: {}, latencyMs: 1, httpStatus: 200 });
+  const gradeImpl = async () => ({ passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' });
+  const records = await runPhase1({ models: ['test/model'], tasksDir, configsDir, resultsDir, nRuns: 1 }, { chatImpl, gradeImpl });
+  const demo = records.find((r) => r.task === '01-demo');
+  assert.equal(demo.language, 'python');
+  assert.equal(demo.type, 'implement');
+  const legacy = records.find((r) => r.task === '02-bare');
+  assert.equal(legacy.language, 'unknown');
+  assert.equal(legacy.type, 'unknown');
+});

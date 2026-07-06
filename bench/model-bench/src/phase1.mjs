@@ -68,7 +68,7 @@ export async function runPhase1(
           { role: 'user', content: buildUserPrompt(task.prompt) },
         ];
         const logFile = join(resultsDir, 'raw', 'phase1', slugify(model), task.id, `run-${i}.json`);
-        const record = { model, task: task.id, run: i, params, finishReason: null, usage: null, latencyMs: null, extraction: null, failureClass: null, passed: null, total: null, passRate: null };
+        const record = { model, task: task.id, language: task.language ?? 'unknown', type: task.type ?? 'unknown', run: i, params, finishReason: null, usage: null, latencyMs: null, extraction: null, failureClass: null, passed: null, total: null, passRate: null };
         try {
           const r = await chat({ model, messages, params }, { logFile });
           record.finishReason = r.finishReason;

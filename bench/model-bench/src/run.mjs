@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { probeModel } from './probe.mjs';
 import { saveConfig } from './config.mjs';
-import { runPhase1 } from './phase1.mjs';
+import { loadTasks, runPhase1 } from './phase1.mjs';
 import { writeReports } from './report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -84,12 +84,24 @@ async function phase1(models, n) {
   console.log(`wrote ${join(RESULTS_DIR, 'summary.csv')} and report.md (${records.length} runs)`);
 }
 
-export function phaseReport(resultsDir = RESULTS_DIR) {
+export function phaseReport(resultsDir = RESULTS_DIR, tasksDir = TASKS_DIR) {
   let records;
   try {
     records = JSON.parse(readFileSync(join(resultsDir, 'phase1-records.json'), 'utf8'));
   } catch {
     throw new Error('No phase1-records.json under results/ — run --phase 1 (or --dry-run) first.');
+  }
+  // Legacy records (pre language/type) get the fields re-derived from the
+  // task bank so old raw data never needs migration.
+  let meta = new Map();
+  try {
+    meta = new Map(loadTasks(tasksDir).map((t) => [t.id, t]));
+  } catch {
+    // tasks dir unreadable: fall back to 'unknown' below
+  }
+  for (const r of records) {
+    r.language ??= meta.get(r.task)?.language ?? 'unknown';
+    r.type ??= meta.get(r.task)?.type ?? 'unknown';
   }
   writeReports(records, resultsDir);
   console.log(`rebuilt reports from ${records.length} records`);
