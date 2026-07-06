@@ -46,10 +46,18 @@ function dockerRun({ args, timeoutMs, name }) {
   });
 }
 
-export async function gradeSolution({ code, taskDir, task }, { runImpl, timeoutMs = 35_000, workRoot = join(tmpdir(), 'model-bench') } = {}) {
+export async function gradeSolution({ code, codes, taskDir, task }, { runImpl, timeoutMs = 35_000, workRoot = join(tmpdir(), 'model-bench') } = {}) {
   const workDir = join(workRoot, `${task.id}-${randomUUID().slice(0, 8)}`);
   mkdirSync(workDir, { recursive: true });
-  writeFileSync(join(workDir, task.solutionFile), code);
+  // Multi-file staging (polyglot tasks): task.solutionFiles lists the file
+  // names in prompt order; extracted codes are right-aligned onto it so the
+  // LAST fenced block always lands in the LAST file. Missing leading blocks
+  // stage as empty files — their hidden cases then FAIL normally.
+  const files = task.solutionFiles ?? [task.solutionFile];
+  const parts = codes ?? (code == null ? [] : [code]);
+  for (let i = 0; i < files.length; i++) {
+    writeFileSync(join(workDir, files[i]), parts[parts.length - files.length + i] ?? '');
+  }
   cpSync(join(taskDir, 'tests'), join(workDir, 'tests'), { recursive: true });
 
   const name = `mb-${randomUUID().slice(0, 12)}`;

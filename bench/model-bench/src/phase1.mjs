@@ -65,7 +65,7 @@ export async function runPhase1(
         const params = plan[i];
         const messages = [
           ...(system ? [{ role: 'system', content: system }] : []),
-          { role: 'user', content: buildUserPrompt(task.prompt) },
+          { role: 'user', content: buildUserPrompt(task.prompt, task.blocks ?? 1) },
         ];
         const logFile = join(resultsDir, 'raw', 'phase1', slugify(model), task.id, `run-${i}.json`);
         const record = { model, task: task.id, language: task.language ?? 'unknown', type: task.type ?? 'unknown', run: i, params, finishReason: null, usage: null, latencyMs: null, extraction: null, failureClass: null, passed: null, total: null, passRate: null };
@@ -77,13 +77,13 @@ export async function runPhase1(
           if (r.finishReason === 'length') {
             record.failureClass = 'TRUNCATED'; // excluded from correctness scoring
           } else {
-            const ex = extractSolution(r.content || r.reasoning, cfg.reasoning_field);
+            const ex = extractSolution(r.content || r.reasoning, cfg.reasoning_field, { blockCount: task.blocks ?? 1 });
             record.extraction = ex.decision;
             if (ex.code === null) {
               record.failureClass = 'EXTRACTION_FAIL';
               record.passRate = 0;
             } else {
-              const g = await grade({ code: ex.code, taskDir: task.dir, task });
+              const g = await grade({ code: ex.code, codes: ex.codes, taskDir: task.dir, task });
               record.failureClass = g.failureClass;
               record.passed = g.passed;
               record.total = g.total;
