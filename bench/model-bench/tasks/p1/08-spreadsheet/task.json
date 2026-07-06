@@ -1,0 +1,9 @@
+{
+  "id": "08-spreadsheet",
+  "language": "javascript",
+  "type": "implement",
+  "difficulty": "hard",
+  "image": "model-bench-node:24",
+  "solutionFile": "solution.cjs",
+  "testCommand": ["node", "/work/tests/run_tests.cjs"]
+}
