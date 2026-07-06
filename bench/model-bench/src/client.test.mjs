@@ -82,3 +82,39 @@ test('benchChat retries once without stream_options on a 400 that names it', asy
   assert.equal(n, 2);
   assert.equal(r.content, 'ok');
 });
+
+test('benchChat backs off 30s once on 429 then succeeds', async () => {
+  let n = 0;
+  const slept = [];
+  const fetchImpl = async () => {
+    n++;
+    if (n === 1) return { ok: false, status: 429, text: async () => 'rate limited' };
+    return { ok: true, status: 200, text: async () => sse([{ choices: [{ delta: { content: 'ok' }, finish_reason: 'stop' }] }]) };
+  };
+  const r = await benchChat(
+    { model: 'm', messages: [{ role: 'user', content: 'x' }], params: { temperature: 0, top_p: 1, max_tokens: 8 } },
+    { env: { NVIDIA_API_KEY: 'k' }, fetchImpl, sleepImpl: async (ms) => slept.push(ms) },
+  );
+  assert.equal(n, 2);
+  assert.deepEqual(slept, [30000]);
+  assert.equal(r.content, 'ok');
+});
+
+test('a stream_options 400 retry does not consume the 429 backoff budget', async () => {
+  let n = 0;
+  const slept = [];
+  const fetchImpl = async (url, init) => {
+    n++;
+    const body = JSON.parse(init.body);
+    if (body.stream_options) return { ok: false, status: 400, text: async () => 'unknown field stream_options' };
+    if (n === 2) return { ok: false, status: 429, text: async () => 'rate limited' };
+    return { ok: true, status: 200, text: async () => sse([{ choices: [{ delta: { content: 'ok' }, finish_reason: 'stop' }] }]) };
+  };
+  const r = await benchChat(
+    { model: 'm', messages: [{ role: 'user', content: 'x' }], params: { temperature: 0, top_p: 1, max_tokens: 8 } },
+    { env: { NVIDIA_API_KEY: 'k' }, fetchImpl, sleepImpl: async (ms) => slept.push(ms) },
+  );
+  assert.equal(n, 3);
+  assert.deepEqual(slept, [30000]);
+  assert.equal(r.content, 'ok');
+});

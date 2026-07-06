@@ -65,7 +65,8 @@ export async function benchChat(
   };
 
   let body = { ...base, stream_options: { include_usage: true } };
-  for (let attempt = 0; ; attempt++) {
+  let retried429 = false;
+  for (;;) {
     const started = now();
     const res = await fetchImpl(`${BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -87,7 +88,8 @@ export async function benchChat(
       return result;
     }
     const errText = await res.text();
-    if (res.status === 429 && attempt === 0) {
+    if (res.status === 429 && !retried429) {
+      retried429 = true;
       await sleep(RATE_LIMIT_BACKOFF_MS);
       continue;
     }
