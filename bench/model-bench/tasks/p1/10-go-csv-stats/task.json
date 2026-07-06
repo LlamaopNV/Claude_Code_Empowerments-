@@ -1,0 +1,9 @@
+{
+  "id": "10-go-csv-stats",
+  "language": "go",
+  "type": "implement",
+  "difficulty": "easy",
+  "image": "model-bench-go",
+  "solutionFile": "solution.go",
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}
