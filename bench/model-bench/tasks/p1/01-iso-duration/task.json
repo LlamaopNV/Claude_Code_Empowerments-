@@ -3,7 +3,7 @@
   "language": "python",
   "type": "implement",
   "difficulty": "easy",
-  "image": "model-bench-python",
+  "image": "model-bench-python:3.14",
   "solutionFile": "solution.py",
   "testCommand": ["python", "/work/tests/run_tests.py"]
 }

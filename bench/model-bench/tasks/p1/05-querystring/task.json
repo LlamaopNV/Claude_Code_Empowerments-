@@ -3,7 +3,7 @@
   "language": "javascript",
   "type": "implement",
   "difficulty": "easy",
-  "image": "model-bench-node",
+  "image": "model-bench-node:24",
   "solutionFile": "solution.mjs",
   "testCommand": ["node", "/work/tests/run_tests.mjs"]
 }

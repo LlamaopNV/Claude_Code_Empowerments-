@@ -7,9 +7,12 @@ network-disabled Docker containers.
 ## Prereqs
 
 - `NVIDIA_API_KEY` in the environment (`/nim-setup` in Claude Code).
-- Docker running. Build the grading images once:
-  `docker build -t model-bench-python -f bench/model-bench/docker/python.Dockerfile bench/model-bench/docker`
-  `docker build -t model-bench-node -f bench/model-bench/docker/node.Dockerfile bench/model-bench/docker`
+- Docker running. Build the grading images once (all base images digest-pinned):
+
+      cd bench/model-bench/docker
+      docker build -t model-bench-python:3.14 -f python.Dockerfile .
+      docker build -t model-bench-node:24 -f node.Dockerfile .
+      for f in go rust sqlite ts polyglot; do docker build -t "model-bench-$f" -f "$f.Dockerfile" .; done
 
 ## Usage (from repo root)
 
