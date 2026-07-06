@@ -1,0 +1,9 @@
+{
+  "id": "03-template-render-fix",
+  "language": "python",
+  "type": "bug fix",
+  "difficulty": "medium",
+  "image": "model-bench-python:3.14",
+  "solutionFile": "solution.py",
+  "testCommand": ["python", "/work/tests/run_tests.py"]
+}
