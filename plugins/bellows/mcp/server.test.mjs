@@ -45,11 +45,15 @@ test('MCP handshake, tools/list, and keyless tool call', async () => {
       clientInfo: { name: 'test', version: '0' },
     });
     assert.equal(init.result.serverInfo.name, 'bellows');
+    assert.equal(init.result.serverInfo.version, '0.2.0');
     notify('notifications/initialized');
 
     const list = await request('tools/list');
     const names = list.result.tools.map((t) => t.name).sort();
     assert.deepEqual(names, ['nim_chat', 'nim_list_models']);
+    const chatTool = list.result.tools.find((t) => t.name === 'nim_chat');
+    assert.match(chatTool.description, /profile/i);
+    assert.equal(chatTool.inputSchema.properties.max_tokens.type, 'integer');
 
     const call = await request('tools/call', { name: 'nim_list_models', arguments: {} });
     assert.equal(call.result.isError, true);

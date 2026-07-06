@@ -13,7 +13,7 @@ verify and expensive to produce.
 - **Bulk mechanical transforms.** Rename/reshape 40 similar files? Send one exemplar and the
   rule, apply the pattern locally, verify with tests.
 - **Second opinions.** Stuck on a bug or a design choice? Describe it to a reasoning model
-  (deepseek-ai/deepseek-r1) and compare its take with your own. Disagreement is signal.
+  (nvidia/nemotron-3-ultra-550b-a55b) and compare its take with your own. Disagreement is signal.
 - **Parallel drafts.** Need three candidate implementations to compare? Ask a coding model for
   drafts while you write the one you believe in.
 - **Big-input summarization.** Logs, diffs, or docs too large to read inline: pipe them in and
@@ -32,14 +32,19 @@ verify and expensive to produce.
 
 Two equivalent surfaces (same lib underneath):
 
-- **MCP tools** (auto-started with this plugin): `nim_chat(prompt, model?, system?)`,
+- **MCP tools** (auto-started with this plugin): `nim_chat(prompt, model?, system?, max_tokens?)`,
   `nim_list_models()`.
 - **CLI** for piped input:
   `node "${CLAUDE_PLUGIN_ROOT}/scripts/nim.mjs" chat --model <id> "prompt"` or
   `cat big.log | node "${CLAUDE_PLUGIN_ROOT}/scripts/nim.mjs" chat "summarize the errors"`.
 
-Model choice: default (qwen/qwen3-coder-480b-a35b-instruct) for code; deepseek-ai/deepseek-r1
-for deliberate reasoning; run /nim-models for the live annotated inventory.
+Either surface resolves the model's own invocation profile (its published parameter defaults)
+before calling, so any catalog id can be used without knowing its quirks. A reply prefixed
+with a reasoning-channel note means the model never produced a final answer - treat it as
+its working notes, not a conclusion.
+
+Model choice: default (openai/gpt-oss-120b) for code; nvidia/nemotron-3-ultra-550b-a55b for
+deliberate reasoning; run /nim-models for the live annotated inventory.
 
 ## Etiquette
 

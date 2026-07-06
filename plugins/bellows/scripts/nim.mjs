@@ -6,7 +6,7 @@ import { parseArgs } from 'node:util';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { listModels, chat, NimError, DEFAULT_MODEL } from './nim-lib.mjs';
+import { listModels, chat, getModelProfile, NimError, DEFAULT_MODEL } from './nim-lib.mjs';
 
 const CACHE_FILE = join(tmpdir(), 'bellows-models-cache.json');
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -28,11 +28,12 @@ function cachedListModels() {
 const USAGE = `Usage:
   nim.mjs verify
   nim.mjs models [--json]
-  nim.mjs chat [--model <id>] [--system <text>] [--] <prompt...>   (prompt may be piped on stdin)`;
+  nim.mjs profile [<model-id>]
+  nim.mjs chat [--model <id>] [--system <text>] [--max-tokens <n>] [--] <prompt...>   (prompt may be piped on stdin)`;
 
 export function parseCliArgs(argv) {
   const [command, ...rest] = argv;
-  if (!['verify', 'models', 'chat'].includes(command)) {
+  if (!['verify', 'models', 'profile', 'chat'].includes(command)) {
     throw new Error(`Unknown command: ${command ?? '(none)'}\n${USAGE}`);
   }
   const { values, positionals } = parseArgs({
@@ -41,14 +42,24 @@ export function parseCliArgs(argv) {
       model: { type: 'string' },
       system: { type: 'string' },
       json: { type: 'boolean', default: false },
+      'max-tokens': { type: 'string' },
     },
     allowPositionals: true,
   });
+  let maxTokens;
+  if (values['max-tokens'] !== undefined) {
+    maxTokens = Number(values['max-tokens']);
+    if (!Number.isInteger(maxTokens) || maxTokens <= 0) {
+      throw new Error(`--max-tokens must be a positive integer, got: ${values['max-tokens']}\n${USAGE}`);
+    }
+  }
   return {
     command,
-    model: values.model ?? DEFAULT_MODEL,
+    // `profile` names its model as a positional; the other commands use --model.
+    model: (command === 'profile' ? positionals[0] : values.model) ?? DEFAULT_MODEL,
     system: values.system,
     json: values.json,
+    maxTokens,
     prompt: positionals.join(' '),
   };
 }
@@ -79,10 +90,27 @@ async function main() {
     console.log(args.json ? JSON.stringify(models, null, 2) : models.join('\n'));
     return;
   }
+  if (args.command === 'profile') {
+    const { params, source } = await getModelProfile(args.model);
+    console.log(JSON.stringify({ model: args.model, source, params }, null, 2));
+    if (source === 'fallback') {
+      console.error('No profile could be resolved; calls to this model will use generic parameters.');
+    }
+    return;
+  }
   // chat
   const prompt = args.prompt || (await readStdin());
   if (!prompt) throw new Error(`chat needs a prompt (argument or stdin).\n${USAGE}`);
-  console.log(await chat({ model: args.model, system: args.system, prompt }));
+  const { text, fromReasoning } = await chat({
+    model: args.model,
+    system: args.system,
+    prompt,
+    maxTokens: args.maxTokens,
+  });
+  if (fromReasoning) {
+    console.error('[bellows] model produced no final answer; showing its reasoning channel instead');
+  }
+  console.log(text);
 }
 
 const isDirectRun = process.argv[1] && import.meta.url === new URL(`file:///${process.argv[1].replace(/\\/g, '/')}`).href;
