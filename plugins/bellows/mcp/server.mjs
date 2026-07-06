@@ -16,6 +16,8 @@ const TOOLS = [
     name: 'nim_chat',
     description:
       `Send a prompt to an NVIDIA-hosted model and return the completion text. Defaults to ${DEFAULT_MODEL}. ` +
+      "Each model is invoked with its own published profile (the parameter defaults from the model's " +
+      'build.nvidia.com page), streamed, with reasoning-only replies surfaced instead of dropped. ' +
       'Treat the output as a draft to verify, not ground truth. Requires NVIDIA_API_KEY.',
     inputSchema: {
       type: 'object',
@@ -23,6 +25,10 @@ const TOOLS = [
         prompt: { type: 'string', description: 'The user prompt.' },
         model: { type: 'string', description: `Model id (default ${DEFAULT_MODEL}).` },
         system: { type: 'string', description: 'Optional system prompt.' },
+        max_tokens: {
+          type: 'integer',
+          description: "Optional completion-token cap; overrides the model profile's default.",
+        },
       },
       required: ['prompt'],
       additionalProperties: false,
@@ -41,7 +47,17 @@ async function callTool(name, args) {
       return textResult(models.join('\n'));
     }
     if (name === 'nim_chat') {
-      return textResult(await chat({ model: args.model, system: args.system, prompt: args.prompt }));
+      const { text, fromReasoning } = await chat({
+        model: args.model,
+        system: args.system,
+        prompt: args.prompt,
+        maxTokens: args.max_tokens,
+      });
+      return textResult(
+        fromReasoning
+          ? `[note: the model produced no final answer; this is its reasoning channel]\n${text}`
+          : text,
+      );
     }
     return textResult(`Unknown tool: ${name}`, true);
   } catch (err) {
@@ -76,7 +92,7 @@ rl.on('line', async (line) => {
       respond(msg.id, {
         protocolVersion: msg.params?.protocolVersion ?? '2025-06-18',
         capabilities: { tools: {} },
-        serverInfo: { name: 'bellows', version: '0.1.0' },
+        serverInfo: { name: 'bellows', version: '0.2.0' },
       });
     } else if (msg.method === 'tools/list') {
       respond(msg.id, { tools: TOOLS });

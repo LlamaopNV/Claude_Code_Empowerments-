@@ -13,7 +13,7 @@ playbook for wiring the same models into your own apps.
 |---|---|
 | `/nim-setup` | Guided account + API key creation, live verification, persists `NVIDIA_API_KEY`. Idempotent; doubles as a health check. |
 | `/nim-models` | Live inventory from `/v1/models`, annotated with what each model is good for. |
-| `/nim "prompt"` | One-shot delegation to a hosted coding model (`--model <id>` to override). |
+| `/nim "prompt"` | One-shot delegation to a hosted coding model (`--model <id>` to override). Every call resolves the model's own invocation profile first. |
 | `nim_chat`, `nim_list_models` | MCP tools, auto-started with the plugin. No manual server management. |
 | `delegating-to-nim` skill | Teaches Claude when offloading pays (bulk transforms, second opinions, parallel drafts, big-input summarization) and the honesty rules. |
 | `nim-integration-playbook` skill | The instructor: OpenAI-SDK-pointed-at-NVIDIA patterns for JS/TS, Python, raw HTTP, streaming, model choice, key hygiene. |
@@ -28,7 +28,15 @@ playbook for wiring the same models into your own apps.
 
 - One zero-dependency client lib (`scripts/nim-lib.mjs`) backs both the CLI
   (`scripts/nim.mjs`) and the MCP server (`mcp/server.mjs`).
-- No key material or prompt content ever touches disk.
+- **Per-model invocation profiles.** Each `build.nvidia.com/<model-id>` page embeds the
+  model's request schema with recommended defaults (temperature, top_p, max_tokens, and
+  extras like `reasoning_effort`). Before every chat, bellows resolves that profile (24h
+  temp-dir cache, silent fallback to generic parameters) so each model is called the way
+  NVIDIA's own playground calls it. Inspect with `nim.mjs profile <model-id>`.
+- **Streaming by default.** Responses stream (long generations survive; non-streaming dies
+  at ~300s), the reasoning channel is captured separately, and a model that streams zero
+  tokens gets one non-streaming retry.
+- No key material or prompt content ever touches disk (profiles cached are parameters only).
 - Cloud-only v1: everything talks to `https://integrate.api.nvidia.com/v1`. Local NIM
   containers are out of scope for now.
 

@@ -22,15 +22,18 @@ never present a curated row the endpoint did not return.
 
 | Model id | Good for |
 |---|---|
-| qwen/qwen3-coder-480b-a35b-instruct | Best default for code generation and bulk transforms; large context |
-| deepseek-ai/deepseek-v3.1 | Strong general coding, cheap second opinions |
-| deepseek-ai/deepseek-r1 | Deliberate reasoning; tricky-bug analysis (slow, verbose) |
-| moonshotai/kimi-k2-instruct | Agentic/tool-style tasks, long context |
+| openai/gpt-oss-120b | Default: fastest model that still aced the 2026-07 coding bakeoff |
+| deepseek-ai/deepseek-v4-pro | Strong general coding, thorough second opinions |
+| deepseek-ai/deepseek-v4-flash | Cheap second opinions; thinks a lot relative to its final answer |
+| z-ai/glm-5.2 | Solid general coding alternative |
+| nvidia/nemotron-3-ultra-550b-a55b | Deliberate reasoning and tricky-bug analysis (slow; thinking-budget model) |
+| moonshotai/kimi-k2.6 | Agentic/tool-style tasks, long context |
 | nvidia/llama-3.3-nemotron-super-49b-v1.5 | Fast general assistant work |
 | meta/llama-3.3-70b-instruct | Reliable general baseline |
 
 (The table is curated; when the live list contains an obviously newer flagship coding model,
-say so rather than pretending the table is complete.)
+say so rather than pretending the table is complete. A few catalog ids are listed by
+`/v1/models` but 404 on invocation — the chat surfaces report that plainly when it happens.)
 
 ## 3. Remind the delegation path
 

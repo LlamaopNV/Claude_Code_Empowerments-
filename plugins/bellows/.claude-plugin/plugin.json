@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "bellows",
   "displayName": "Bellows",
-  "version": "0.1.0",
-  "description": "Pump free NVIDIA build.nvidia.com inference into your forge: guided API-key setup, live model inventory, delegation of coding grunt-work to NVIDIA-hosted models (Qwen-Coder, DeepSeek, Nemotron), and an integration playbook for wiring those models into your own apps.",
+  "version": "0.2.0",
+  "description": "Pump free NVIDIA build.nvidia.com inference into your forge: guided API-key setup, live model inventory, delegation of coding grunt-work to NVIDIA-hosted models (gpt-oss, DeepSeek, Nemotron) — each invoked with its own published parameter profile — and an integration playbook for wiring those models into your own apps.",
   "author": {
     "name": "LlamaopNV",
     "email": "llama.op@gmail.com"

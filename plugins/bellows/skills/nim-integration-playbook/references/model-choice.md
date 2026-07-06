@@ -5,11 +5,16 @@ before hardcoding a default; NVIDIA rotates the catalog.
 
 | Need | Start with | Why |
 |---|---|---|
-| Code generation / refactoring feature | qwen/qwen3-coder-480b-a35b-instruct | Strongest hosted coding model; large context |
+| Code generation / refactoring feature | openai/gpt-oss-120b | Fast and accurate on coding tasks (2026-07 bakeoff winner) |
 | General chat / assistant | meta/llama-3.3-70b-instruct | Reliable, fast, cheap on credits |
-| Deep reasoning (analysis, planning) | deepseek-ai/deepseek-r1 | Deliberate chain-of-thought quality |
-| Long-context ingestion | moonshotai/kimi-k2-instruct | Long context, agentic style |
+| Deep reasoning (analysis, planning) | nvidia/nemotron-3-ultra-550b-a55b | Deliberate thinking-budget model (slow; stream it) |
+| Long-context ingestion | moonshotai/kimi-k2.6 | Long context, agentic style |
 | Low latency, high volume | nvidia/llama-3.3-nemotron-super-49b-v1.5 | Small enough to be snappy |
+
+Each model's build.nvidia.com page embeds its recommended request parameters (temperature,
+top_p, max_tokens, reasoning knobs). Match them in your own integration - reasoning models
+in particular degrade badly when called with generic parameters. Prefer streaming; several
+models emit a separate `reasoning_content` delta channel your client should not discard.
 
 Rules of thumb:
 - Ship with ONE default and make it configurable (env var), then let usage argue for changes.

@@ -128,8 +128,8 @@
       "name": "bellows",
       "displayName": "Bellows",
       "source": "./plugins/bellows",
-      "description": "Pump free NVIDIA build.nvidia.com inference into your forge: guided API-key setup, live model inventory, delegation of coding grunt-work to NVIDIA-hosted models, and an integration playbook for wiring those models into your own apps.",
-      "version": "0.1.0",
+      "description": "Pump free NVIDIA build.nvidia.com inference into your forge: guided API-key setup, live model inventory, delegation of coding grunt-work to NVIDIA-hosted models — each invoked with its own published parameter profile — and an integration playbook for wiring those models into your own apps.",
+      "version": "0.2.0",
       "author": {
         "name": "LlamaopNV",
         "email": "llama.op@gmail.com"
