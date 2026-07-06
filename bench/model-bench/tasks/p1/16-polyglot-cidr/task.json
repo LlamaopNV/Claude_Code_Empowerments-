@@ -1,0 +1,11 @@
+{
+  "id": "16-polyglot-cidr",
+  "language": "polyglot",
+  "type": "spec-following",
+  "difficulty": "hard",
+  "image": "model-bench-polyglot",
+  "solutionFile": "solution.go",
+  "solutionFiles": ["solution.py", "solution.go"],
+  "blocks": 2,
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}
