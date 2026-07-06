@@ -1,0 +1,9 @@
+{
+  "id": "15-orders-refactor",
+  "language": "python",
+  "type": "refactor",
+  "difficulty": "medium",
+  "image": "model-bench-python:3.14",
+  "solutionFile": "solution.py",
+  "testCommand": ["python", "/work/tests/run_tests.py"]
+}
