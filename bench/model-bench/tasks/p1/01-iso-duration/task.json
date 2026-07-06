@@ -1,0 +1,9 @@
+{
+  "id": "01-iso-duration",
+  "language": "python",
+  "type": "implement",
+  "difficulty": "easy",
+  "image": "model-bench-python",
+  "solutionFile": "solution.py",
+  "testCommand": ["python", "/work/tests/run_tests.py"]
+}
