@@ -1,0 +1,9 @@
+{
+  "id": "12-go-hub-fix",
+  "language": "go",
+  "type": "bug fix",
+  "difficulty": "hard",
+  "image": "model-bench-go",
+  "solutionFile": "solution.go",
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}
