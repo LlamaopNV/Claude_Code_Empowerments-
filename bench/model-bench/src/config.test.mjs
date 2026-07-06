@@ -40,3 +40,17 @@ test('samplingPlan: greedy gets 1 deterministic + 4 at temp 0.2; sampled gets n 
   assert.equal(sampled.length, 5);
   assert.ok(sampled.every((p) => p.temperature === 0.6 && p.top_p === 0.95));
 });
+
+test('validateConfig rejects NaN and out-of-range numbers, listing every problem', () => {
+  const cfg = defaultConfig('m', { reasoning: false });
+  assert.throws(() => validateConfig({ ...cfg, temperature: NaN }), /temperature/);
+  assert.throws(() => validateConfig({ ...cfg, temperature: 3 }), /temperature/);
+  assert.throws(() => validateConfig({ ...cfg, top_p: 5 }), /top_p/);
+  assert.throws(() => validateConfig({ ...cfg, top_p: 0 }), /top_p/);
+  assert.throws(() => validateConfig({ ...cfg, max_tokens: -100 }), /max_tokens/);
+  assert.throws(() => validateConfig({ ...cfg, max_tokens: 1.5 }), /max_tokens/);
+  assert.throws(
+    () => validateConfig({ ...cfg, temperature: NaN, top_p: 5 }),
+    (e) => /temperature/.test(e.message) && /top_p/.test(e.message),
+  );
+});

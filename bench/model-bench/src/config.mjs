@@ -16,9 +16,12 @@ export function defaultConfig(model, { reasoning = false } = {}) {
 export function validateConfig(cfg) {
   const problems = [];
   if (!cfg.model) problems.push('model is required');
-  for (const k of ['temperature', 'top_p', 'max_tokens']) {
-    if (typeof cfg[k] !== 'number') problems.push(`${k} must be a number`);
-  }
+  if (typeof cfg.temperature !== 'number' || Number.isNaN(cfg.temperature) || cfg.temperature < 0 || cfg.temperature > 2)
+    problems.push('temperature must be a number in [0, 2]');
+  if (typeof cfg.top_p !== 'number' || Number.isNaN(cfg.top_p) || cfg.top_p <= 0 || cfg.top_p > 1)
+    problems.push('top_p must be a number in (0, 1]');
+  if (!Number.isInteger(cfg.max_tokens) || cfg.max_tokens <= 0)
+    problems.push('max_tokens must be a positive integer');
   if (!REASONING_FIELDS.has(cfg.reasoning_field)) problems.push(`reasoning_field must be one of ${[...REASONING_FIELDS].join('|')}`);
   if (!TOOL_SUPPORT.has(cfg.tool_support)) problems.push(`tool_support must be one of ${[...TOOL_SUPPORT].join('|')}`);
   if (problems.length) throw new Error(`Invalid config for ${cfg.model ?? '<unknown>'}: ${problems.join('; ')}`);
