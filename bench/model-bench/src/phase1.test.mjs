@@ -120,3 +120,91 @@ test('runPhase1 records API errors without aborting the sweep', async () => {
   assert.match(records[0].error, /502/);
   assert.equal(records[1].failureClass, null);
 });
+
+test('records carry language/type from task.json, unknown when absent', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  // second task without language/type fields (legacy manifest)
+  const bare = join(tasksDir, '02-bare');
+  mkdirSync(bare, { recursive: true });
+  writeFileSync(join(bare, 'task.json'), JSON.stringify({
+    id: '02-bare', difficulty: 'easy', image: 'model-bench-python',
+    solutionFile: 'solution.py', testCommand: ['python', '/work/tests/run_tests.py'],
+  }));
+  writeFileSync(join(bare, 'prompt.md'), 'Write another thing.');
+  const chatImpl = async () => ({ content: '```python\nx = 1\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: {}, latencyMs: 1, httpStatus: 200 });
+  const gradeImpl = async () => ({ passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' });
+  const records = await runPhase1({ models: ['test/model'], tasksDir, configsDir, resultsDir, nRuns: 1 }, { chatImpl, gradeImpl });
+  const demo = records.find((r) => r.task === '01-demo');
+  assert.equal(demo.language, 'python');
+  assert.equal(demo.type, 'implement');
+  const legacy = records.find((r) => r.task === '02-bare');
+  assert.equal(legacy.language, 'unknown');
+  assert.equal(legacy.type, 'unknown');
+});
+
+test('runPhase1 honors task.blocks: multi-block extraction reaches the grader as codes', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  const poly = join(tasksDir, '16-poly');
+  mkdirSync(poly, { recursive: true });
+  writeFileSync(join(poly, 'task.json'), JSON.stringify({
+    id: '16-poly', language: 'polyglot', type: 'spec-following', difficulty: 'hard',
+    image: 'model-bench-polyglot', solutionFile: 'solution.go', blocks: 2,
+    solutionFiles: ['solution.py', 'solution.go'], testCommand: ['sh', '/work/tests/run_tests.sh'],
+  }));
+  writeFileSync(join(poly, 'prompt.md'), 'Implement it twice.');
+  const chatImpl = async () => ({ content: 'Python:\n```python\nPY\n```\nGo:\n```go\nGO\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: {}, latencyMs: 1, httpStatus: 200 });
+  const seen = [];
+  const gradeImpl = async ({ code, codes, task }) => {
+    seen.push({ code, codes, id: task.id });
+    return { passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' };
+  };
+  await runPhase1({ models: ['test/model'], tasksDir, configsDir, resultsDir, nRuns: 1 }, { chatImpl, gradeImpl });
+  const polyCall = seen.find((s) => s.id === '16-poly');
+  assert.deepEqual(polyCall.codes, ['PY\n', 'GO\n']);
+  assert.equal(polyCall.code, 'GO\n');
+  const demoCall = seen.find((s) => s.id === '01-demo');
+  assert.deepEqual(demoCall.codes, ['PY\n', 'GO\n'].slice(-1)); // blockCount 1 → last block only
+});
+
+test('runPhase1 sends the two-block closing line for blocks:2 tasks, standard line otherwise', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  const poly = join(tasksDir, '16-poly2');
+  mkdirSync(poly, { recursive: true });
+  writeFileSync(join(poly, 'task.json'), JSON.stringify({
+    id: '16-poly2', language: 'polyglot', type: 'spec-following', difficulty: 'hard',
+    image: 'model-bench-polyglot', solutionFile: 'solution.go', blocks: 2,
+    solutionFiles: ['solution.py', 'solution.go'], testCommand: ['sh', '/work/tests/run_tests.sh'],
+  }));
+  writeFileSync(join(poly, 'prompt.md'), 'Implement it twice.');
+  const prompts = [];
+  const chatImpl = async (req) => {
+    prompts.push(req.messages.at(-1).content);
+    return { content: '```python\nPY\n```\n```go\nGO\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: {}, latencyMs: 1, httpStatus: 200 };
+  };
+  const gradeImpl = async () => ({ passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' });
+  await runPhase1({ models: ['test/model'], tasksDir, configsDir, resultsDir, nRuns: 1 }, { chatImpl, gradeImpl });
+  // tasks run in id order: 01-demo (blockCount 1) then 16-poly2 (blockCount 2)
+  assert.match(prompts[0], /in a single fenced code block/);
+  assert.match(prompts[1], /exactly two fenced code blocks: the Python program first, then the Go program/);
+  assert.match(prompts[1], /last two fenced code blocks in your reply are what get executed/);
+  assert.doesNotMatch(prompts[1], /single fenced code block/);
+});
+
+test('runPhase1 taskIds filter runs only the named tasks', async () => {
+  const { tasksDir, configsDir, resultsDir } = makeFixture();
+  const second = join(tasksDir, '02-other');
+  mkdirSync(second, { recursive: true });
+  writeFileSync(join(second, 'task.json'), JSON.stringify({
+    id: '02-other', language: 'python', type: 'implement', difficulty: 'easy',
+    image: 'model-bench-python', solutionFile: 'solution.py',
+    testCommand: ['python', '/work/tests/run_tests.py'],
+  }));
+  writeFileSync(join(second, 'prompt.md'), 'Other.');
+  const chatImpl = async () => ({ content: '```python\nx = 1\n```', reasoning: '', toolCalls: [], finishReason: 'stop', usage: {}, latencyMs: 1, httpStatus: 200 });
+  const gradeImpl = async () => ({ passed: 1, total: 1, passRate: 1, failureClass: null, cases: [], output: '' });
+  const records = await runPhase1(
+    { models: ['test/model'], tasksDir, configsDir, resultsDir, nRuns: 1, taskIds: ['02-other'] },
+    { chatImpl, gradeImpl },
+  );
+  assert.deepEqual(records.map((r) => r.task), ['02-other']);
+});

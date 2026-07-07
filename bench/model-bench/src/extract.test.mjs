@@ -54,3 +54,63 @@ test('CRLF fences and think-stripped fences are counted correctly', () => {
   assert.equal(t.fenceCount, 1);
   assert.equal(t.decision, 'last_fence');
 });
+
+test('every result now carries a codes array; blockCount 1 keeps old behavior', () => {
+  const one = extractSolution('x\n```python\na = 1\n```\n', 'none');
+  assert.deepEqual(one.codes, ['a = 1\n']);
+  assert.equal(one.code, 'a = 1\n');
+  const raw = extractSolution('def f(x):\n    return x\n', 'none');
+  assert.deepEqual(raw.codes, [raw.code]);
+  const none = extractSolution('Sorry, no.', 'none');
+  assert.deepEqual(none.codes, []);
+});
+
+test('blockCount 2 takes the LAST two blocks in reply order', () => {
+  const reply = 'Draft:\n```python\nold\n```\nPython:\n```python\nPY\n```\nGo:\n```go\nGO\n```\n';
+  const r = extractSolution(reply, 'none', { blockCount: 2 });
+  assert.deepEqual(r.codes, ['PY\n', 'GO\n']);
+  assert.equal(r.code, 'GO\n');
+  assert.equal(r.decision, 'last_fence');
+  assert.equal(r.fenceCount, 3);
+});
+
+test('blockCount 2 with a single fence returns one code (right-aligned by the grader)', () => {
+  const r = extractSolution('```go\nGO\n```\n', 'none', { blockCount: 2 });
+  assert.deepEqual(r.codes, ['GO\n']);
+  assert.equal(r.decision, 'last_fence');
+});
+
+test('blockCount 2 never raw-falls-back: a fence-less reply is none', () => {
+  const r = extractSolution('def f():\n    return 1\n', 'none', { blockCount: 2 });
+  assert.equal(r.decision, 'none');
+  assert.deepEqual(r.codes, []);
+});
+
+test('4-backtick fences are blocks and can wrap 3-backtick content', () => {
+  const wrapped = 'Here you go:\n````text\nouter\n```js\ninner\n```\nmore\n````\ndone';
+  const r = extractSolution(wrapped, 'none');
+  assert.equal(r.fenceCount, 1);
+  assert.equal(r.code, 'outer\n```js\ninner\n```\nmore\n');
+  const two = extractSolution('```python\na\n```\n````python\nb\n````\n', 'none');
+  assert.equal(two.fenceCount, 2);
+  assert.equal(two.code, 'b\n');
+});
+
+test('homograph prose starting with let/var/class/package no longer raw-falls-back', () => {
+  for (const prose of [
+    'let me explain what happened here.',
+    'var ious approaches could work for this.',
+    'class dismissed — the answer is no.',
+    'package deal for you today only.',
+  ]) {
+    assert.equal(extractSolution(prose, 'none').decision, 'none', prose);
+  }
+});
+
+test('real single-token-keyword source still raw-falls-back', () => {
+  assert.equal(extractSolution('let total = 0;\ntotal += 1;\n', 'none').decision, 'raw_fallback');
+  assert.equal(extractSolution('var count = compute();\n', 'none').decision, 'raw_fallback');
+  assert.equal(extractSolution('class Tokenizer:\n    pass\n', 'none').decision, 'raw_fallback');
+  assert.equal(extractSolution('package main\n\nfunc main() {}\n', 'none').decision, 'raw_fallback');
+  assert.equal(extractSolution('WITH t AS (SELECT 1) SELECT * FROM t;\n', 'none').decision, 'raw_fallback');
+});

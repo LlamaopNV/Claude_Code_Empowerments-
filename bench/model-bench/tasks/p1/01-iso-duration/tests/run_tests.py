@@ -15,6 +15,7 @@ VALID = [
     ("minute-seconds", "PT1M30S", 90.0),
     ("zero", "PT0S", 0.0),
     ("full-date-part", "P1Y2M3W4D", 31536000.0 + 5184000.0 + 1814400.0 + 345600.0),
+    ("months-and-minutes", "P1MT2M", 2592120.0),
 ]
 INVALID = [
     ("empty", ""),

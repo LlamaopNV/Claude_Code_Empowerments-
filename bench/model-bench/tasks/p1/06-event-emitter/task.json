@@ -1,0 +1,9 @@
+{
+  "id": "06-event-emitter",
+  "language": "javascript",
+  "type": "implement",
+  "difficulty": "medium",
+  "image": "model-bench-node:24",
+  "solutionFile": "solution.mjs",
+  "testCommand": ["node", "/work/tests/run_tests.mjs"]
+}

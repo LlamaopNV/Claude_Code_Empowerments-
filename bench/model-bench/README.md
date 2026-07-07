@@ -7,9 +7,12 @@ network-disabled Docker containers.
 ## Prereqs
 
 - `NVIDIA_API_KEY` in the environment (`/nim-setup` in Claude Code).
-- Docker running. Build the grading images once:
-  `docker build -t model-bench-python -f bench/model-bench/docker/python.Dockerfile bench/model-bench/docker`
-  `docker build -t model-bench-node -f bench/model-bench/docker/node.Dockerfile bench/model-bench/docker`
+- Docker running. Build the grading images once (all base images digest-pinned):
+
+      cd bench/model-bench/docker
+      docker build -t model-bench-python:3.14 -f python.Dockerfile .
+      docker build -t model-bench-node:24 -f node.Dockerfile .
+      for f in go rust sqlite ts polyglot; do docker build -t "model-bench-$f" -f "$f.Dockerfile" .; done
 
 ## Usage (from repo root)
 
@@ -20,6 +23,10 @@ network-disabled Docker containers.
 - Report: `node bench/model-bench/src/run.mjs --phase report`
 - Dry run (whole pipeline, one cheap model, n=1):
   `node bench/model-bench/src/run.mjs --dry-run`
+- Restrict phase 1 to specific tasks:
+  `node bench/model-bench/src/run.mjs --phase 1 --models <ids> --tasks 02-rate-limiter,06-event-emitter`
+- Validate every task's reference solution in Docker (run before trusting any scores):
+  `node bench/model-bench/src/validate-tasks.mjs [--tasks <ids>]`
 
 Raw request/response logs: `results/raw/<phase>/<model-slug>/<task>/<run>.json`.
 Human review step: eyeball each generated `configs/*.json` and 5 random

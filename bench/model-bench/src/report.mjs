@@ -22,14 +22,34 @@ const groupBy = (xs, key) => {
   return m;
 };
 
+// Per-language / per-type breakout: unweighted mean over the per-task means,
+// consistent with perModel.meanScore (spec: "broken out per language and per
+// type"). Only tasks with a non-null mean participate.
+function breakout(perModelTask, dim) {
+  const rows = [];
+  for (const [, entries] of groupBy(perModelTask.filter((t) => t.mean !== null), (t) => `${t.model} ${t[dim]}`)) {
+    rows.push({
+      model: entries[0].model,
+      [dim]: entries[0][dim],
+      meanScore: mean(entries.map((t) => t.mean)),
+      passAt1: mean(entries.map((t) => t.passAt1)),
+      tasks: entries.length,
+    });
+  }
+  rows.sort((a, b) => a.model.localeCompare(b.model) || b.meanScore - a.meanScore);
+  return rows;
+}
+
 export function buildSummary(records) {
   const perModelTask = [];
-  for (const [, taskRecs] of groupBy(records, (r) => `${r.model}::${r.task}`)) {
+  for (const [, taskRecs] of groupBy(records, (r) => `${r.model} ${r.task}`)) {
     const graded = taskRecs.filter((r) => r.passRate !== null);
     const rates = graded.map((r) => r.passRate);
     perModelTask.push({
       model: taskRecs[0].model,
       task: taskRecs[0].task,
+      language: taskRecs[0].language ?? 'unknown',
+      type: taskRecs[0].type ?? 'unknown',
       runs: graded.length,
       truncated: taskRecs.filter((r) => r.failureClass === 'TRUNCATED').length,
       mean: rates.length ? mean(rates) : null,
@@ -57,15 +77,27 @@ export function buildSummary(records) {
     });
   }
   perModel.sort((a, b) => (b.meanScore ?? -1) - (a.meanScore ?? -1));
-  return { perModelTask, perModel };
+  return {
+    perModelTask,
+    perModel,
+    perLanguage: breakout(perModelTask, 'language'),
+    perType: breakout(perModelTask, 'type'),
+  };
 }
 
-const CSV_HEADER = 'model,task,run,temperature,failure_class,pass_rate,passed,total,extraction,finish_reason,prompt_tokens,completion_tokens,latency_ms';
-const cell = (v) => (v === null || v === undefined ? '' : String(v));
+const CSV_HEADER = 'model,task,language,type,run,temperature,failure_class,pass_rate,passed,total,extraction,finish_reason,prompt_tokens,completion_tokens,latency_ms';
+// RFC-4180 escaping. Task ids and model slugs are path-safe upstream, but
+// model display ids, error strings and future fields are not — quote any cell
+// containing a comma, quote, or newline and double the inner quotes.
+const cell = (v) => {
+  if (v === null || v === undefined) return '';
+  const s = String(v);
+  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+};
 
 export function toCsv(records) {
   const rows = records.map((r) =>
-    [r.model, r.task, r.run, r.params?.temperature, r.failureClass, r.passRate, r.passed, r.total, r.extraction, r.finishReason, r.usage?.prompt_tokens, r.usage?.completion_tokens, r.latencyMs]
+    [r.model, r.task, r.language ?? 'unknown', r.type ?? 'unknown', r.run, r.params?.temperature, r.failureClass, r.passRate, r.passed, r.total, r.extraction, r.finishReason, r.usage?.prompt_tokens, r.usage?.completion_tokens, r.latencyMs]
       .map(cell)
       .join(','),
   );
@@ -74,7 +106,7 @@ export function toCsv(records) {
 
 const pct = (x) => (x === null ? 'n/a' : `${(x * 100).toFixed(1)}%`);
 
-export function buildReportMd({ perModelTask, perModel }) {
+export function buildReportMd({ perModelTask, perModel, perLanguage, perType }) {
   const lines = ['# Model Bench — Phase 1 Report', '', '## Leaderboard', '', '| Model | Mean score | pass@1 | Median compl. tokens | Median latency (ms) | Truncation | Extraction fail |', '|---|---|---|---|---|---|---|'];
   for (const m of perModel) {
     const trunc = m.truncationRate > 0.1 ? `${pct(m.truncationRate)} ⚠ double max_tokens and rerun` : pct(m.truncationRate);
@@ -83,6 +115,14 @@ export function buildReportMd({ perModelTask, perModel }) {
   lines.push('', '## Per task', '', '| Model | Task | Mean ± std | pass@1 | Graded runs | Truncated |', '|---|---|---|---|---|---|');
   for (const t of perModelTask) {
     lines.push(`| ${t.model} | ${t.task} | ${t.mean === null ? 'n/a' : `${t.mean.toFixed(3)} ± ${t.std.toFixed(3)}`} | ${pct(t.passAt1)} | ${t.runs} | ${t.truncated} |`);
+  }
+  lines.push('', '## Per language', '', '| Model | Language | Mean score | pass@1 | Tasks |', '|---|---|---|---|---|');
+  for (const l of perLanguage) {
+    lines.push(`| ${l.model} | ${l.language} | ${pct(l.meanScore)} | ${pct(l.passAt1)} | ${l.tasks} |`);
+  }
+  lines.push('', '## Per type', '', '| Model | Type | Mean score | pass@1 | Tasks |', '|---|---|---|---|---|');
+  for (const t of perType) {
+    lines.push(`| ${t.model} | ${t.type} | ${pct(t.meanScore)} | ${pct(t.passAt1)} | ${t.tasks} |`);
   }
   lines.push('', '## Failure classes', '');
   for (const m of perModel) {

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import { probeModel } from './probe.mjs';
 import { saveConfig } from './config.mjs';
-import { runPhase1 } from './phase1.mjs';
+import { loadTasks, runPhase1 } from './phase1.mjs';
 import { writeReports } from './report.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -24,6 +24,7 @@ export function parseCli(argv) {
       models: { type: 'string' },
       n: { type: 'string' },
       'dry-run': { type: 'boolean', default: false },
+      tasks: { type: 'string' },
     },
   });
   const dryRun = values['dry-run'];
@@ -34,7 +35,8 @@ export function parseCli(argv) {
   }
   const n = dryRun ? 1 : Number(values.n ?? 5);
   if (!Number.isInteger(n) || n < 1) throw new Error('--n must be a positive integer');
-  return { phase, models, dryRun, n };
+  const taskIds = values.tasks ? values.tasks.split(',').map((s) => s.trim()).filter(Boolean) : null;
+  return { phase, models, dryRun, n, taskIds };
 }
 
 const PROBE_HEADER = '| Model | echo | system | longOutput | tools | fence | toggle | status | notes |';
@@ -75,21 +77,33 @@ async function phase0(models) {
   console.log(`configs written to ${CONFIGS_DIR} — review each JSON before phase 1.`);
 }
 
-async function phase1(models, n) {
+async function phase1(models, n, taskIds = null) {
   const records = await runPhase1(
-    { models, tasksDir: TASKS_DIR, configsDir: CONFIGS_DIR, resultsDir: RESULTS_DIR, nRuns: n },
+    { models, tasksDir: TASKS_DIR, configsDir: CONFIGS_DIR, resultsDir: RESULTS_DIR, nRuns: n, taskIds },
     { log: console.log },
   );
   writeReports(records, RESULTS_DIR);
   console.log(`wrote ${join(RESULTS_DIR, 'summary.csv')} and report.md (${records.length} runs)`);
 }
 
-export function phaseReport(resultsDir = RESULTS_DIR) {
+export function phaseReport(resultsDir = RESULTS_DIR, tasksDir = TASKS_DIR) {
   let records;
   try {
     records = JSON.parse(readFileSync(join(resultsDir, 'phase1-records.json'), 'utf8'));
   } catch {
     throw new Error('No phase1-records.json under results/ — run --phase 1 (or --dry-run) first.');
+  }
+  // Legacy records (pre language/type) get the fields re-derived from the
+  // task bank so old raw data never needs migration.
+  let meta = new Map();
+  try {
+    meta = new Map(loadTasks(tasksDir).map((t) => [t.id, t]));
+  } catch {
+    // tasks dir unreadable: fall back to 'unknown' below
+  }
+  for (const r of records) {
+    r.language ??= meta.get(r.task)?.language ?? 'unknown';
+    r.type ??= meta.get(r.task)?.type ?? 'unknown';
   }
   writeReports(records, resultsDir);
   console.log(`rebuilt reports from ${records.length} records`);
@@ -99,13 +113,13 @@ async function main() {
   const cli = parseCli(process.argv.slice(2));
   if (cli.dryRun) {
     await phase0(cli.models);
-    await phase1(cli.models, cli.n);
+    await phase1(cli.models, cli.n, cli.taskIds);
     phaseReport();
     console.log('dry run complete — inspect results/report.md before the full spend.');
     return;
   }
   if (cli.phase === '0') return phase0(cli.models);
-  if (cli.phase === '1') return phase1(cli.models, cli.n);
+  if (cli.phase === '1') return phase1(cli.models, cli.n, cli.taskIds);
   if (cli.phase === 'report') return phaseReport();
   throw new Error(`unknown --phase ${cli.phase}; use 0 | 1 | report or --dry-run`);
 }

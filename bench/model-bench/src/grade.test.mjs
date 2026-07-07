@@ -75,3 +75,38 @@ test('gradeSolution cleans up even when the runner throws, and propagates the er
   );
   assert.deepEqual(readdirSync(workRoot), []);
 });
+
+test('gradeSolution stages multiple files from codes when task.solutionFiles is set', async () => {
+  const taskDir = mkdtempSync(join(tmpdir(), 'task-'));
+  mkdirSync(join(taskDir, 'tests'));
+  writeFileSync(join(taskDir, 'tests', 'run_tests.sh'), 'echo CASE a PASS');
+  const task = { id: 'poly', language: 'polyglot', image: 'model-bench-polyglot', solutionFile: 'solution.go', solutionFiles: ['solution.py', 'solution.go'], testCommand: ['sh', '/work/tests/run_tests.sh'] };
+  let staged;
+  const runImpl = async ({ workDir }) => {
+    staged = {
+      py: readFileSync(join(workDir, 'solution.py'), 'utf8'),
+      go: readFileSync(join(workDir, 'solution.go'), 'utf8'),
+    };
+    return { output: 'CASE a PASS\n', timedOut: false };
+  };
+  await gradeSolution({ code: 'GO\n', codes: ['PY\n', 'GO\n'], taskDir, task }, { runImpl, workRoot: mkdtempSync(join(tmpdir(), 'work-')) });
+  assert.deepEqual(staged, { py: 'PY\n', go: 'GO\n' });
+});
+
+test('gradeSolution right-aligns short codes: one block fills only the LAST file', async () => {
+  const taskDir = mkdtempSync(join(tmpdir(), 'task-'));
+  mkdirSync(join(taskDir, 'tests'));
+  writeFileSync(join(taskDir, 'tests', 'run_tests.sh'), '');
+  const task = { id: 'poly', language: 'polyglot', image: 'model-bench-polyglot', solutionFiles: ['solution.py', 'solution.go'], testCommand: ['sh', '/work/tests/run_tests.sh'] };
+  let staged;
+  const runImpl = async ({ workDir }) => {
+    staged = {
+      py: readFileSync(join(workDir, 'solution.py'), 'utf8'),
+      go: readFileSync(join(workDir, 'solution.go'), 'utf8'),
+    };
+    return { output: 'CASE go-1 PASS\nCASE py-1 FAIL\n', timedOut: false };
+  };
+  const r = await gradeSolution({ code: 'GO\n', codes: ['GO\n'], taskDir, task }, { runImpl, workRoot: mkdtempSync(join(tmpdir(), 'work-')) });
+  assert.deepEqual(staged, { py: '', go: 'GO\n' });
+  assert.equal(r.failureClass, 'TEST_FAIL'); // the empty half fails its cases; no crash
+});

@@ -1,0 +1,9 @@
+{
+  "id": "14-sql-analytics",
+  "language": "sql",
+  "type": "implement",
+  "difficulty": "medium",
+  "image": "model-bench-sqlite",
+  "solutionFile": "solution.sql",
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}

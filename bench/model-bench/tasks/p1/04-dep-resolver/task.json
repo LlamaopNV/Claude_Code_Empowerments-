@@ -1,0 +1,9 @@
+{
+  "id": "04-dep-resolver",
+  "language": "python",
+  "type": "implement",
+  "difficulty": "hard",
+  "image": "model-bench-python:3.14",
+  "solutionFile": "solution.py",
+  "testCommand": ["python", "/work/tests/run_tests.py"]
+}

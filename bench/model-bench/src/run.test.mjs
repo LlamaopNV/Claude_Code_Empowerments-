@@ -1,18 +1,23 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseCli, upsertProbeRow, phaseReport } from './run.mjs';
 
 test('parseCli parses phases, model lists, n and dry-run', () => {
-  assert.deepEqual(parseCli(['--phase', '0', '--models', 'a/x,b/y']), { phase: '0', models: ['a/x', 'b/y'], dryRun: false, n: 5 });
-  assert.deepEqual(parseCli(['--phase', '1', '--models', 'a/x', '--n', '3']), { phase: '1', models: ['a/x'], dryRun: false, n: 3 });
-  assert.deepEqual(parseCli(['--dry-run']), { phase: null, models: ['meta/llama-3.3-70b-instruct'], dryRun: true, n: 1 });
+  assert.deepEqual(parseCli(['--phase', '0', '--models', 'a/x,b/y']), { phase: '0', models: ['a/x', 'b/y'], dryRun: false, n: 5, taskIds: null });
+  assert.deepEqual(parseCli(['--phase', '1', '--models', 'a/x', '--n', '3']), { phase: '1', models: ['a/x'], dryRun: false, n: 3, taskIds: null });
+  assert.deepEqual(parseCli(['--dry-run']), { phase: null, models: ['meta/llama-3.3-70b-instruct'], dryRun: true, n: 1, taskIds: null });
   assert.throws(() => parseCli(['--phase', '1']), /--models/);
-  assert.deepEqual(parseCli(['--phase', 'report']), { phase: 'report', models: [], dryRun: false, n: 5 });
+  assert.deepEqual(parseCli(['--phase', 'report']), { phase: 'report', models: [], dryRun: false, n: 5, taskIds: null });
   assert.throws(() => parseCli(['--phase', '1', '--models', 'a/x', '--n', 'abc']), /--n/);
   assert.throws(() => parseCli(['--phase', '1', '--models', 'a/x', '--n', '0']), /--n/);
+});
+
+test('parseCli parses --tasks into taskIds', () => {
+  const cli = parseCli(['--phase', '1', '--models', 'a/x', '--tasks', '02-rate-limiter, 06-event-emitter']);
+  assert.deepEqual(cli.taskIds, ['02-rate-limiter', '06-event-emitter']);
 });
 
 test('upsertProbeRow writes a header + separator on a fresh file', () => {
@@ -52,4 +57,27 @@ test('phaseReport rebuilds summary.csv and report.md from an existing phase1-rec
   phaseReport(resultsDir);
   assert.match(readFileSync(join(resultsDir, 'summary.csv'), 'utf8'), /a\/x/);
   assert.match(readFileSync(join(resultsDir, 'report.md'), 'utf8'), /Model Bench/);
+});
+
+test('phaseReport backfills language/type from task.json for legacy records', () => {
+  const root = mkdtempSync(join(tmpdir(), 'rep-'));
+  const resultsDir = join(root, 'results');
+  mkdirSync(resultsDir, { recursive: true });
+  const tasksDir = join(root, 'tasks');
+  const taskDir = join(tasksDir, '01-demo');
+  mkdirSync(taskDir, { recursive: true });
+  writeFileSync(join(taskDir, 'task.json'), JSON.stringify({
+    id: '01-demo', language: 'python', type: 'implement', difficulty: 'easy',
+    image: 'model-bench-python', solutionFile: 'solution.py', testCommand: ['python', 'x'],
+  }));
+  writeFileSync(join(taskDir, 'prompt.md'), 'p');
+  const legacy = [
+    { model: 'm/a', task: '01-demo', run: 0, params: { temperature: 0 }, finishReason: 'stop', usage: {}, latencyMs: 1, extraction: 'last_fence', failureClass: null, passed: 1, total: 1, passRate: 1 },
+    { model: 'm/a', task: '99-gone', run: 0, params: { temperature: 0 }, finishReason: 'stop', usage: {}, latencyMs: 1, extraction: 'last_fence', failureClass: null, passed: 1, total: 1, passRate: 1 },
+  ];
+  writeFileSync(join(resultsDir, 'phase1-records.json'), JSON.stringify(legacy));
+  phaseReport(resultsDir, tasksDir);
+  const csv = readFileSync(join(resultsDir, 'summary.csv'), 'utf8');
+  assert.match(csv, /m\/a,01-demo,python,implement,/);
+  assert.match(csv, /m\/a,99-gone,unknown,unknown,/);
 });

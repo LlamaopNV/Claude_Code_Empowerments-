@@ -1,0 +1,9 @@
+{
+  "id": "09-ts-state-machine",
+  "language": "typescript",
+  "type": "implement",
+  "difficulty": "medium",
+  "image": "model-bench-ts",
+  "solutionFile": "solution.ts",
+  "testCommand": ["sh", "/work/tests/run_tests.sh"]
+}
