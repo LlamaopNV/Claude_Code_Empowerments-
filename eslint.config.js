@@ -21,6 +21,14 @@ export default [
       // Forgemaster run directories hold pipeline artifacts (stage records and
       // per-run acceptance-check scripts), not workspace code.
       'forgemaster-runs/**',
+      // Benchmark task fixtures (hidden tests + reference solutions) run only
+      // inside pinned Docker images with their own runtimes — Node 24 with
+      // `using` declarations (06-event-emitter), CommonJS (08-spreadsheet),
+      // and other languages — never imported by the harness. The workspace
+      // lint config (espree @ ecmaVersion 2022, .mjs/.js globals) cannot parse
+      // them and would false-flag valid fixture code. Same rationale as
+      // site/** and forgemaster-runs/**: content, not workspace code.
+      'bench/model-bench/tasks/**',
     ],
   },
   js.configs.recommended,
