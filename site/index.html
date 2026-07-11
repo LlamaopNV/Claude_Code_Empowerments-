@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Claude skill showcase</title>
+    <title>Claude plugin &amp; skill showcase</title>
     <meta
       name="description"
-      content="Interactive showcases for the skills in the catalog. Pick one and watch it work, then install it."
+      content="Interactive showcases for the plugins and skills in the marketplace. Plugins install with /plugin marketplace; skills install one at a time from the skill-installer catalog. Pick one and watch it work."
     />
 
     <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
@@ -159,7 +159,7 @@
         <h1
           class="font-semibold tracking-tighter leading-[1.05] text-[2.6rem] md:text-6xl max-w-[18ch]"
         >
-          Claude Code skills, shown not told.
+          Claude Code plugins &amp; skills, shown not told.
         </h1>
         <p class="mt-6 text-lg text-[color:var(--text-dim)] max-w-[56ch] leading-relaxed">
           Interactive showcases for the plugins and skills in the marketplace. Pick one and watch it
@@ -179,10 +179,18 @@
       <section id="grid" class="max-w-content mx-auto px-5 pb-24 pt-6">
         <!-- Plugins -->
         <div
-          class="flex items-baseline justify-between gap-4 flex-wrap border-b hairline pb-3 mb-5 reveal"
+          class="flex items-end justify-between gap-4 flex-wrap border-b hairline pb-4 mb-6 reveal"
         >
-          <h2 class="font-mono text-[15px] font-medium tracking-wide">Plugins</h2>
-          <span class="font-mono text-xs text-[color:var(--text-faint)]"
+          <div>
+            <h2 class="font-mono text-lg font-medium tracking-tight flex items-center gap-2">
+              <i class="ph-bold ph-plugs-connected accent" aria-hidden="true"></i> Plugins
+            </h2>
+            <p class="text-sm text-[color:var(--text-dim)] mt-2 max-w-[54ch] leading-relaxed">
+              Full marketplace plugins. Each bundles one or more skills, plus its own slash
+              commands and agents.
+            </p>
+          </div>
+          <span class="font-mono text-xs text-[color:var(--text-faint)] whitespace-nowrap"
             >install with <span class="accent">/plugin marketplace</span></span
           >
         </div>
@@ -349,10 +357,18 @@
 
         <!-- Skills -->
         <div
-          class="flex items-baseline justify-between gap-4 flex-wrap border-b hairline pb-3 mb-5 mt-16 reveal"
+          class="flex items-end justify-between gap-4 flex-wrap border-b hairline pb-4 mb-6 mt-16 reveal"
         >
-          <h2 class="font-mono text-[15px] font-medium tracking-wide">Skills</h2>
-          <span class="font-mono text-xs text-[color:var(--text-faint)]"
+          <div>
+            <h2 class="font-mono text-lg font-medium tracking-tight flex items-center gap-2">
+              <i class="ph-bold ph-puzzle-piece accent" aria-hidden="true"></i> Skills
+            </h2>
+            <p class="text-sm text-[color:var(--text-dim)] mt-2 max-w-[54ch] leading-relaxed">
+              Standalone skills, added one at a time. No plugin required. They drop straight into a
+              project or your user config.
+            </p>
+          </div>
+          <span class="font-mono text-xs text-[color:var(--text-faint)] whitespace-nowrap"
             >install from the
             <a href="./skill-installer/" class="accent">skill-installer</a> catalog</span
           >
@@ -423,7 +439,7 @@
         homeUrl: './',
         repoUrl: 'https://github.com/llamaopnv',
         navLinks: [],
-        footNote: 'a showcase of the Claude Code skill catalog',
+        footNote: 'a showcase of Claude Code plugins & skills',
       };
     </script>
     <script src="./shared/shell.js" defer></script>

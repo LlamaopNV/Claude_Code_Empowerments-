@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>van-pletzen · showcase</title>
-<meta name="description" content="van-pletzen: 'n grap-skill. Praat AS Van Pletzen, die Groothond, in sy Mengels Afrikaans-English mix. Opt-in only, hy bly dormant totdat jy hom op die naam roep." />
+<meta name="description" content="van-pletzen: a for-laughs persona skill. Ask for it by name and Claude replies as Van Pletzen (the Groothond) in his Mengels Afrikaans-English mix. Opt-in only, it stays dormant until named." />
 
 <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
 <script src="https://cdn.tailwindcss.com"></script>
@@ -47,6 +47,12 @@
     background: var(--bg-2); padding: 10px 16px;
   }
   .chip b { color: var(--accent); font-weight: 500; }
+
+  /* plain-English clarity block: the straight version, up top */
+  .plainbox { display: flex; gap: 13px; align-items: flex-start; border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); background: var(--bg-2); padding: 15px 18px; max-width: 64ch; }
+  .plainbox > i { color: var(--accent); font-size: 19px; margin-top: 1px; flex: 0 0 auto; }
+  .plainbox p { margin: 0; color: var(--text-dim); line-height: 1.62; font-size: 14.5px; }
+  .plainbox b { color: var(--text); font-weight: 600; }
 
   /* ---- the gate: dormant vs wakes ---- */
   .gate { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 12px; }
@@ -136,6 +142,15 @@
     <h1 class="reveal font-semibold tracking-tighter leading-[1.06] text-[2.5rem] md:text-6xl max-w-[16ch] mt-6">
       Vra vir my. <span class="grad">By die naam.</span>
     </h1>
+    <div class="reveal plainbox mt-6">
+      <i class="ph ph-info" aria-hidden="true"></i>
+      <p>
+        <b>In plain English:</b> a for-laughs persona skill. Ask for it by name and Claude answers
+        as Van Pletzen, the "Groothond", in his Mengels (a live Afrikaans-English mix). It never
+        triggers on its own, and it drops the act the moment you need a real answer. A joke, opt-in
+        only. Everything below is the bit itself.
+      </p>
+    </div>
     <p class="reveal sect-sub text-lg mt-6 max-w-[60ch]">
       Ek is Groothond. Van Pletzen op die ID, maar niemand call my dit nie. Ek host <i>Praating</i>
       en ek praat Mengels, my eie mix van Afrikaans en English. Hierdie ding is 'n grap, niks meer
