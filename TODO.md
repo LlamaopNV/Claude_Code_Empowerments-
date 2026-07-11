@@ -26,6 +26,7 @@ accent icon. Owned skills only:
 - [x] forgemaster (feature) `#f2c94c` (run-record replay; page shipped via its own pipeline, run 2026-07-04-forgemaster-showcase)
 - [x] tdd-heartbeat `#e5675f` (external, linked from the grid)
 - [x] bellows `#76b900`
+- [x] van-pletzen `#cf4d6e` (joke skill; "Praating on-air gate" metaphor: two-take transcript showing the persona stay dormant, then wake only when named)
 
 ### Removed 2026-06-24 (not the user's; pulled from repo + marketplace + site)
 

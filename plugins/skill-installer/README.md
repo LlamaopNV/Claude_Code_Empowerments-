@@ -33,9 +33,11 @@ The installable skills live in [`catalog/`](./catalog/). Current contents:
 | `symmetric-audit` | Audits sibling files (create/edit/view, schema consumers, route families) for divergence and fixes them. |
 | `iterative-review-fix` | Automated review → evaluate → fix loop before commit/PR. Invokes `symmetric-audit` first. |
 | `web-smoke-test` | Drives a real Chrome (via the chrome-devtools MCP) through a web change and reports browser + server failures. |
+| `van-pletzen` | A for-laughs novelty persona. Talk _as_ Van Pletzen (the "Groothond") in his Mengels voice. Opt-in only: fires solely when you name it, never from topic or vibe. |
 
 > `iterative-review-fix` depends on `symmetric-audit` — install both together.
 > `web-smoke-test` requires the `chrome-devtools-mcp` plugin.
+> `van-pletzen` is a joke skill and stays dormant until you explicitly ask for it by name.
 
 ## For developers — adding a skill to the catalog
 
