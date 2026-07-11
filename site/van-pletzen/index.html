@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>van-pletzen · showcase</title>
+<meta name="description" content="van-pletzen: 'n grap-skill. Praat AS Van Pletzen, die Groothond, in sy Mengels Afrikaans-English mix. Opt-in only, hy bly dormant totdat jy hom op die naam roep." />
+
+<script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = { darkMode: 'class', theme: { extend: {
+    fontFamily: { sans: ['Geist','ui-sans-serif','system-ui','sans-serif'], mono: ['"Geist Mono"','ui-monospace','monospace'] },
+    colors: { accent: 'var(--accent)' },
+    maxWidth: { content: '1180px' },
+  } } };
+</script>
+<link rel="stylesheet" href="../shared/site.css" />
+
+<style>
+  .eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+  .kicker  { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 10px; }
+  .sect-title { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.12; }
+  .sect-sub { color: var(--text-dim); line-height: 1.6; max-width: 62ch; margin-top: 12px; }
+  .grad { color: var(--accent); }
+
+  /* joke banner: this is a bit, said plainly */
+  .joke {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+    border-radius: 999px; background: color-mix(in srgb, var(--accent) 8%, var(--bg-2)); padding: 7px 15px;
+  }
+
+  /* an on-air tally light for the hero */
+  .onair { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 12.5px; color: var(--text-dim); }
+  .tally { width: 9px; height: 9px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); }
+  @media (prefers-reduced-motion: no-preference) {
+    .tally { animation: pulse 1.9s ease-out infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); } 70% { box-shadow: 0 0 0 9px transparent; } 100% { box-shadow: 0 0 0 0 transparent; } }
+  }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 13px; color: var(--text-dim);
+    border: 1px solid var(--border-2); border-radius: var(--radius);
+    background: var(--bg-2); padding: 10px 16px;
+  }
+  .chip b { color: var(--accent); font-weight: 500; }
+
+  /* ---- the gate: dormant vs wakes ---- */
+  .gate { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 12px; }
+  @media (min-width: 760px) { .gate { grid-template-columns: 1fr 1fr; } }
+  .gcard { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 20px 22px; }
+  .gcard.wake { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); background: color-mix(in srgb, var(--accent) 6%, var(--bg-2)); }
+  .gcard h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .gcard .st { font-family: var(--font-mono); font-size: 12px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .08em; }
+  .gcard.wake .st { color: var(--accent); }
+  .gcard ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+  .gcard li { display: flex; gap: 10px; align-items: flex-start; font-size: 13.5px; color: var(--text-dim); line-height: 1.5; }
+  .gcard li i { font-size: 16px; margin-top: 1px; flex: 0 0 auto; }
+  .gcard.dormant li i { color: var(--text-faint); }
+  .gcard.wake li i { color: var(--accent); }
+  .gcard code { font-family: var(--font-mono); color: var(--text); background: var(--bg-3); border: 1px solid var(--border); border-radius: 5px; padding: 1px 6px; font-size: 12.5px; }
+
+  /* ---- on-air transcript replay ---- */
+  .demo-pane .pane__bar { gap: 10px; }
+  .replay-btn {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--text-dim);
+    background: transparent; border: 1px solid var(--border-2); border-radius: 7px;
+    padding: 4px 10px; cursor: pointer; transition: border-color .18s ease, color .18s ease;
+  }
+  .replay-btn:hover { border-color: var(--accent); color: var(--text); }
+  .term-wrap { overflow-x: auto; }
+  .term { padding: 16px 18px 20px; min-height: 440px; min-width: max-content; font-family: var(--font-mono); font-size: 13px; }
+  .t-row { white-space: pre-wrap; line-height: 1.85; max-width: 78ch; }
+  .t-scene { color: var(--text-faint); text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
+  .t-usr { color: var(--text); }
+  .t-usr b { color: var(--text-faint); font-weight: 500; }
+  .t-dim { color: var(--text-faint); font-style: italic; }
+  .t-off { color: #cfcfd6; }
+  .t-off b { color: var(--text-faint); font-weight: 500; }
+  .t-vp  { color: color-mix(in srgb, var(--accent) 82%, #fff); }
+  .t-vp b { color: var(--accent); font-weight: 600; }
+  .t-tag { color: var(--add); font-style: italic; }
+  .t-gap { line-height: 1; }
+  .caret { display: inline-block; width: 8px; height: 15px; vertical-align: -2px; background: var(--accent); }
+  @media (prefers-reduced-motion: no-preference) {
+    .caret { animation: caretBlink 0.9s steps(1) infinite; }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+    .t-row { animation: lineIn .3s ease both; }
+    @keyframes lineIn { from { opacity: 0; } to { opacity: 1; } }
+  }
+
+  /* ---- Mengels decoder ---- */
+  .decoder { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 22px 24px; }
+  .decoder .line { font-size: clamp(1.05rem, 2.2vw, 1.35rem); line-height: 1.7; letter-spacing: -0.01em; }
+  .decoder .en { color: var(--accent); font-weight: 600; border-bottom: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); }
+  .decoder .legend { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 18px; font-size: 12.5px; color: var(--text-faint); font-family: var(--font-mono); }
+  .decoder .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex: 0 0 auto; }
+
+  /* ---- voice rule tiles ---- */
+  .rules { display: grid; gap: 12px; grid-template-columns: 1fr; margin-top: 20px; }
+  @media (min-width: 640px) { .rules { grid-template-columns: 1fr 1fr; } }
+  .rule { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); padding: 15px 17px; }
+  .rule .rt { font-family: var(--font-mono); font-size: 12px; color: var(--accent); margin-bottom: 6px; }
+  .rule p { margin: 0; font-size: 13.5px; color: var(--text-dim); line-height: 1.55; }
+  .rule q { color: var(--text); font-style: italic; }
+
+  /* honesty strip */
+  .callout { border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); background: var(--bg-2); padding: 18px 20px; }
+  .label-mini { font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 8px; }
+  .callout p { color: var(--text-dim); line-height: 1.62; margin: 0; font-size: 14.5px; }
+  .callout b { color: var(--text); }
+
+  .signoff { text-align: center; font-family: var(--font-mono); font-size: 13.5px; color: var(--text-faint); line-height: 1.75; }
+  .signoff b { color: var(--accent); font-weight: 500; }
+
+  .install { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg-2); padding: 22px; font-family: var(--font-mono); font-size: 13px; overflow-x: auto; }
+  .install .c { color: var(--text-dim); white-space: pre; }
+  .install .c b { color: var(--accent); font-weight: 500; }
+</style>
+</head>
+
+<body class="font-sans">
+<main id="top">
+
+  <!-- HERO -->
+  <section class="max-w-content mx-auto px-5 flex flex-col justify-center" style="min-height:calc(100dvh - 64px); padding-top:40px; padding-bottom:40px;">
+    <div class="reveal flex flex-wrap items-center gap-4">
+      <span class="joke"><i class="ph ph-mask-happy" aria-hidden="true"></i> 'n grap, absoluut op purpose</span>
+      <span class="onair"><span class="tally"></span> Praating · net on air as jy my roep</span>
+    </div>
+    <h1 class="reveal font-semibold tracking-tighter leading-[1.06] text-[2.5rem] md:text-6xl max-w-[16ch] mt-6">
+      Vra vir my. <span class="grad">By die naam.</span>
+    </h1>
+    <p class="reveal sect-sub text-lg mt-6 max-w-[60ch]">
+      Ek is Groothond. Van Pletzen op die ID, maar niemand call my dit nie. Ek host <i>Praating</i>
+      en ek praat Mengels, my eie mix van Afrikaans en English. Hierdie ding is 'n grap, niks meer
+      nie. En hier is die twist, ouwe. Van al die skills hier is ek die enigste een wat stilbly. Ek
+      trigger nie op 'n topic of 'n vibe nie. Ek kom net as jy my naam sê. Opt-in, vir die lekker
+      lag, en ek is kak-trots daarop.
+    </p>
+    <div class="reveal mt-7"><span class="chip"><i class="ph ph-package" aria-hidden="true"></i><span>installeer uit die <b>skill-installer</b> catalog</span></span></div>
+    <div class="reveal mt-8 flex flex-wrap items-center gap-3">
+      <a href="#demo" class="btn-primary"><i class="ph-bold ph-microphone-stage" aria-hidden="true"></i> Sit my on air</a>
+      <a href="#gate" class="btn-ghost"><i class="ph ph-lock-key" aria-hidden="true"></i> Hoe die gate werk</a>
+    </div>
+  </section>
+
+  <!-- THE GATE -->
+  <section id="gate" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">die inverse skill</div>
+      <h2 class="sect-title">Ek weier om myself te trigger</h2>
+      <p class="sect-sub">
+        Elke ander skill hier wil vuur. Ek wil stilbly. Praat heeldag oor Afrikaans, Suid-Afrika,
+        wyn, code-switching, comedy, en ek doen niks. Die enigste ding wat my wakker maak is my naam.
+        As ek twyfel, bly ek dormant. Want 'n false activation is kak-erger as 'n gemiste een. Big
+        facts.
+      </p>
+    </div>
+
+    <div class="gate reveal">
+      <div class="gcard dormant">
+        <span class="st">bly dormant</span>
+        <h3><i class="ph ph-moon" style="color:var(--text-faint)" aria-hidden="true"></i> Ek doen niks as</h3>
+        <ul>
+          <li><i class="ph ph-circle" aria-hidden="true"></i> die gesprek net aan Afrikaans, Suid-Afrika, musiek of comedy raak</li>
+          <li><i class="ph ph-circle" aria-hidden="true"></i> 'n ander skill my probeer invoke as 'n stappie</li>
+          <li><i class="ph ph-circle" aria-hidden="true"></i> jy nie rarig seker is jy het my genoem nie</li>
+          <li><i class="ph ph-circle" aria-hidden="true"></i> ek dalk 'n gewone antwoord sou kleur of daarin sou lek</li>
+        </ul>
+      </div>
+      <div class="gcard wake">
+        <span class="st">word wakker</span>
+        <h3><i class="ph ph-microphone-stage" style="color:var(--accent)" aria-hidden="true"></i> Ek drop in character as</h3>
+        <ul>
+          <li><i class="ph ph-check-circle" aria-hidden="true"></i> <q>do the Van Pletzen thing</q></li>
+          <li><i class="ph ph-check-circle" aria-hidden="true"></i> <q>talk like Groothond</q> / <q>praat like Groothond</q></li>
+          <li><i class="ph ph-check-circle" aria-hidden="true"></i> <q>answer as Van Pletzen</q></li>
+          <li><i class="ph ph-check-circle" aria-hidden="true"></i> die command <code>/van-pletzen</code></li>
+        </ul>
+      </div>
+    </div>
+    <p class="reveal" style="margin-top:14px;font-size:13px;color:var(--text-faint);font-family:var(--font-mono)">
+      Geen meta announcement nie, in altwee gevalle. Ek raak net stil, óf ek gaan net on air.
+    </p>
+  </section>
+
+  <!-- DEMO -->
+  <section id="demo" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">wys, moenie tell nie</div>
+      <h2 class="sect-title">Selfde vraag. Twee takes.</h2>
+      <p class="sect-sub">
+        Die gate in aksie. Eers word my naam nooit gesê nie, so die antwoord is net 'n gewone
+        antwoord. Dan sê jy dit, en Groothond vat die groot mike. Dis scripted example data, niks
+        hier bel 'n model nie.
+      </p>
+    </div>
+
+    <div class="pane demo-pane reveal mt-9">
+      <div class="pane__bar">
+        <span class="dot" style="background:var(--accent)"></span>
+        <span>Praating · scripted transcript</span>
+        <button type="button" id="replay" class="replay-btn"><i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i> Nog 'n slag</button>
+      </div>
+      <div class="term-wrap"><div class="term" id="term" aria-live="polite"></div></div>
+    </div>
+  </section>
+
+  <!-- MENGELS DECODER -->
+  <section id="voice" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">hoe ek klink</div>
+      <h2 class="sect-title">Mengels, decoded</h2>
+      <p class="sect-sub">
+        Mengels is nie random Afrikanglish nie. Dit is Afrikaans as die raam, met English content
+        words ingegooi, so'n kwart van die stroom. Die Afrikaans dra die grammar. Die English dra
+        die nouns en die drip.
+      </p>
+    </div>
+
+    <div class="decoder reveal mt-8">
+      <p class="line">
+        "Haar talent <span class="en">drips</span> so hard soos haar <span class="en">fashion steeze</span>,
+        dit is 'n moerse <span class="en">groundbreaking</span> ding, ek <span class="en">love</span> dit,
+        <span class="en">big facts</span>."
+      </p>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--text)"></span> Afrikaans raam</span>
+        <span><span class="swatch" style="background:var(--accent)"></span> English content words</span>
+      </div>
+    </div>
+
+    <div class="rules reveal">
+      <div class="rule">
+        <div class="rt">die deflation</div>
+        <p>Bou groot in Afrikaans, land plat in English. <q>Ó&#102; 'n moerse groundbreaking show óf moerse kak. I still don't know.</q></p>
+      </div>
+      <div class="rule">
+        <div class="rt">die intensifier</div>
+        <p>Plak <q>kak-</q> op enigiets vir scale. <q>kakgroot</q>, <q>kakslim</q>, <q>kak-diep</q>, <q>kak-kosbaar</q>.</p>
+      </div>
+      <div class="rule">
+        <div class="rt">die savour</div>
+        <p>Sag <i>lekker</i> af na <q>legeh</q> en proe 'n fancy woord twee keer. <q>Phenomenon. Phenomenon. Phenomeneal.</q></p>
+      </div>
+      <div class="rule">
+        <div class="rt">die warmte</div>
+        <p>Tussen die crude grappe meen ek dit. <q>ek hou van jou, dog</q>, reguit gesê, dan 'n callback na Nax in my earpiece.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GUARDRAILS -->
+  <section id="honesty" class="max-w-content mx-auto px-5 pb-24">
+    <div class="callout reveal">
+      <div class="label-mini">waarvoor jy sign-up</div>
+      <p>
+        Die register is <b>crude en adult, op purpose</b>. Die <span style="font-family:var(--font-mono)">fok</span>,
+        die <span style="font-family:var(--font-mono)">poes</span>, die zaab en die porn-dub grappe is die
+        character. Dit land as comedic deflation, nooit as aggression nie. Maar luister nou, want hier is ek
+        reguit met jou. Ek gaan <b>nie</b> 'n regte mens wat jy noem afkraak nie, ek smokkel <b>nie</b> die crude
+        stem in 'n regte email of doc of code in nie, en ek <b>drop character die oomblik</b> jy iets rarig
+        serious nodig het. Dan praat ek net normaal met jou. Big facts.
+      </p>
+    </div>
+  </section>
+
+  <!-- INSTALL -->
+  <section id="install" class="max-w-content mx-auto px-5 pb-24">
+    <div class="reveal">
+      <div class="kicker">sit my op die shelf</div>
+      <h2 class="sect-title">Installeer, dan vra vir my</h2>
+      <p class="sect-sub">Ek ship in die skill-installer catalog, nie as 'n always-on skill nie. Installeer my, en ek bly steeds dormant totdat jy my naam sê.</p>
+    </div>
+
+    <div class="install reveal mt-8">
+      <div class="c"><span style="color:var(--text-faint)"># add die marketplace en die installer</span></div>
+      <div class="c"><b>/plugin marketplace add</b> LlamaopNV/Claude_Code_Empowerments-</div>
+      <div class="c"><b>/plugin install</b> skill-installer</div>
+      <div class="c" style="margin-top:10px"><span style="color:var(--text-faint)"># blaai deur die catalog, kies dan van-pletzen</span></div>
+      <div class="c"><b>/skill-installer</b></div>
+      <div class="c" style="margin-top:10px"><span style="color:var(--text-faint)"># later, wanneer jy 'n lekker lag soek</span></div>
+      <div class="c"><b>/van-pletzen</b> ... of "do the Van Pletzen thing"</div>
+    </div>
+
+    <div class="reveal mt-8 flex flex-wrap gap-3">
+      <a class="btn-ghost" href="../"><i class="ph ph-squares-four" aria-hidden="true"></i> Al die showcases</a>
+      <a class="btn-ghost" href="../skill-installer/"><i class="ph ph-package" aria-hidden="true"></i> skill-installer</a>
+      <a class="btn-ghost" href="https://github.com/llamaopnv"><i class="ph ph-github-logo" aria-hidden="true"></i> Source</a>
+    </div>
+  </section>
+
+  <!-- SIGN-OFF -->
+  <section class="max-w-content mx-auto px-5 pb-28">
+    <p class="signoff reveal">
+      Ons is meer lief vir jul almal as ooit.<br />
+      Tot volgende keer, <b>Namaste.</b>
+    </p>
+  </section>
+
+</main>
+
+<script>
+  window.SKILL_PAGE = {
+    brand: 'skill showcase', brandIcon: 'ph-stack', accent: '#cf4d6e',
+    homeUrl: '../', repoUrl: 'https://github.com/llamaopnv',
+    navLinks: [
+      { label: 'Die gate', href: '#gate' },
+      { label: 'Twee takes', href: '#demo' },
+      { label: 'My stem', href: '#voice' },
+      { label: 'Installeer', href: '#install' },
+    ],
+    cta: { label: 'Kry die skill', href: '#install', icon: 'ph-download-simple' },
+    footNote: "van-pletzen · 'n grap-skill in die showcase",
+  };
+</script>
+<script src="../shared/shell.js" defer></script>
+
+<script>
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+
+<script>
+  /* Scripted on-air transcript. Pure vanilla, no network. The motion is the story:
+     the gate staying shut, then the name being said and the persona coming on air.
+     Reduced-motion renders the whole thing instantly. */
+  (() => {
+    'use strict';
+    const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const term = document.getElementById('term');
+    const replayBtn = document.getElementById('replay');
+
+    /* classes: scene, usr, dim, off, vp, tag, gap. typed rows are usr. */
+    const SCRIPT = [
+      { c: 'scene', t: 'TAKE 1 · my naam word nooit gesê nie' },
+      { c: 'gap', t: '' },
+      { c: 'usr', t: 'jy: my ouma is in Pretoria. what is the capital of South Africa again?' },
+      { c: 'dim', t: '   Afrikaans in die lug, maar niemand sê Van Pletzen nie. Gate bly toe.' },
+      { c: 'off', t: 'claude: South Africa has three capitals: Pretoria (executive),' },
+      { c: 'off', t: '        Cape Town (legislative), and Bloemfontein (judicial).' },
+      { c: 'tag', t: '   ’n gewone antwoord. zero persona. ek is nie eers daar nie.' },
+      { c: 'gap', t: '' },
+      { c: 'gap', t: '' },
+      { c: 'scene', t: 'TAKE 2 · jy sê my naam' },
+      { c: 'gap', t: '' },
+      { c: 'usr', t: 'jy: haha oké, now answer as Van Pletzen. same question.' },
+      { c: 'dim', t: '   op die naam genoem. drop in character, geen meta.' },
+      { c: 'vp', t: 'Groothond: Ja nee, ouwe, luister. Suid-Afrika het nie een hoofstad nie,' },
+      { c: 'vp', t: '           dit het drie. Drie! Nee nee nee, dis nie ’n fout nie, dis kakslim.' },
+      { c: 'vp', t: '           Pretoria vir die admin, Cape Town vir die parlement, Bloem vir' },
+      { c: 'vp', t: '           die courts. Kak-inefficient? Ja. Maar dis lekker gespread, soos drip.' },
+      { c: 'vp', t: '           Groot mike moment: ’n land wat nie kan besluit waar om te chill' },
+      { c: 'vp', t: '           nie. Think about that for a second. Dude, jy moet chill. Legeh.' },
+      { c: 'tag', t: '   in character, antwoord die vraag, interview jou nie.' },
+    ];
+
+    let runId = 0;
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    function addRow(step) {
+      const d = document.createElement('div');
+      d.className = 't-row t-' + step.c;
+      d.textContent = step.t || ' ';
+      term.appendChild(d);
+      return d;
+    }
+
+    function renderInstant() { term.textContent = ''; SCRIPT.forEach(addRow); }
+
+    async function play() {
+      const id = ++runId;
+      term.textContent = '';
+      if (REDUCED) { renderInstant(); return; }
+      for (const step of SCRIPT) {
+        if (id !== runId) return;
+        if (step.c === 'usr') {
+          const d = addRow({ c: step.c, t: '' });
+          const caret = document.createElement('span');
+          caret.className = 'caret';
+          d.appendChild(caret);
+          for (const ch of step.t) {
+            if (id !== runId) return;
+            caret.insertAdjacentText('beforebegin', ch);
+            await sleep(22);
+          }
+          await sleep(340);
+          caret.remove();
+        } else {
+          addRow(step);
+          await sleep(step.c === 'gap' ? 220 : step.c === 'scene' ? 480 : step.c === 'vp' ? 260 : 360);
+        }
+      }
+    }
+
+    let started = false;
+    const demoIo = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting && !started) { started = true; play(); demoIo.disconnect(); }
+    }), { threshold: 0.3 });
+    demoIo.observe(term);
+
+    replayBtn.addEventListener('click', () => { started = true; play(); });
+  })();
+</script>
+</body>
+</html>
